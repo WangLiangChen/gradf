@@ -5,6 +5,9 @@
     <groupId>liangchen.wang</groupId>
     <artifactId>gradf</artifactId>
     <version>1.0.0-SNAPSHOT</version>
+    <modules>
+        <module>gradf.framework.commons</module>
+    </modules>
     <packaging>pom</packaging>
 
     <developers>
@@ -37,6 +40,11 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>5.6.2</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
@@ -46,11 +54,11 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>3.14.0</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <build>
