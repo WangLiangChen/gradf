@@ -2,7 +2,7 @@ package liangchen.wang.gradf.framework.commons.object;
 
 import com.esotericsoftware.reflectasm.MethodAccess;
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
-import liangchen.wang.gradf.framework.commons.json.JSONUtil;
+import liangchen.wang.gradf.framework.commons.json.JsonUtil;
 import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 
@@ -181,7 +181,7 @@ public abstract class EnhancedObject implements Serializable, Cloneable {
 
     @Override
     public String toString() {
-        return JSONUtil.INSTANCE.toJSONString(this);
+        return JsonUtil.INSTANCE.toJSONString(this);
     }
 
     @Override

@@ -20,6 +20,9 @@ import java.util.stream.Collectors;
  * @author LiangChen.Wang 2019/10/25 13:41
  */
 public enum ClassBeanUtil {
+    /**
+     *
+     */
     INSTANCE;
     private final Map<String, BeanCopier> cache = new ConcurrentHashMap<>();
     private final Map<Class, Class> primitiveMap = new HashMap<>();

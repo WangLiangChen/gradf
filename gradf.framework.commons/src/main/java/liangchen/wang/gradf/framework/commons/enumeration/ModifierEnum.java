@@ -5,6 +5,8 @@ package liangchen.wang.gradf.framework.commons.enumeration;
  * 参见 java.lang.reflect.Modifier
  */
 public enum ModifierEnum {
+    /**
+     */
     PUBLIC(0x00000001),
     PRIVATE(0x00000002),
     PROTECTED(0x00000004),

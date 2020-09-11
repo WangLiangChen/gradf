@@ -4,6 +4,9 @@ package liangchen.wang.gradf.framework.commons.utils;
  * @author liangchen.wang 2020/9/10
  */
 public enum StringUtil {
+    /**
+     *
+     */
     INSTANCE;
     private final String FORMAT_REGEX = "\\{(.*?)\\}";
     private final String FORMAT_REPLACEMENT = "\\%s";

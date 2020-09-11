@@ -7,6 +7,9 @@ import java.util.regex.Pattern;
  * @author liangchen.wang 2020/9/10
  */
 public enum ValidationUtil {
+    /**
+     *
+     */
     INSTANCE;
     private final Pattern loginNamePattern = Pattern.compile("^[\\u4e00-\\u9fa5a-zA-Z][\\u4e00-\\u9fa5a-zA-Z0-9_-]{4,14}$");
     private final Pattern mobilePattern = Pattern.compile("^1[34578][0-9]\\d{4,8}$");

@@ -2,15 +2,17 @@ package liangchen.wang.gradf.framework.commons.json;
 
 import java.io.Serializable;
 import java.util.*;
-
-public class JSONList extends JSON implements List<Object>, Cloneable, RandomAccess, Serializable {
+/**
+ * @author WangLiangChen
+ */
+public class JsonList extends Json implements List<Object>, Cloneable, RandomAccess, Serializable {
     private final List<Object> list;
 
-    public JSONList() {
+    public JsonList() {
         this.list = new ArrayList<>();
     }
 
-    public JSONList(List<Object> list) {
+    public JsonList(List<Object> list) {
         if (list == null) {
             throw new IllegalArgumentException("list is null.");
         }
@@ -18,33 +20,33 @@ public class JSONList extends JSON implements List<Object>, Cloneable, RandomAcc
     }
 
     @SuppressWarnings("unchecked")
-    public JSONMap getJSONMap(int index) {
+    public JsonMap getJSONMap(int index) {
         Object value = list.get(index);
         if (null == value) {
-            return new JSONMap();
+            return new JsonMap();
         }
 
-        if (value instanceof JSONMap) {
-            return (JSONMap) value;
+        if (value instanceof JsonMap) {
+            return (JsonMap) value;
         }
 
         if (value instanceof Map) {
-            return new JSONMap((Map<String, Object>) value);
+            return new JsonMap((Map<String, Object>) value);
         }
         throw new RuntimeException("object is not a JSONMap");
     }
 
     @SuppressWarnings("unchecked")
-    public JSONList getJSONList(int index) {
+    public JsonList getJSONList(int index) {
         Object value = list.get(index);
         if (null == value) {
-            return new JSONList();
+            return new JsonList();
         }
-        if (value instanceof JSONList) {
-            return (JSONList) value;
+        if (value instanceof JsonList) {
+            return (JsonList) value;
         }
         if (value instanceof List) {
-            return new JSONList((List<Object>) value);
+            return new JsonList((List<Object>) value);
         }
         throw new RuntimeException("object is not a JSONList");
     }
@@ -77,15 +79,15 @@ public class JSONList extends JSON implements List<Object>, Cloneable, RandomAcc
         List<T> list = new ArrayList<>(this.list.size());
 
         for (Object e : this.list) {
-            String jsonString = JSONUtil.INSTANCE.toJSONString(e);
-            T t = JSONUtil.INSTANCE.parseObject(jsonString, clazz);
+            String jsonString = JsonUtil.INSTANCE.toJSONString(e);
+            T t = JsonUtil.INSTANCE.parseObject(jsonString, clazz);
             list.add(t);
         }
         return list;
     }
 
     public String toJSONString() {
-        return JSONUtil.INSTANCE.toJSONString(this.list);
+        return JsonUtil.INSTANCE.toJSONString(this.list);
     }
 
     public int size() {
@@ -195,7 +197,7 @@ public class JSONList extends JSON implements List<Object>, Cloneable, RandomAcc
 
     @Override
     public Object clone() {
-        return new JSONList(new ArrayList<Object>(list));
+        return new JsonList(new ArrayList<Object>(list));
     }
 
     public boolean equals(Object obj) {

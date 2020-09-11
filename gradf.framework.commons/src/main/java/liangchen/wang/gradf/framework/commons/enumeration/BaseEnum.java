@@ -1,10 +1,13 @@
 package liangchen.wang.gradf.framework.commons.enumeration;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * @author LiangChen.Wang
+ */
 public class BaseEnum {
-    private final static Map<String,String> map = new ConcurrentHashMap<>();
+    private final static Map<String,String> map = new HashMap<>();
     private final String name;
     private final String text;
 

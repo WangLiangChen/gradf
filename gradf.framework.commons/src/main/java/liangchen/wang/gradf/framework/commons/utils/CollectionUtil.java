@@ -1,7 +1,6 @@
 package liangchen.wang.gradf.framework.commons.utils;
 
 import com.google.common.collect.Lists;
-import liangchen.wang.gradf.framework.commons.exception.InfoException;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 
@@ -12,7 +11,14 @@ import java.util.function.Consumer;
  * @author LiangChen.Wang
  */
 public enum CollectionUtil {
+    /**
+     *
+     */
     INSTANCE;
+
+    public boolean isEmpty(byte[] bytes) {
+        return (null == bytes || bytes.length == 0);
+    }
 
     public <T> boolean isEmpty(T[] array) {
         return (null == array || array.length == 0);
@@ -20,6 +26,10 @@ public enum CollectionUtil {
 
     public <T> boolean isNotEmpty(T[] array) {
         return !isEmpty(array);
+    }
+
+    public boolean isNotEmpty(byte[] bytes) {
+        return !isEmpty(bytes);
     }
 
     public <T> boolean isEmpty(Collection<T> collection) {

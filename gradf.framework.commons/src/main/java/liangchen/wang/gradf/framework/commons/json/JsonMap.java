@@ -2,50 +2,52 @@ package liangchen.wang.gradf.framework.commons.json;
 
 import java.io.Serializable;
 import java.util.*;
-
-public class JSONMap extends JSON implements Map<String, Object>, Cloneable, Serializable {
+/**
+ * @author WangLiangChen
+ */
+public class JsonMap extends Json implements Map<String, Object>, Cloneable, Serializable {
     private final Map<String, Object> map;
 
-    public JSONMap(Map<String, Object> map) {
+    public JsonMap(Map<String, Object> map) {
         if (map == null) {
             throw new IllegalArgumentException("map is null.");
         }
         this.map = map;
     }
 
-    public JSONMap() {
+    public JsonMap() {
         map = new LinkedHashMap<>();
     }
 
     @SuppressWarnings("unchecked")
-    public JSONMap getJSONMap(String key) {
+    public JsonMap getJSONMap(String key) {
         Object value = map.get(key);
         if (null == value) {
-            return new JSONMap();
+            return new JsonMap();
         }
 
-        if (value instanceof JSONMap) {
-            return (JSONMap) value;
+        if (value instanceof JsonMap) {
+            return (JsonMap) value;
         }
 
         if (value instanceof Map) {
-            return new JSONMap((Map<String, Object>) value);
+            return new JsonMap((Map<String, Object>) value);
         }
         throw new RuntimeException("object is not a JSONMap");
     }
 
     @SuppressWarnings("unchecked")
-    public JSONList getJSONList(String key) {
+    public JsonList getJSONList(String key) {
         Object value = map.get(key);
         if (null == value) {
-            return new JSONList();
+            return new JsonList();
         }
-        if (value instanceof JSONList) {
-            return (JSONList) value;
+        if (value instanceof JsonList) {
+            return (JsonList) value;
         }
 
         if (value instanceof List) {
-            return new JSONList((List<Object>) value);
+            return new JsonList((List<Object>) value);
         }
 
         throw new RuntimeException("object is not a JSONList");
@@ -125,7 +127,7 @@ public class JSONMap extends JSON implements Map<String, Object>, Cloneable, Ser
 
     @SuppressWarnings("unchecked")
     public <T> T toJavaObject(Class<T> clazz) {
-        if (clazz == Map.class || clazz == JSONMap.class) {
+        if (clazz == Map.class || clazz == JsonMap.class) {
             return (T) this;
         }
 
@@ -133,12 +135,12 @@ public class JSONMap extends JSON implements Map<String, Object>, Cloneable, Ser
             return (T) this;
         }
         // 使用Json转换
-        String mapJson = JSONUtil.INSTANCE.toJSONString(this.map);
-        return JSONUtil.INSTANCE.parseObject(mapJson, clazz);
+        String mapJson = JsonUtil.INSTANCE.toJSONString(this.map);
+        return JsonUtil.INSTANCE.parseObject(mapJson, clazz);
     }
 
     public String toJSONString() {
-        return JSONUtil.INSTANCE.toJSONString(this.map);
+        return JsonUtil.INSTANCE.toJSONString(this.map);
     }
 
     public int size() {
@@ -199,7 +201,7 @@ public class JSONMap extends JSON implements Map<String, Object>, Cloneable, Ser
 
     @Override
     public Object clone() {
-        return new JSONMap(map instanceof LinkedHashMap ? new LinkedHashMap<String, Object>(map) : new HashMap<String, Object>(map));
+        return new JsonMap(map instanceof LinkedHashMap ? new LinkedHashMap<String, Object>(map) : new HashMap<String, Object>(map));
     }
 
     public boolean equals(Object obj) {

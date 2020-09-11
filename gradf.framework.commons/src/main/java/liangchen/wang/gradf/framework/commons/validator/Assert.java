@@ -17,6 +17,9 @@ import java.util.regex.Pattern;
  * @author .LiangChen.Wang
  */
 public enum Assert {
+    /**
+     *
+     */
     INSTANCE;
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
@@ -140,6 +143,13 @@ public enum Assert {
         StringBuilder messages = new StringBuilder();
         violations.forEach(e -> messages.append(e.getMessage()).append(Symbol.SEMICOLON.getSymbol()));
         assertException(messages.toString());
+    }
+
+    public void notEmpty(byte[] bytes, String message, Object... args) {
+        if (CollectionUtil.INSTANCE.isNotEmpty(bytes)) {
+            return;
+        }
+        assertException(message, args);
     }
 
     private static Class<?>[] resolveGroups(Class<?>... groupsClass) {

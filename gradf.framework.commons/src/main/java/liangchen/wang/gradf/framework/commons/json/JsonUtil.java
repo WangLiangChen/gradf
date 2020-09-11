@@ -12,7 +12,10 @@ import java.util.*;
 /**
  * @author WangLiangChen
  */
-public enum JSONUtil {
+public enum JsonUtil {
+    /**
+     *
+     */
     INSTANCE;
     /**
      * 注册TypeAdapter 防止数字转化为浮点型
@@ -69,18 +72,18 @@ public enum JSONUtil {
         return toList(jsonElement.getAsJsonArray());
     }
 
-    public JSONMap parseJSONMap(String jsonString) {
+    public JsonMap parseJSONMap(String jsonString) {
         if (StringUtil.INSTANCE.isBlank(jsonString)) {
-            return new JSONMap();
+            return new JsonMap();
         }
         JsonElement jsonElement = JsonParser.parseString(jsonString);
         Assert.INSTANCE.isTrue(jsonElement.isJsonObject(), "Json字符串必须为JsonObject");
         return toJSONMap(jsonElement.getAsJsonObject());
     }
 
-    public JSONList parseJSONList(String jsonString) {
+    public JsonList parseJSONList(String jsonString) {
         if (StringUtil.INSTANCE.isBlank(jsonString)) {
-            return new JSONList();
+            return new JsonList();
         }
         JsonElement jsonElement = JsonParser.parseString(jsonString);
         Assert.INSTANCE.isTrue(jsonElement.isJsonArray(), "Json字符串必须为JsonArray");
@@ -121,7 +124,7 @@ public enum JSONUtil {
         return map;
     }
 
-    private JSONList toJSONList(JsonArray json) {
+    private JsonList toJSONList(JsonArray json) {
         List<Object> list = new ArrayList<>();
         json.forEach(e -> {
             if (e.isJsonArray()) {
@@ -132,10 +135,10 @@ public enum JSONUtil {
                 list.add(e.getAsString());
             }
         });
-        return new JSONList(list);
+        return new JsonList(list);
     }
 
-    private JSONMap toJSONMap(JsonObject json) {
+    private JsonMap toJSONMap(JsonObject json) {
         Map<String, Object> map = new HashMap<>();
         Set<Map.Entry<String, JsonElement>> entrySet = json.entrySet();
         entrySet.stream().forEach(e -> {
@@ -151,6 +154,6 @@ public enum JSONUtil {
                 map.put(key, null);
             }
         });
-        return new JSONMap(map);
+        return new JsonMap(map);
     }
 }
