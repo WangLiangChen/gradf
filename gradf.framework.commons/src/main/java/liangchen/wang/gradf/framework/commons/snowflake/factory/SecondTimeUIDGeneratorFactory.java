@@ -10,8 +10,8 @@ import java.util.concurrent.TimeUnit;
  *   1bit          28bits              22bits         13bits
  * }</pre>
  */
-public class SecondTimeFactory extends DefaultFactory {
-	public SecondTimeFactory() {
+public class SecondTimeUIDGeneratorFactory extends DefaultUIDGeneratorFactory {
+	public SecondTimeUIDGeneratorFactory() {
 		super.timeBits = 28;
 		super.workerBits = 22;
 		super.seqBits = 13;

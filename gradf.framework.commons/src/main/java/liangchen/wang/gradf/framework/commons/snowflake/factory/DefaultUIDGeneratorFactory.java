@@ -1,13 +1,16 @@
 package liangchen.wang.gradf.framework.commons.snowflake.factory;
 
-
-import liangchen.wang.crdf.framework.commons.snowflake.generator.DefaultGenerator;
-import liangchen.wang.crdf.framework.commons.snowflake.generator.IGenerator;
-import liangchen.wang.crdf.framework.commons.snowflake.worker.IWorkerIdAssigner;
+import liangchen.wang.gradf.framework.commons.snowflake.generator.DefaultUIDGenerator;
+import liangchen.wang.gradf.framework.commons.snowflake.generator.IUIDGenerator;
+import liangchen.wang.gradf.framework.commons.snowflake.worker.IWorkerIdBuilder;
 
 import java.util.concurrent.TimeUnit;
 
-public class DefaultFactory implements IFactory {
+/**
+ * use DefaultUIDGenerator
+ * @author LiangChen.Wang
+ */
+public class DefaultUIDGeneratorFactory implements IUIDGeneratorFactory {
 
 	protected int timeBits;
 	protected int workerBits;
@@ -17,13 +20,13 @@ public class DefaultFactory implements IFactory {
 	protected TimeUnit timeUnit;
 
 	@Override
-	public IGenerator create(IWorkerIdAssigner workerIdAssigner) {
+	public IUIDGenerator create(IWorkerIdBuilder workerIdAssigner) {
 		return create(workerIdAssigner.workerId());
 	}
 
 	@Override
-	public IGenerator create(Long workerId) {
-		return new DefaultGenerator(timeBits, workerBits, seqBits, epochTime, workerId, timeUnit);
+	public IUIDGenerator create(Long workerId) {
+		return new DefaultUIDGenerator(timeBits, workerBits, seqBits, epochTime, workerId, timeUnit);
 	}
 
 	public void setTimeBits(int timeBits) {

@@ -10,8 +10,8 @@ import java.util.concurrent.TimeUnit;
  *   1bit          41bits              10bits         12bits
  * }</pre>
  */
-public class MilliSecondTimeFactory extends DefaultFactory {
-	public MilliSecondTimeFactory() {
+public class MilliSecondTimeUIDGeneratorFactory extends DefaultUIDGeneratorFactory {
+	public MilliSecondTimeUIDGeneratorFactory() {
 		super.timeBits = 41;
 		super.workerBits = 10;
 		super.seqBits = 12;

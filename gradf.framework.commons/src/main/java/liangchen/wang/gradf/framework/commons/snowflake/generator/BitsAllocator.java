@@ -1,9 +1,18 @@
 package liangchen.wang.gradf.framework.commons.snowflake.generator;
 
+import liangchen.wang.gradf.framework.commons.validator.Assert;
 
-import liangchen.wang.crdf.framework.commons.validator.Assert;
-import liangchen.wang.crdf.framework.commons.validator.AssertLevel;
-
+/**
+ * @author LiangChen.Wang
+ *
+ * <pre>{@code
+ * +------+----------------------+----------------+-----------+
+ * | sign |  delta millisecond   | worker node id | sequence  |
+ * +------+----------------------+----------------+-----------+
+ *   1bit          28bits              22bits         13bits
+ * }</pre>
+ * 标志位  时间位  节点位  序列位
+ */
 public class BitsAllocator {
     /**
      * Total 64 bits
@@ -19,6 +28,7 @@ public class BitsAllocator {
     private final int sequenceBits;
 
     /**
+     * maxDeltalTime 增量时间
      * Max value for workId & sequence
      */
     private final long maxDeltaTime;
@@ -31,16 +41,16 @@ public class BitsAllocator {
     private final int timestampShift;
     private final int workerIdShift;
 
- 
+
     public BitsAllocator(int timestampBits, int workerIdBits, int sequenceBits) {
         // make sure allocated 64 bits
         int allocateTotalBits = signBits + timestampBits + workerIdBits + sequenceBits;
-        Assert.INSTANCE.isTrue(allocateTotalBits == TOTAL_BITS, AssertLevel.INFO, "allocate not enough 64 bits");
+        Assert.INSTANCE.isTrue(allocateTotalBits == TOTAL_BITS, "allocate must 64 bits");
 
         // initialize bits
         this.timestampBits = timestampBits;
         this.workerIdBits = workerIdBits;
-		this.sequenceBits = sequenceBits;
+        this.sequenceBits = sequenceBits;
 
         // initialize max value
         this.maxDeltaTime = ~(-1L << timestampBits);
@@ -55,7 +65,7 @@ public class BitsAllocator {
     /**
      * Allocate bits for UID according to delta seconds & workerId & sequence<br>
      * <b>Note that: </b>The highest bit will always be 0 for sign
-     * 
+     *
      * @param deltaSeconds
      * @param workerId
      * @param sequence
@@ -64,7 +74,7 @@ public class BitsAllocator {
     public long allocate(long deltaSeconds, long workerId, long sequence) {
         return (deltaSeconds << timestampShift) | (workerId << workerIdShift) | sequence;
     }
-    
+
     /**
      * Getters
      */
@@ -103,5 +113,5 @@ public class BitsAllocator {
     public int getWorkerIdShift() {
         return workerIdShift;
     }
-        
+
 }
