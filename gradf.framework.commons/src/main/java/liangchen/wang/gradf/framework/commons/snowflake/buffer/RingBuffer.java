@@ -21,16 +21,14 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author yutianbao
  */
 public class RingBuffer {
+    public static final int DEFAULT_PADDING_PERCENT = 50;
     private static final Logger LOGGER = LoggerFactory.getLogger(RingBuffer.class);
-
     /**
      * Constants
      */
     private static final int START_POINT = -1;
     private static final long CAN_PUT_FLAG = 0L;
     private static final long CAN_TAKE_FLAG = 1L;
-    public static final int DEFAULT_PADDING_PERCENT = 50;
-
     /**
      * The size of RingBuffer's slots, each slot hold a UID
      */

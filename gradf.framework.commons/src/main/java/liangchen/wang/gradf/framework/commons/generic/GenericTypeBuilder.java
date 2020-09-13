@@ -12,37 +12,37 @@ import java.util.List;
  */
 
 /**
- Example for List<String>:
- Type type = GenericTypeBuilder.newInstance(List.class)
-        .addTypeParam(String.class)
-        .build();
- Example for List<? super String>:
- Type type = GenericTypeBuilder.newInstance(List.class)
-        .addTypeParamSuper(String.class)
-        .build();
- Example for List<? extends CharSequence>:
- Type type = GenericTypeBuilder.newInstance(List.class)
-        .addTypeParamExtends(CharSequence.class)
-        .build();
- Example for Map<String, String[]>:
- Type type = GenericTypeBuilder.newInstance(HashMap.class)
-        .addTypeParam(String.class)
-        .addTypeParam(String[].class)
-        .build();
- Example for Map<String, List<String>>:
- Type type = GenericTypeBuilder.newInstance(Map.class)
-        .addTypeParam(String.class)
-        .beginSubType(List.class) //开始 List<String> 部分
-        .addTypeParam(String.class) //设置List的泛型值
-        .endSubType() //结束 List<String> 部分
-        .build();
+ * Example for List<String>:
+ * Type type = GenericTypeBuilder.newInstance(List.class)
+ * .addTypeParam(String.class)
+ * .build();
+ * Example for List<? super String>:
+ * Type type = GenericTypeBuilder.newInstance(List.class)
+ * .addTypeParamSuper(String.class)
+ * .build();
+ * Example for List<? extends CharSequence>:
+ * Type type = GenericTypeBuilder.newInstance(List.class)
+ * .addTypeParamExtends(CharSequence.class)
+ * .build();
+ * Example for Map<String, String[]>:
+ * Type type = GenericTypeBuilder.newInstance(HashMap.class)
+ * .addTypeParam(String.class)
+ * .addTypeParam(String[].class)
+ * .build();
+ * Example for Map<String, List<String>>:
+ * Type type = GenericTypeBuilder.newInstance(Map.class)
+ * .addTypeParam(String.class)
+ * .beginSubType(List.class) //开始 List<String> 部分
+ * .addTypeParam(String.class) //设置List的泛型值
+ * .endSubType() //结束 List<String> 部分
+ * .build();
  */
 public class GenericTypeBuilder {
     private final GenericTypeBuilder parent;
     private final Class raw;
     private final List<Type> args = new ArrayList<>();
 
-    public GenericTypeBuilder(Class raw,GenericTypeBuilder parent) {
+    public GenericTypeBuilder(Class raw, GenericTypeBuilder parent) {
         assert raw != null;
         this.parent = parent;
         this.raw = raw;
@@ -55,6 +55,7 @@ public class GenericTypeBuilder {
     private static GenericTypeBuilder newInstance(Class raw, GenericTypeBuilder parent) {
         return new GenericTypeBuilder(raw, parent);
     }
+
     public GenericTypeBuilder beginSubType(Class raw) {
         return newInstance(raw, this);
     }

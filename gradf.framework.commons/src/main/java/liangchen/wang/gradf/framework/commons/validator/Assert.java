@@ -23,6 +23,18 @@ public enum Assert {
     INSTANCE;
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
+    private static Class<?>[] resolveGroups(Class<?>... groupsClass) {
+        Class[] groups;
+        if (CollectionUtil.INSTANCE.isEmpty(groupsClass)) {
+            groups = new Class[]{Default.class};
+        } else {
+            groups = new Class[groupsClass.length + 1];
+            System.arraycopy(groupsClass, 0, groups, 0, groupsClass.length);
+            groups[groups.length - 1] = Default.class;
+        }
+        return groups;
+    }
+
     public void notNull(Object object, Runnable runnable) {
         if (object != null) {
             return;
@@ -150,18 +162,6 @@ public enum Assert {
             return;
         }
         assertException(message, args);
-    }
-
-    private static Class<?>[] resolveGroups(Class<?>... groupsClass) {
-        Class[] groups;
-        if (CollectionUtil.INSTANCE.isEmpty(groupsClass)) {
-            groups = new Class[]{Default.class};
-        } else {
-            groups = new Class[groupsClass.length + 1];
-            System.arraycopy(groupsClass, 0, groups, 0, groupsClass.length);
-            groups[groups.length - 1] = Default.class;
-        }
-        return groups;
     }
 
     private void assertException(String message, Object... args) {

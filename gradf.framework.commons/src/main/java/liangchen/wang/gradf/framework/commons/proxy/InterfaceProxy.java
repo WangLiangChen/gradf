@@ -13,29 +13,35 @@ import java.lang.reflect.Proxy;
  */
 public class InterfaceProxy {
     @SuppressWarnings("unchecked")
-    public static  <T> T newInstance(Class<T> interfaceClass) {
+    public static <T> T newInstance(Class<T> interfaceClass) {
         final Handler<T> handler = new Handler<>(interfaceClass);
         return (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(),
-                new Class[]{interfaceClass},handler);
+                new Class[]{interfaceClass}, handler);
     }
+
     static class Handler<T> implements InvocationHandler {
         private Class<T> interfaceClass;
+
         public Handler(Class<T> interfaceClass) {
             this.interfaceClass = interfaceClass;
         }
+
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             //在这里写方法实现
             return null;
         }
     }
+
     static class CglibProxy implements MethodInterceptor {
         private Enhancer enhancer = new Enhancer();
-        public Object getProxy(Class clazz){
+
+        public Object getProxy(Class clazz) {
             enhancer.setSuperclass(clazz);
             enhancer.setCallback(this);
             return enhancer.create();
         }
+
         @Override
         public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
             System.out.println("前置代理");

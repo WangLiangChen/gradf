@@ -71,6 +71,10 @@ public enum NetUtil {
         }
     }
 
+    public URL concatURL(URL url, String... more) {
+        return toURL(url.toString(), more);
+    }
+
     public boolean isAvailableURL(URL url) {
         try {
             url.openStream();

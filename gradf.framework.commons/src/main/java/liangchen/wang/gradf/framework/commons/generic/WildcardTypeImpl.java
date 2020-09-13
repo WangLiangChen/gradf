@@ -77,7 +77,7 @@ public class WildcardTypeImpl implements WildcardType {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()){
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
         WildcardTypeImpl that = (WildcardTypeImpl) o;

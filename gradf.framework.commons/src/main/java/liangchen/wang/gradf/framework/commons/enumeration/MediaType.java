@@ -8,6 +8,7 @@ import java.util.Map;
  */
 public enum MediaType {
     /**
+     *
      */
     INSTANCE;
     private Map<String, String> extensionMap = new HashMap<>();

@@ -10,9 +10,9 @@ import org.junit.jupiter.api.Test;
 public class StringUtilTest {
 
     @Test
-    public void testFormat(){
+    public void testFormat() {
         String source = "My name is:{},I have {hands} hands";
-        source = StringUtil.INSTANCE.format(source,"liangchen.wang",2);
-        Assert.INSTANCE.isEquals(source,"My name is:liangchen.wang,I have 2 hands","fail");
+        source = StringUtil.INSTANCE.format(source, "liangchen.wang", 2);
+        Assert.INSTANCE.isEquals(source, "My name is:liangchen.wang,I have 2 hands", "fail");
     }
 }

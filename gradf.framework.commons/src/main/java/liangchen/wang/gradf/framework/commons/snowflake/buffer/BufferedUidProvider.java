@@ -1,4 +1,3 @@
-
 package liangchen.wang.gradf.framework.commons.snowflake.buffer;
 
 import java.util.List;
@@ -8,7 +7,7 @@ public interface BufferedUidProvider {
 
     /**
      * Provides UID in one second
-     * 
+     *
      * @param momentInSecond
      * @return
      */

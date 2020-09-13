@@ -7,14 +7,18 @@ import java.util.Map;
  * @author LiangChen.Wang
  */
 public class BaseEnum {
-    private final static Map<String,String> map = new HashMap<>();
+    private final static Map<String, String> map = new HashMap<>();
     private final String name;
     private final String text;
 
     public BaseEnum(String name, String text) {
         this.name = name;
         this.text = text;
-        map.put(this.name,this.text);
+        map.put(this.name, this.text);
+    }
+
+    public static String textByName(String name) {
+        return map.get(name);
     }
 
     public String name() {
@@ -23,8 +27,5 @@ public class BaseEnum {
 
     public String text() {
         return text;
-    }
-    public static String textByName(String name){
-        return map.get(name);
     }
 }

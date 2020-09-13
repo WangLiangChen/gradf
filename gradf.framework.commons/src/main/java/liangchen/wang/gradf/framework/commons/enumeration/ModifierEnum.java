@@ -6,6 +6,7 @@ package liangchen.wang.gradf.framework.commons.enumeration;
  */
 public enum ModifierEnum {
     /**
+     *
      */
     PUBLIC(0x00000001),
     PRIVATE(0x00000002),

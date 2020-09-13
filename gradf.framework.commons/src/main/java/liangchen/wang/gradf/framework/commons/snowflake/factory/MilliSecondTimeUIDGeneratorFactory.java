@@ -11,12 +11,12 @@ import java.util.concurrent.TimeUnit;
  * }</pre>
  */
 public class MilliSecondTimeUIDGeneratorFactory extends DefaultUIDGeneratorFactory {
-	public MilliSecondTimeUIDGeneratorFactory() {
-		super.timeBits = 41;
-		super.workerBits = 10;
-		super.seqBits = 12;
-		// epoch millisecond,default: 2018-01-01 (millisecond:1514764800000L)
-		super.epochTime = 1514764800000L;
-		super.timeUnit = TimeUnit.MILLISECONDS;
-	}
+    public MilliSecondTimeUIDGeneratorFactory() {
+        super.timeBits = 41;
+        super.workerBits = 10;
+        super.seqBits = 12;
+        // epoch millisecond,default: 2018-01-01 (millisecond:1514764800000L)
+        super.epochTime = 1514764800000L;
+        super.timeUnit = TimeUnit.MILLISECONDS;
+    }
 }

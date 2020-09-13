@@ -6,6 +6,7 @@ package liangchen.wang.gradf.framework.commons.enumeration;
 
 public enum ExceptionCode {
     /**
+     *
      */
     NeedLogin("需要登录");
     private final String text;
