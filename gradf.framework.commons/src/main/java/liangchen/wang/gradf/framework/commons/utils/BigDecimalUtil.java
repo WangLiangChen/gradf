@@ -97,7 +97,7 @@ public enum BigDecimalUtil {
         }
     }
 
-    enum Operator {
+    private enum Operator {
         /**
          * 运算符
          */
