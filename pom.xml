@@ -7,6 +7,9 @@
     <version>1.0.0-SNAPSHOT</version>
     <modules>
         <module>gradf.framework.commons</module>
+        <module>gradf.framework.springboot</module>
+        <module>gradf.framework.web</module>
+        <module>gradf.framework.data</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -39,6 +42,16 @@
                 <version>${version.springboot}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>liangchen.wang</groupId>
+                <artifactId>gradf.framework.commons</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>liangchen.wang</groupId>
+                <artifactId>gradf.framework.springboot</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>

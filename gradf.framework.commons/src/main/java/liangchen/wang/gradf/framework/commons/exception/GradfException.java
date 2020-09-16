@@ -5,7 +5,7 @@ import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 /**
  * @author LiangChen.Wang
  */
-public abstract class GradfException extends RuntimeException {
+public class GradfException extends RuntimeException {
     private ExceptionData exceptionData;
 
     public GradfException(String message, Object... args) {

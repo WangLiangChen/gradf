@@ -1,6 +1,10 @@
 package liangchen.wang.gradf.framework.commons.object;
 
 import com.google.common.collect.Maps;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
+import com.thoughtworks.xstream.io.xml.XmlFriendlyNameCoder;
+import com.thoughtworks.xstream.io.xml.Xpp3Driver;
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import liangchen.wang.gradf.framework.commons.exception.InfoException;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
@@ -122,6 +126,20 @@ public enum ClassBeanUtil {
         } catch (Exception e) {
             throw new ErrorException(e);
         }
+    }
+
+    public String bean2xml(Object bean, String root) {
+        XStream xStream = new XStream(new DomDriver("UTF-8", new XmlFriendlyNameCoder("_-", "_")));
+        xStream.alias(root, bean.getClass());
+        String xml = xStream.toXML(bean);
+        return xml;
+    }
+
+    public <T> T xml2bean(String xml, Class<T> cls, String root) {
+        XStream xStream = new XStream(new DomDriver("utf-8"));
+        xStream.alias(root, cls);
+        T o = ClassBeanUtil.INSTANCE.cast(xStream.fromXML(xml));
+        return o;
     }
 
     @SuppressWarnings("unchecked")
