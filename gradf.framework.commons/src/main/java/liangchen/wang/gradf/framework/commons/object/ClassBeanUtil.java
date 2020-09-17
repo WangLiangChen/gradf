@@ -8,6 +8,7 @@ import com.thoughtworks.xstream.io.xml.Xpp3Driver;
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import liangchen.wang.gradf.framework.commons.exception.InfoException;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
+import liangchen.wang.gradf.framework.commons.validator.Assert;
 import net.sf.cglib.beans.BeanCopier;
 import net.sf.cglib.beans.BeanMap;
 
@@ -102,23 +103,20 @@ public enum ClassBeanUtil {
     }
 
     public <T> Map<String, Object> bean2map(T bean) {
-        Map<String, Object> map = Maps.newHashMap();
-        if (bean != null) {
-            BeanMap beanMap = BeanMap.create(bean);
-            for (Object key : beanMap.keySet()) {
-                map.put(key + "", beanMap.get(key));
-            }
-        }
-        return map;
+        Assert.INSTANCE.notNull(bean, "参数bean不能为null");
+        return BeanMap.create(bean);
     }
 
     public <T> T map2bean(Map<String, Object> map, T bean) {
+        Assert.INSTANCE.notNull(bean, "参数bean不能为null");
+        Assert.INSTANCE.notNull(map, "参数map不能为null");
         BeanMap beanMap = BeanMap.create(bean);
         beanMap.putAll(map);
         return bean;
     }
 
     public <T> T map2bean(Map<String, Object> map, Class<T> beanClass) {
+        Assert.INSTANCE.notNull(beanClass, "参数beanClass不能为null");
         try {
             T t = beanClass.getDeclaredConstructor().newInstance();
             t = map2bean(map, t);
