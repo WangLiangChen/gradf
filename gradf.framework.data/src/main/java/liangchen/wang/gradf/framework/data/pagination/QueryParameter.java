@@ -1,5 +1,7 @@
 package liangchen.wang.gradf.framework.data.pagination;
 
+import liangchen.wang.gradf.framework.commons.validator.Assert;
+
 import java.util.Map;
 
 /**
@@ -7,7 +9,7 @@ import java.util.Map;
  * @date 18-11-14 上午11:39
  */
 public class QueryParameter {
-    private Map<String,String> search;
+    private Map<String, String> search;
     private PaginationParameter pagination;
 
     public Map<String, String> getSearch() {
@@ -15,6 +17,7 @@ public class QueryParameter {
     }
 
     public void setSearch(Map<String, String> search) {
+        Assert.INSTANCE.notEmpty(search, "参数search不能为空");
         this.search = search;
     }
 
@@ -23,6 +26,7 @@ public class QueryParameter {
     }
 
     public void setPagination(PaginationParameter pagination) {
+        Assert.INSTANCE.notNull(pagination, "参数pagination不能为空");
         this.pagination = pagination;
     }
 }

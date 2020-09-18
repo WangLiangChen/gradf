@@ -104,7 +104,12 @@ public enum ClassBeanUtil {
 
     public <T> Map<String, Object> bean2map(T bean) {
         Assert.INSTANCE.notNull(bean, "参数bean不能为null");
-        return BeanMap.create(bean);
+        BeanMap beanMap = BeanMap.create(bean);
+        Map<String, Object> map = new HashMap<>(beanMap.size());
+        for (Object key : beanMap.keySet()) {
+            map.put(String.valueOf(key), beanMap.get(key));
+        }
+        return map;
     }
 
     public <T> T map2bean(Map<String, Object> map, T bean) {
@@ -174,8 +179,7 @@ public enum ClassBeanUtil {
     }
 
     public Map<String, Object> dictionarySort(Map<String, Object> source) {
-        List<String> keys = new ArrayList<>(source.keySet());
-        //字典排序并拼接字符串
+        Assert.INSTANCE.notNull(source, "参数source不能为空");
         Map<String, Object> result = source.entrySet().stream().sorted(Comparator.comparing(e -> e.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (k, v) -> k, LinkedHashMap::new));
         return result;
     }

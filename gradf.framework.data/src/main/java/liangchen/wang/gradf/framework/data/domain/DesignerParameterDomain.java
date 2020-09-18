@@ -1,7 +1,7 @@
 package liangchen.wang.gradf.framework.data.domain;
 
-import liangchen.wang.crdf.framework.commons.object.ClassBeanUtil;
-import liangchen.wang.crdf.framework.commons.object.EnhancedObject;
+import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
+import liangchen.wang.gradf.framework.commons.object.EnhancedObject;
 
 import javax.validation.constraints.NotBlank;
 
@@ -12,7 +12,7 @@ public class DesignerParameterDomain extends EnhancedObject {
     private static final DesignerParameterDomain self = new DesignerParameterDomain();
 
     public static DesignerParameterDomain newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     @NotBlank(message = "模块名不能为空")

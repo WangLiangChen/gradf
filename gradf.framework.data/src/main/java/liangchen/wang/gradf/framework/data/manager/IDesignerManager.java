@@ -1,6 +1,6 @@
 package liangchen.wang.gradf.framework.data.manager;
 
-import liangchen.wang.crdf.framework.data.domain.DesignerParameterDomain;
+import liangchen.wang.gradf.framework.data.domain.DesignerParameterDomain;
 
 /**
  * @author LiangChen.Wang

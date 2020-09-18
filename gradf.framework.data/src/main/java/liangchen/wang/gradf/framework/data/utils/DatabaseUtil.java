@@ -4,6 +4,9 @@ package liangchen.wang.gradf.framework.data.utils;
  * @author LiangChen.Wang
  */
 public enum DatabaseUtil {
+    /**
+     *
+     */
     INSTANCE;
 
     public String jdbcType2JavaType(String jdbcType) {
@@ -41,8 +44,6 @@ public enum DatabaseUtil {
                 break;
             case "mediumint":
             case "int":
-                javaType = "java.lang.Integer";
-                break;
             case "integer":
                 javaType = "java.lang.Integer";
                 break;

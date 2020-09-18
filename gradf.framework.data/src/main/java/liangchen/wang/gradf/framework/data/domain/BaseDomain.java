@@ -1,6 +1,7 @@
 package liangchen.wang.gradf.framework.data.domain;
 
-import liangchen.wang.crdf.framework.commons.pagination.PaginationParameter;
+
+import liangchen.wang.gradf.framework.data.pagination.PaginationParameter;
 
 import java.time.LocalDateTime;
 

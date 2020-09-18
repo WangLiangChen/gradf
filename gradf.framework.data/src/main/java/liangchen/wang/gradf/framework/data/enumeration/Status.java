@@ -1,7 +1,7 @@
 package liangchen.wang.gradf.framework.data.enumeration;
 
 
-import liangchen.wang.crdf.framework.commons.enumeration.BaseEnum;
+import liangchen.wang.gradf.framework.commons.enumeration.BaseEnum;
 
 /**
  * @author LiangChen.Wang

@@ -6,23 +6,26 @@ import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
 import java.util.List;
 import java.util.Optional;
 
-public interface IAbstractDao<E extends RootEntity> {
+/**
+ * @author LiangChen.Wang
+ */
+public interface IAbstractDao<E extends RootEntity, Q extends RootQuery> {
 
     boolean insert(E entity);
 
-    int deleteByQuery(RootQuery query);
+    int deleteByQuery(Q query);
 
-    int updateByQuery(E entity, RootQuery query);
+    int updateByQuery(E entity, Q query);
 
-    boolean exist(RootQuery query);
+    boolean exist(Q query);
 
-    int count(RootQuery query);
+    int count(Q query);
 
-    E one(RootQuery query, String... returnFields);
+    E one(Q query, String... returnFields);
 
-    Optional<E> oneOptional(RootQuery query, String... returnFields);
+    Optional<E> oneOptional(Q query, String... returnFields);
 
-    List<E> list(RootQuery query, String... returnFields);
+    List<E> list(Q query, String... returnFields);
 
-    PaginationResult<E> pagination(RootQuery query, String... returnFields);
+    PaginationResult<E> pagination(Q query, String... returnFields);
 }

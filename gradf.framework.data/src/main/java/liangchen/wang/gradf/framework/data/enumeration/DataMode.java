@@ -1,5 +1,8 @@
 package liangchen.wang.gradf.framework.data.enumeration;
 
+/**
+ * @author LiangChen.Wang
+ */
 public enum DataMode {
     //数据权限模式：读取(4)修改(2)删除(1)没有权限(0) ,curd
     A((byte) -1, "所有操作"),

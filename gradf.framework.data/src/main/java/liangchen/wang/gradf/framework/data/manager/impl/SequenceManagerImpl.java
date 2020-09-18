@@ -1,7 +1,7 @@
 package liangchen.wang.gradf.framework.data.manager.impl;
 
-import liangchen.wang.crdf.framework.data.dao.ISequenceDao;
-import liangchen.wang.crdf.framework.data.manager.ISequenceManager;
+import liangchen.wang.gradf.framework.data.dao.ISequenceDao;
+import liangchen.wang.gradf.framework.data.manager.ISequenceManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
 

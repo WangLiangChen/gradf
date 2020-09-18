@@ -1,7 +1,7 @@
 package liangchen.wang.gradf.framework.data.dao.impl;
 
-import liangchen.wang.crdf.framework.data.condition.DataConditionAnnotation;
-import liangchen.wang.crdf.framework.data.dao.AbstractDBLock;
+import liangchen.wang.gradf.framework.data.condition.DataConditionAnnotation;
+import liangchen.wang.gradf.framework.data.dao.AbstractDBLock;
 import net.javacrumbs.shedlock.support.LockException;
 import org.springframework.stereotype.Repository;
 
@@ -10,6 +10,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
+/**
+ * @author LiangChen.Wang
+ */
 @DataConditionAnnotation
 @Repository("Crdf_Data_UpdateLockLock")
 public class UpdateLockImpl extends AbstractDBLock {

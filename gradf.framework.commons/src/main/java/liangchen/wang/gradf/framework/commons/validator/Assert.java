@@ -9,6 +9,8 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.groups.Default;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -159,6 +161,20 @@ public enum Assert {
 
     public void notEmpty(byte[] bytes, String message, Object... args) {
         if (CollectionUtil.INSTANCE.isNotEmpty(bytes)) {
+            return;
+        }
+        assertException(message, args);
+    }
+
+    public void notEmpty(Collection<?> collection, String message, Object... args) {
+        if (CollectionUtil.INSTANCE.isNotEmpty(collection)) {
+            return;
+        }
+        assertException(message, args);
+    }
+
+    public <T> void notEmpty(Map<?, ?> map, String message, Object... args) {
+        if (CollectionUtil.INSTANCE.isNotEmpty(map)) {
             return;
         }
         assertException(message, args);

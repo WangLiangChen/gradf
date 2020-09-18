@@ -1,7 +1,7 @@
 package liangchen.wang.gradf.framework.data.dao.impl;
 
-import liangchen.wang.crdf.framework.data.condition.DataConditionAnnotation;
-import liangchen.wang.crdf.framework.data.dao.AbstractDBLock;
+import liangchen.wang.gradf.framework.data.condition.DataConditionAnnotation;
+import liangchen.wang.gradf.framework.data.dao.AbstractDBLock;
 import net.javacrumbs.shedlock.support.LockException;
 import org.springframework.stereotype.Repository;
 

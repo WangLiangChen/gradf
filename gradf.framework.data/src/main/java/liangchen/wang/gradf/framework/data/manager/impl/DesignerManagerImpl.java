@@ -1,18 +1,18 @@
 package liangchen.wang.gradf.framework.data.manager.impl;
 
-import liangchen.wang.crdf.framework.commons.exeception.ErrorException;
-import liangchen.wang.crdf.framework.commons.utils.DateTimeUtil;
-import liangchen.wang.crdf.framework.commons.utils.StringUtil;
-import liangchen.wang.crdf.framework.commons.validator.Assert;
-import liangchen.wang.crdf.framework.commons.validator.AssertLevel;
-import liangchen.wang.crdf.framework.data.condition.DataConditionAnnotation;
-import liangchen.wang.crdf.framework.data.dao.IDesignerDao;
-import liangchen.wang.crdf.framework.data.domain.DesignerDomain;
-import liangchen.wang.crdf.framework.data.domain.DesignerParameterDomain;
-import liangchen.wang.crdf.framework.data.entity.BaseEntity;
-import liangchen.wang.crdf.framework.data.entity.Column;
-import liangchen.wang.crdf.framework.data.entity.Columns;
-import liangchen.wang.crdf.framework.data.manager.IDesignerManager;
+import liangchen.wang.gradf.framework.commons.exception.ErrorException;
+import liangchen.wang.gradf.framework.commons.utils.DateTimeUtil;
+import liangchen.wang.gradf.framework.commons.utils.StringUtil;
+import liangchen.wang.gradf.framework.commons.validator.Assert;
+import liangchen.wang.gradf.framework.commons.validator.AssertLevel;
+import liangchen.wang.gradf.framework.data.condition.DataConditionAnnotation;
+import liangchen.wang.gradf.framework.data.dao.IDesignerDao;
+import liangchen.wang.gradf.framework.data.domain.DesignerDomain;
+import liangchen.wang.gradf.framework.data.domain.DesignerParameterDomain;
+import liangchen.wang.gradf.framework.data.entity.BaseEntity;
+import liangchen.wang.gradf.framework.data.entity.Column;
+import liangchen.wang.gradf.framework.data.entity.Columns;
+import liangchen.wang.gradf.framework.data.manager.IDesignerManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -42,7 +42,7 @@ public class DesignerManagerImpl implements IDesignerManager {
 
     @Override
     public void columns(DesignerParameterDomain parameter) {
-        Assert.INSTANCE.validate(parameter, AssertLevel.INFO);
+        Assert.INSTANCE.validate(parameter);
         Columns columns = dao.columns(parameter.getTableName());
         DesignerDomain designerDomain = createDesignerData(parameter.getTableName(), parameter.getEntityName(), parameter.getModuleName(), parameter.getExportPath(), parameter.getMainPackage(), columns);
         designerDomain.setAuthor(parameter.getAuthor());
@@ -181,11 +181,11 @@ public class DesignerManagerImpl implements IDesignerManager {
         Collection<String> lines = new ArrayList<String>();
         lines.add("package " + entityPackage + ";");
         lines.add("");
-        lines.add("import liangchen.wang.crdf.framework.commons.object.ClassBeanUtil;");
+        lines.add("import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;");
         if (extendedBaseEntity) {
-            lines.add("import liangchen.wang.crdf.framework.data.entity.BaseEntity;");
+            lines.add("import liangchen.wang.gradf.framework.data.entity.BaseEntity;");
         } else {
-            lines.add("import liangchen.wang.crdf.framework.data.base.RootEntity;");
+            lines.add("import liangchen.wang.gradf.framework.data.base.RootEntity;");
         }
         lines.add("");
         lines.add("import javax.persistence.Entity;");
@@ -261,10 +261,10 @@ public class DesignerManagerImpl implements IDesignerManager {
         Collection<String> lines = new ArrayList<String>();
         lines.add("package " + queryPackage + ";");
         lines.add("");
-        lines.add("import liangchen.wang.crdf.framework.commons.object.ClassBeanUtil;");
-        lines.add("import liangchen.wang.crdf.framework.data.annotation.Query;");
-        lines.add("import liangchen.wang.crdf.framework.data.base.RootQuery;");
-        lines.add("import liangchen.wang.crdf.framework.data.enumeration.Operator;");
+        lines.add("import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;");
+        lines.add("import liangchen.wang.gradf.framework.data.annotation.Query;");
+        lines.add("import liangchen.wang.gradf.framework.data.base.RootQuery;");
+        lines.add("import liangchen.wang.gradf.framework.data.enumeration.Operator;");
         lines.add("");
         lines.add("import javax.persistence.Table;");
         lines.add("");
@@ -365,7 +365,7 @@ public class DesignerManagerImpl implements IDesignerManager {
 
         lines.add("import " + entityClass + ";");
         //lines.add("import " + queryClass + ";");
-        lines.add("import liangchen.wang.crdf.framework.data.base.IAbstractDao;");
+        lines.add("import liangchen.wang.gradf.framework.data.base.IAbstractDao;");
         lines.add("");
         lines.add("/**");
         lines.add(" * @author " + author + " " + DateTimeUtil.INSTANCE.getYYYY_MM_DD_HH_MM_SS());
@@ -417,8 +417,8 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("");
         lines.add("import " + iDaoClass + ";");
         lines.add("import " + entityClass + ";");
-        lines.add("import liangchen.wang.crdf.framework.cache.annotation.CrdfAutoCacheable;");
-        lines.add("import liangchen.wang.crdf.framework.data.base.AbstractBaseDao;");
+        lines.add("import liangchen.wang.gradf.framework.cache.annotation.CrdfAutoCacheable;");
+        lines.add("import liangchen.wang.gradf.framework.data.base.AbstractBaseDao;");
         lines.add("import org.springframework.stereotype.Repository;");
         lines.add("");
         lines.add("import java.util.concurrent.TimeUnit;");
@@ -453,8 +453,8 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("package " + parameterDomainPackage + ";");
         lines.add("");
         lines.add("import " + entityClass + ";");
-        lines.add("import liangchen.wang.crdf.component.business.base.ParameterDomain;");
-        lines.add("import liangchen.wang.crdf.framework.commons.object.ClassBeanUtil;");
+        lines.add("import liangchen.wang.gradf.component.business.base.ParameterDomain;");
+        lines.add("import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;");
         lines.add("");
         lines.add("/**");
         lines.add(" * @author " + author + " " + DateTimeUtil.INSTANCE.getYYYY_MM_DD_HH_MM_SS());
@@ -519,8 +519,8 @@ public class DesignerManagerImpl implements IDesignerManager {
         Collection<String> lines = new ArrayList<String>();
         lines.add("package " + resultDomainPackage + ";");
         lines.add("");
-        lines.add("import liangchen.wang.crdf.component.business.base.ResultDomain;");
-        lines.add("import liangchen.wang.crdf.framework.commons.object.ClassBeanUtil;");
+        lines.add("import liangchen.wang.gradf.component.business.base.ResultDomain;");
+        lines.add("import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;");
         lines.add("");
         lines.add("/**");
         lines.add(" * @author " + author + " " + DateTimeUtil.INSTANCE.getYYYY_MM_DD_HH_MM_SS());
@@ -577,11 +577,11 @@ public class DesignerManagerImpl implements IDesignerManager {
         Collection<String> lines = new ArrayList<>();
         lines.add("package " + iManagerPackage + ";");
         lines.add("");
-        lines.add("import liangchen.wang.crdf.component.business.base.IAbstractManager;");
+        lines.add("import liangchen.wang.gradf.component.business.base.IAbstractManager;");
         lines.add("import " + queryClass + ";");
         lines.add("import " + parameterDomainClass + ";");
         lines.add("import " + resultDomainClass + ";");
-        lines.add("import liangchen.wang.crdf.framework.commons.pagination.PaginationResult;");
+        lines.add("import liangchen.wang.gradf.framework.commons.pagination.PaginationResult;");
         lines.add("");
         lines.add("import java.util.List;");
         lines.add("");
@@ -653,18 +653,18 @@ public class DesignerManagerImpl implements IDesignerManager {
         Collection<String> lines = new ArrayList<>();
         lines.add("package " + managerPackage + ";");
         lines.add("");
-        lines.add("import liangchen.wang.crdf.component.business.base.AbstractManager;");
-        lines.add("import liangchen.wang.crdf.framework.cache.annotation.CrdfAutoCacheable;");
-        lines.add("import liangchen.wang.crdf.framework.commons.exeception.InfoException;");
-        lines.add("import liangchen.wang.crdf.framework.commons.pagination.PaginationResult;");
-        lines.add("import liangchen.wang.crdf.framework.data.enumeration.Status;");
-        lines.add("import liangchen.wang.crdf.framework.commons.utils.CollectionUtil;");
-        lines.add("import liangchen.wang.crdf.framework.commons.validator.Assert;");
-        lines.add("import liangchen.wang.crdf.framework.commons.validator.AssertLevel;");
-        lines.add("import liangchen.wang.crdf.framework.data.enumeration.Status;");
-        lines.add("import liangchen.wang.crdf.framework.data.utils.UidDb;");
-        lines.add("import liangchen.wang.crdf.framework.commons.object.ClassBeanUtil;");
-        lines.add("import liangchen.wang.crdf.framework.commons.utils.ContextUtil;");
+        lines.add("import liangchen.wang.gradf.component.business.base.AbstractManager;");
+        lines.add("import liangchen.wang.gradf.framework.cache.annotation.CrdfAutoCacheable;");
+        lines.add("import liangchen.wang.gradf.framework.commons.exeception.InfoException;");
+        lines.add("import liangchen.wang.gradf.framework.commons.pagination.PaginationResult;");
+        lines.add("import liangchen.wang.gradf.framework.data.enumeration.Status;");
+        lines.add("import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;");
+        lines.add("import liangchen.wang.gradf.framework.commons.validator.Assert;");
+        lines.add("import liangchen.wang.gradf.framework.commons.validator.AssertLevel;");
+        lines.add("import liangchen.wang.gradf.framework.data.enumeration.Status;");
+        lines.add("import liangchen.wang.gradf.framework.data.utils.UidDb;");
+        lines.add("import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;");
+        lines.add("import liangchen.wang.gradf.framework.commons.utils.ContextUtil;");
         lines.add("import " + iDaoClass + ";");
         lines.add("import " + entityClass + ";");
         lines.add("import " + queryClass + ";");
@@ -693,7 +693,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("    @Override");
         lines.add("    public boolean insert(" + parameterDomainName + " parameter) {");
         lines.add("        Assert.INSTANCE.notNull(parameter, AssertLevel.INFO, \"参数不能为空\");");
-        String entityNameVar = StringUtil.INSTANCE.convertFirstLowerCase(entityName);
+        String entityNameVar = StringUtil.INSTANCE.firstLetterConvertCase(entityName);
         lines.add("        parameter.populateEntity((" + entityNameVar + ") -> {");
         lines.add("            //TODO 这里可以调整Entity，比如设置主键/状态等");
         List<Column> primaryKeys = columns.getPrimaryKeys();

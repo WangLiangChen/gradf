@@ -21,7 +21,7 @@ import java.lang.reflect.Method;
 public class LoggerAspect {
     private final static Logger logger = LoggerFactory.getLogger(LoggerAspect.class);
 
-    @Pointcut("@within(liangchen.wang.crdf.framework.springboot.logger.annotation.LoggerAnnotation) || @annotation(liangchen.wang.crdf.framework.springboot.logger.annotation.LoggerAnnotation)")
+    @Pointcut("@within(liangchen.wang.gradf.framework.springboot.logger.annotation.LoggerAnnotation) || @annotation(liangchen.wang.gradf.framework.springboot.logger.annotation.LoggerAnnotation)")
     public void pointcut() {
     }
 

@@ -1,8 +1,8 @@
 package liangchen.wang.gradf.framework.data.base;
 
 
-import liangchen.wang.crdf.framework.commons.pagination.PaginationParameter;
-import liangchen.wang.crdf.framework.data.enumeration.Operator;
+import liangchen.wang.gradf.framework.data.enumeration.Operator;
+import liangchen.wang.gradf.framework.data.pagination.PaginationParameter;
 
 import javax.persistence.Transient;
 import java.util.ArrayList;

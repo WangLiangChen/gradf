@@ -5,6 +5,9 @@ import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+/**
+ * @author LiangChen.Wang
+ */
 public class JdbcShedLockProviderAutoConfiguration {
     @Bean
     public LockProvider jdbcTemplateLockProvider(JdbcTemplate jdbcTemplate) {

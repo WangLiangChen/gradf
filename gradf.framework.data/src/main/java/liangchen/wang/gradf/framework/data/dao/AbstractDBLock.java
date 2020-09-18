@@ -1,8 +1,8 @@
 package liangchen.wang.gradf.framework.data.dao;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
-import liangchen.wang.crdf.framework.commons.exeception.InfoException;
-import liangchen.wang.crdf.framework.commons.utils.StringUtil;
+import liangchen.wang.gradf.framework.commons.exception.InfoException;
+import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import net.javacrumbs.shedlock.support.LockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +15,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashSet;
 
+/**
+ * @author LiangChen.Wang
+ */
 public abstract class AbstractDBLock implements IDBLock {
     private static final Logger logger = LoggerFactory.getLogger(AbstractDBLock.class);
     private static final String DELETESQL = "delete from crdf_lock where lock_key=?";

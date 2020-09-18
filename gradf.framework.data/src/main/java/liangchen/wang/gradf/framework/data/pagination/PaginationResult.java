@@ -3,6 +3,7 @@ package liangchen.wang.gradf.framework.data.pagination;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
 import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
+import liangchen.wang.gradf.framework.commons.validator.Assert;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,32 +14,39 @@ import java.util.function.Consumer;
  * @author LiangChen.Wang
  */
 public class PaginationResult<E> {
-	public static <E> PaginationResult<E> newInstance() {
-		return new PaginationResult<>();
-	}
+    public static <E> PaginationResult<E> newInstance() {
+        return new PaginationResult<>();
+    }
 
-	private List<E> datas;
-	private Integer totalRecords;
-	private Integer page;
-	private Integer rows;
+    private List<E> datas;
+    private Integer totalRecords;
+    private Integer page;
+    private Integer rows;
 
-	public List<E> getDatas() {
-		return datas;
-	}
-	public void setDatas(List<E> datas) {
-		this.datas = datas;
-	}
-	public Integer getTotalRecords() {
-		return totalRecords;
-	}
-	public void setTotalRecords(Integer totalRecord) {
-		this.totalRecords = totalRecord;
-	}
+    public List<E> getDatas() {
+        return datas;
+    }
+
+    public void setDatas(List<E> datas) {
+        Assert.INSTANCE.notNull(datas, "参数datas不能为空");
+        this.datas = datas;
+    }
+
+    public Integer getTotalRecords() {
+        return totalRecords;
+    }
+
+    public void setTotalRecords(Integer totalRecord) {
+        Assert.INSTANCE.notNull(totalRecord, "参数totalRecord不能为空");
+        this.totalRecords = totalRecord;
+    }
+
     public Integer getPage() {
         return page;
     }
 
     public void setPage(Integer page) {
+        Assert.INSTANCE.notNull(page, "参数page不能为空");
         this.page = page;
     }
 
@@ -47,40 +55,45 @@ public class PaginationResult<E> {
     }
 
     public void setRows(Integer rows) {
+        Assert.INSTANCE.notNull(rows, "参数rows不能为空");
         this.rows = rows;
     }
 
-    public void circleDatas(Consumer<E> consumer){
-	    if(CollectionUtil.INSTANCE.isEmpty(datas)){
-	        return;
+    public void circleDatas(Consumer<E> consumer) {
+        if (CollectionUtil.INSTANCE.isEmpty(datas) || null == consumer) {
+            return;
         }
-	    datas.forEach(d->consumer.accept(d));
+        datas.forEach(d -> consumer.accept(d));
     }
-	public <T> PaginationResult<T> copyTo(Class<T> clazz){
-		return copyTo(clazz,null);
-	}
-	public <T> PaginationResult<T> copyTo(Class<T> clazz,Consumer<T> consumer){
-	    PaginationResult<T> paginationResult = new PaginationResult<>();
-	    paginationResult.setTotalRecords(this.totalRecords);
+
+    public <T> PaginationResult<T> copyTo(Class<T> clazz) {
+        return copyTo(clazz, null);
+    }
+
+    public <T> PaginationResult<T> copyTo(Class<T> clazz, Consumer<T> consumer) {
+        Assert.INSTANCE.notNull(clazz, "参数clazz不能为空");
+        PaginationResult<T> paginationResult = new PaginationResult<>();
+        paginationResult.setTotalRecords(this.totalRecords);
         paginationResult.setPage(this.page);
         paginationResult.setRows(this.rows);
-	    if(CollectionUtil.INSTANCE.isEmpty(datas)){
-	    	paginationResult.setDatas(Collections.emptyList());
-	    	return paginationResult;
-		}
+        if (CollectionUtil.INSTANCE.isEmpty(datas)) {
+            paginationResult.setDatas(Collections.emptyList());
+            return paginationResult;
+        }
         List<T> ts = new ArrayList<>(datas.size());
-		datas.forEach(d->{
-             T t = ClassBeanUtil.INSTANCE.copyProperties(d,clazz);
-             if(null!=consumer){
-             	consumer.accept(t);
-			 }
-             ts.add(t);
-		});
-		paginationResult.setDatas(ts);
-	    return paginationResult;
+        datas.forEach(d -> {
+            T t = ClassBeanUtil.INSTANCE.copyProperties(d, clazz);
+            if (null != consumer) {
+                consumer.accept(t);
+            }
+            ts.add(t);
+        });
+        paginationResult.setDatas(ts);
+        return paginationResult;
     }
+
     @Override
     public String toString() {
-       return JsonUtil.INSTANCE.toJSONString(this);
+        return JsonUtil.INSTANCE.toJSONString(this);
     }
 }

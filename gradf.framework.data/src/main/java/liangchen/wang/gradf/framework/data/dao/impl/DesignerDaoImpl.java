@@ -1,11 +1,11 @@
 package liangchen.wang.gradf.framework.data.dao.impl;
 
-import liangchen.wang.crdf.framework.commons.exeception.ErrorException;
-import liangchen.wang.crdf.framework.data.condition.DataConditionAnnotation;
-import liangchen.wang.crdf.framework.data.dao.IDesignerDao;
-import liangchen.wang.crdf.framework.data.entity.Column;
-import liangchen.wang.crdf.framework.data.entity.Columns;
-import liangchen.wang.crdf.framework.data.utils.DatabaseUtil;
+import liangchen.wang.gradf.framework.commons.exception.ErrorException;
+import liangchen.wang.gradf.framework.data.condition.DataConditionAnnotation;
+import liangchen.wang.gradf.framework.data.dao.IDesignerDao;
+import liangchen.wang.gradf.framework.data.entity.Column;
+import liangchen.wang.gradf.framework.data.entity.Columns;
+import liangchen.wang.gradf.framework.data.utils.DatabaseUtil;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -26,10 +26,12 @@ import java.util.List;
 @Repository("Crdf_Data_DesignerDao")
 public class DesignerDaoImpl implements IDesignerDao {
     private final JdbcTemplate jdbcTemplate;
+
     @Inject
     public DesignerDaoImpl(@Named("jdbcTemplate") JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
     @Override
     public Columns columns(String tableName) {
         // 查询获取主键列名
@@ -47,27 +49,27 @@ public class DesignerDaoImpl implements IDesignerDao {
 
         // 查询获取列
         ResultSetMetaData rsmd = jdbcTemplate.query("select * from " + tableName + " where 1=0", ResultSet::getMetaData);
-        String columnName,jdbcTypeName,javaTypeName;
+        String columnName, jdbcTypeName, javaTypeName;
         Column column;
         List<Column> primaryKeys = new ArrayList<>();
         List<Column> columns = new ArrayList<>();
-        try{
+        try {
             for (int i = 1, j = rsmd.getColumnCount(); i <= j; i++) {
                 columnName = rsmd.getColumnName(i);
                 jdbcTypeName = rsmd.getColumnTypeName(i);
                 //javaTypeName = rsmd.getColumnClassName(i);
                 javaTypeName = DatabaseUtil.INSTANCE.jdbcType2JavaType(jdbcTypeName);
-                if(primaryKeyColumnNames.contains(columnName)){
-                    column = Column.newInstance(columnName,jdbcTypeName,javaTypeName,true);
+                if (primaryKeyColumnNames.contains(columnName)) {
+                    column = Column.newInstance(columnName, jdbcTypeName, javaTypeName, true);
                     primaryKeys.add(column);
-                }else{
-                    column = Column.newInstance(columnName,jdbcTypeName,javaTypeName);
+                } else {
+                    column = Column.newInstance(columnName, jdbcTypeName, javaTypeName);
                     columns.add(column);
                 }
             }
-        }catch (SQLException ex){
+        } catch (SQLException ex) {
             throw new ErrorException(ex);
         }
-        return Columns.newInstance(primaryKeys,columns);
+        return Columns.newInstance(primaryKeys, columns);
     }
 }

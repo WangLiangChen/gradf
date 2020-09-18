@@ -5,10 +5,10 @@ import java.lang.annotation.*;
 /**
  * @author LiangChen.Wang
  */
-@Retention(RetentionPolicy.RUNTIME)  
-@Target({ElementType.TYPE,ElementType.METHOD})
-@Inherited  
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Inherited
 @Documented
 public @interface SwitchDataSource {
-	String value();
+    String value();
 }

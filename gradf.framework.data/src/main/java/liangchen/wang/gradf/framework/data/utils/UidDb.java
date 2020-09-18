@@ -1,19 +1,22 @@
 package liangchen.wang.gradf.framework.data.utils;
 
-import liangchen.wang.crdf.framework.commons.snowflake.factory.IFactory;
-import liangchen.wang.crdf.framework.commons.snowflake.factory.SecondTimeFactory;
-import liangchen.wang.crdf.framework.commons.snowflake.generator.IGenerator;
+import liangchen.wang.gradf.framework.commons.snowflake.factory.IUIDGeneratorFactory;
+import liangchen.wang.gradf.framework.commons.snowflake.factory.SecondTimeUIDGeneratorFactory;
+import liangchen.wang.gradf.framework.commons.snowflake.generator.IUIDGenerator;
 
 /**
  * @author LiangChen.Wang 2019/10/31 20:29
  */
 public enum UidDb {
+    /**
+     *
+     */
     INSTANCE;
     private final String UID = "UID";
-    private IGenerator distributedGenerator;
+    private IUIDGenerator distributedGenerator;
 
     UidDb() {
-        IFactory factory = new SecondTimeFactory();
+        IUIDGeneratorFactory factory = new SecondTimeUIDGeneratorFactory();
         Long sequenceNumber = SequenceUtil.INSTANCE.sequenceNumber(UID);
         distributedGenerator = factory.create(sequenceNumber);
     }

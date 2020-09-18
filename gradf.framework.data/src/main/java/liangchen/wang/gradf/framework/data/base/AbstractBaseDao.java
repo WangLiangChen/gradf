@@ -1,10 +1,10 @@
 package liangchen.wang.gradf.framework.data.base;
 
-import liangchen.wang.crdf.framework.commons.exeception.InfoException;
-import liangchen.wang.crdf.framework.commons.pagination.PaginationResult;
-import liangchen.wang.crdf.framework.commons.utils.CollectionUtil;
-import liangchen.wang.crdf.framework.commons.validator.Assert;
-import liangchen.wang.crdf.framework.commons.validator.AssertLevel;
+
+import liangchen.wang.gradf.framework.commons.exception.InfoException;
+import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
+import liangchen.wang.gradf.framework.commons.validator.Assert;
+import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -17,8 +17,9 @@ import java.util.Optional;
 /**
  * @author LiangChen.Wang
  */
-public abstract class AbstractBaseDao<E extends RootEntity> extends AbstractDao<E> {
+public abstract class AbstractBaseDao<E extends RootEntity, Q extends RootQuery> extends AbstractDao<E, Q> {
     private final Class<E> entityClass;
+    private final Class<Q> queryClass;
     @Inject
     @Named("Crdf_Data_DaoBuilder")
     private DaoBuilder daoBuilder;
@@ -27,9 +28,10 @@ public abstract class AbstractBaseDao<E extends RootEntity> extends AbstractDao<
     public AbstractBaseDao() {
         Class<?> implClass = getClass();
         Type thisType = implClass.getGenericSuperclass();
-        Assert.INSTANCE.isTrue(thisType instanceof ParameterizedType, AssertLevel.INFO, "必须设置参数化类型:<E extends RootEntity>");
+        Assert.INSTANCE.isTrue(thisType instanceof ParameterizedType, "必须设置参数化类型:<E extends RootEntity, Q extends RootQuery>");
         Type[] argTypes = ((ParameterizedType) thisType).getActualTypeArguments();
         entityClass = (Class<E>) argTypes[0];
+        queryClass = (Class<Q>) argTypes[1];
     }
 
     @Override
@@ -43,29 +45,29 @@ public abstract class AbstractBaseDao<E extends RootEntity> extends AbstractDao<
 
 
     @Override
-    public int deleteByQuery(RootQuery query) {
-        return sqlSessionTemplate.delete(daoBuilder.deleteByQueryId(query.getClass()), query);
+    public int deleteByQuery(Q query) {
+        return sqlSessionTemplate.delete(daoBuilder.deleteByQueryId(queryClass), query);
     }
 
     @Override
-    public int updateByQuery(E entity, RootQuery query) {
+    public int updateByQuery(E entity, Q query) {
         query.setEntity(entity);
-        return sqlSessionTemplate.update(daoBuilder.updateByQueryId(entityClass, query.getClass()), query);
+        return sqlSessionTemplate.update(daoBuilder.updateByQueryId(entityClass, queryClass), query);
     }
 
     @Override
-    public boolean exist(RootQuery query) {
+    public boolean exist(Q query) {
         int count = count(query);
         return count > 0;
     }
 
     @Override
-    public int count(RootQuery query) {
-        return sqlSessionTemplate.selectOne(daoBuilder.countId(query.getClass()), query);
+    public int count(Q query) {
+        return sqlSessionTemplate.selectOne(daoBuilder.countId(queryClass), query);
     }
 
     @Override
-    public E one(RootQuery query, String... returnFields) {
+    public E one(Q query, String... returnFields) {
         List<E> list = list(query, returnFields);
         int size = list.size();
         switch (size) {
@@ -79,7 +81,7 @@ public abstract class AbstractBaseDao<E extends RootEntity> extends AbstractDao<
     }
 
     @Override
-    public Optional<E> oneOptional(RootQuery query, String... returnFields) {
+    public Optional<E> oneOptional(Q query, String... returnFields) {
         List<E> list = list(query, returnFields);
         int size = list.size();
         switch (size) {
@@ -93,20 +95,20 @@ public abstract class AbstractBaseDao<E extends RootEntity> extends AbstractDao<
     }
 
     @Override
-    public List<E> list(RootQuery query, String... returnFields) {
+    public List<E> list(Q query, String... returnFields) {
         if (CollectionUtil.INSTANCE.isEmpty(returnFields)) {
             query.setReturnFields(new String[]{"*"});
         } else {
             query.setReturnFields(returnFields);
         }
-        List<E> list = sqlSessionTemplate.selectList(daoBuilder.listId(query.getClass(), entityClass), query);
+        List<E> list = sqlSessionTemplate.selectList(daoBuilder.listId(queryClass, entityClass), query);
         // 清除query的returnFields字段，以免影响缓存Key
         query.setReturnFields(null);
         return list;
     }
 
     @Override
-    public PaginationResult<E> pagination(RootQuery query, String... returnFields) {
+    public PaginationResult<E> pagination(Q query, String... returnFields) {
         int count = count(query);
         PaginationResult<E> paginationResult = PaginationResult.newInstance();
         paginationResult.setTotalRecords(count);

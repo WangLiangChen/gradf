@@ -1,11 +1,11 @@
 package liangchen.wang.gradf.framework.data.configuration;
 
-import liangchen.wang.crdf.framework.commons.utils.CollectionUtil;
-import liangchen.wang.crdf.framework.commons.utils.ConfigurationUtil;
-import liangchen.wang.crdf.framework.commons.utils.Printer;
-import liangchen.wang.crdf.framework.commons.utils.StringUtil;
-import liangchen.wang.crdf.framework.data.base.IAbstractDao;
-import liangchen.wang.crdf.framework.data.mybatis.interceptor.PaginationInterceptor;
+import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
+import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
+import liangchen.wang.gradf.framework.commons.utils.Printer;
+import liangchen.wang.gradf.framework.commons.utils.StringUtil;
+import liangchen.wang.gradf.framework.data.base.IAbstractDao;
+import liangchen.wang.gradf.framework.data.mybatis.interceptor.PaginationInterceptor;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.LocalCacheScope;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -27,7 +27,7 @@ import java.util.Properties;
  * @author LiangChen.Wang
  */
 public class JdbcAutoConfiguration {
-    private final static String SYSTEM_MAPPER_SCAN_PACKAGE = "liangchen.wang.crdf.framework.springboot.data";
+    private final static String SYSTEM_MAPPER_SCAN_PACKAGE = "liangchen.wang.gradf.framework.springboot.data";
 
     @Bean
     public SqlSessionFactoryBean sqlSessionFactory(DataSource dataSource, @Nullable Interceptor[] interceptors) throws Exception {

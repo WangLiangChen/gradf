@@ -1,7 +1,8 @@
 package liangchen.wang.gradf.framework.data.pagination;
 
-import liangchen.wang.crdf.framework.commons.object.EnhancedObject;
-import liangchen.wang.crdf.framework.commons.utils.StringUtil;
+import liangchen.wang.gradf.framework.commons.object.EnhancedObject;
+import liangchen.wang.gradf.framework.commons.utils.StringUtil;
+import liangchen.wang.gradf.framework.commons.validator.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,85 +14,87 @@ public class PaginationParameter extends EnhancedObject {
     /**
      * 分页页号
      */
-	private transient Integer page;
+    private transient Integer page;
     /**
      * 分页记录偏移(MySql)
      */
-	private transient Integer offset;
+    private transient Integer offset;
     /**
      * 行数
      */
-	private transient Integer rows;
+    private transient Integer rows;
     /**
      * 排序
      */
-	private transient List<OrderBy> orderBy;
+    private transient List<OrderBy> orderBy;
 
-	public void initPagination() {
-		this.page = null == this.page ? 1 : this.page;
-		this.rows = null == this.rows ? 10 : this.rows;
-	}
+    public void initPagination() {
+        this.page = null == this.page ? 1 : this.page;
+        this.rows = null == this.rows ? 10 : this.rows;
+    }
 
-	public List<OrderBy> getOrderBy() {
-		return orderBy;
-	}
-	public void setOrderBy(List<OrderBy> orderBy){this.orderBy = orderBy;}
-	public void addOrderBy(String orderby, OrderByDirection direction) {
-		addOrderBy(orderby, direction, null);
-	}
-	public void addOrderBy(String orderby, OrderByDirection direction, Integer index) {
-	    if(StringUtil.INSTANCE.isBlank(orderby)){
-	        return;
+    public List<OrderBy> getOrderBy() {
+        return orderBy;
+    }
+
+    public void setOrderBy(List<OrderBy> orderBy) {
+        Assert.INSTANCE.notEmpty(orderBy, "参数orderBy不能为空");
+        this.orderBy = orderBy;
+    }
+
+    public void addOrderBy(String orderby, OrderByDirection direction) {
+        addOrderBy(orderby, direction, 0);
+    }
+
+    public void addOrderBy(String orderby, OrderByDirection direction, Integer index) {
+        Assert.INSTANCE.notBlank(orderby, "参数orderby不能为空");
+        Assert.INSTANCE.notNull(direction, "参数direction不能为空");
+        orderBy = orderBy == null ? new ArrayList<>(1) : orderBy;
+        if (null == index) {
+            orderBy.add(new OrderBy(orderby, direction));
+            return;
         }
-        if(null==direction){
-	        direction = OrderByDirection.asc;
+        orderBy.add(index, new OrderBy(orderby, direction));
+    }
+
+    public Integer getPage() {
+        if (null != page) {
+            page = page < 1 ? 1 : page;
+            return page;
         }
-		orderBy=orderBy==null?new ArrayList<>(1):orderBy;
-		if (null == index) {
-			orderBy.add(new OrderBy(orderby, direction));
-			return;
-		}
-		orderBy.add(index, new OrderBy(orderby, direction));
-	}
+        if (null != offset && null != rows) {
+            page = offset / rows + 1;
+        }
+        return page;
+    }
 
-	public Integer getPage() {
-		if (null != page) {
-			page = page < 1 ? 1 : page;
-			return page;
-		}
-		if (null != offset && null != rows) {
-			page = offset / rows + 1;
-		}
-		return page;
-	}
+    public void setPage(Integer page) {
+        this.page = page;
+    }
 
-	public void setPage(Integer page) {
-		this.page = page;
-	}
+    public Integer getOffset() {
+        if (null != offset) {
+            offset = offset < 0 ? 0 : offset;
+            return offset;
+        }
+        if (null != page && null != rows) {
+            offset = (page - 1) * rows;
+        }
+        return offset;
+    }
 
-	public Integer getOffset() {
-		if (null != offset) {
-			offset = offset < 0 ? 0 : offset;
-			return offset;
-		}
-		if (null != page && null != rows) {
-			offset = (page - 1) * rows;
-		}
-		return offset;
-	}
+    public void setOffset(Integer offset) {
+        this.offset = offset;
+    }
 
-	public void setOffset(Integer offset) {
-		this.offset = offset;
-	}
+    public Integer getRows() {
+        if (null != rows && rows < 1) {
+            return 1;
+        }
+        return rows;
+    }
 
-	public Integer getRows() {
-		if (null != rows && rows < 1) {
-			return 1;
-		}
-		return rows;
-	}
-
-	public void setRows(Integer rows) {
-		this.rows = rows;
-	}
+    public void setRows(Integer rows) {
+        this.rows = rows;
+    }
 }

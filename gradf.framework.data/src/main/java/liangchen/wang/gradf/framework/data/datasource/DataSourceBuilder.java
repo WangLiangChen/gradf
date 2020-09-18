@@ -1,5 +1,6 @@
 package liangchen.wang.gradf.framework.data.datasource;
 
+import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -14,10 +15,15 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @param <T>
+ * @author LiangChen.Wang
+ */
 public final class DataSourceBuilder<T extends DataSource> {
 
     private static final String[] DATA_SOURCE_TYPE_NAMES = new String[]{"com.zaxxer.hikari.HikariDataSource",
-            "org.apache.tomcat.jdbc.pool.DataSource", "org.apache.commons.dbcp2.BasicDataSource"};
+            "org.apache.tomcat.jdbc.pool.DataSource",
+            "org.apache.commons.dbcp2.BasicDataSource"};
 
     private Class<? extends DataSource> type;
 
@@ -57,6 +63,7 @@ public final class DataSourceBuilder<T extends DataSource> {
     private void bind(DataSource result) {
         ConfigurationPropertySource source = new MapConfigurationPropertySource(this.properties);
         ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
+        aliases.addAliases("driver-class-name", "driver-class");
         aliases.addAliases("url", "jdbc-url");
         aliases.addAliases("username", "user");
         Binder binder = new Binder(source.withAliases(aliases));
@@ -64,9 +71,9 @@ public final class DataSourceBuilder<T extends DataSource> {
     }
 
     @SuppressWarnings("unchecked")
-    public <D extends DataSource> DataSourceBuilder<D> type(Class<D> type) {
+    public <T extends DataSource> DataSourceBuilder<T> type(Class<T> type) {
         this.type = type;
-        return (DataSourceBuilder<D>) this;
+        return (DataSourceBuilder<T>) this;
     }
 
     public DataSourceBuilder<T> url(String url) {
@@ -95,7 +102,7 @@ public final class DataSourceBuilder<T extends DataSource> {
             try {
                 return (Class<? extends DataSource>) ClassUtils.forName(name, classLoader);
             } catch (Exception ex) {
-                // Swallow and continue
+                throw new ErrorException(ex);
             }
         }
         return null;
@@ -107,6 +114,7 @@ public final class DataSourceBuilder<T extends DataSource> {
         return this;
     }
 
+    // 扩展增增加额外属性的方法，by liangchen.wang
     public DataSourceBuilder<T> properties(Map<String, String> properties) {
         this.properties.putAll(properties);
         return this;

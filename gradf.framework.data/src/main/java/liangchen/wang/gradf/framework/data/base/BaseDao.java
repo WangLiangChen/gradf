@@ -1,7 +1,6 @@
 package liangchen.wang.gradf.framework.data.base;
 
 
-
 import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
 
 import java.util.List;
