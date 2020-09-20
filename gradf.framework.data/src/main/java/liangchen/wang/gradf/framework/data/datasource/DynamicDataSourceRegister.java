@@ -103,7 +103,7 @@ public class DynamicDataSourceRegister implements ImportBeanDefinitionRegistrar 
         String url = null;
         if (dialect instanceof MySQLDialect) {
             driverClassName = "com.mysql.cj.jdbc.Driver";
-            String query = "serverTimezone=GMT%2B8&characterEncoding=utf-8&characterSetResults=utf-8&useUnicode=false&useSSL=false&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true";
+            String query = "serverTimezone=GMT%2B8&characterEncoding=utf-8&characterSetResults=utf-8&useUnicode=true&useSSL=false&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true";
             url = String.format("jdbc:mysql://%s:%s/%s?%s", properties.get("host"), properties.get("port"), properties.get("database"), query);
             properties.remove("host");
             properties.remove("port");
