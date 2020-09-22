@@ -77,76 +77,84 @@ public class JsonList extends Json implements List<Object>, Cloneable, RandomAcc
     }
 
     public <T> List<T> toJavaList(Class<T> clazz) {
-        List<T> list = new ArrayList<>(this.list.size());
-
-        for (Object e : this.list) {
-            String jsonString = JsonUtil.INSTANCE.toJsonString(e);
-            T t = JsonUtil.INSTANCE.parseObject(jsonString, clazz);
-            list.add(t);
-        }
-        return list;
+        return JsonUtil.INSTANCE.parseList(this, clazz);
     }
 
     public String toJSONString() {
         return JsonUtil.INSTANCE.toJsonString(this.list);
     }
 
+    @Override
     public int size() {
         return list.size();
     }
 
+    @Override
     public boolean isEmpty() {
         return list.isEmpty();
     }
 
+    @Override
     public boolean contains(Object o) {
         return list.contains(o);
     }
 
+    @Override
     public Iterator<Object> iterator() {
         return list.iterator();
     }
 
+    @Override
     public Object[] toArray() {
         return list.toArray();
     }
 
+    @Override
     public <T> T[] toArray(T[] a) {
         return list.toArray(a);
     }
 
+    @Override
     public boolean add(Object e) {
         return list.add(e);
     }
 
+    @Override
     public boolean remove(Object o) {
         return list.remove(o);
     }
 
+    @Override
     public boolean containsAll(Collection<?> c) {
         return list.containsAll(c);
     }
 
+    @Override
     public boolean addAll(Collection<? extends Object> c) {
         return list.addAll(c);
     }
 
+    @Override
     public boolean addAll(int index, Collection<? extends Object> c) {
         return list.addAll(index, c);
     }
 
+    @Override
     public boolean removeAll(Collection<?> c) {
         return list.removeAll(c);
     }
 
+    @Override
     public boolean retainAll(Collection<?> c) {
         return list.retainAll(c);
     }
 
+    @Override
     public void clear() {
         list.clear();
     }
 
+    @Override
     public Object set(int index, Object element) {
         if (index == -1) {
             list.add(element);
@@ -164,34 +172,42 @@ public class JsonList extends Json implements List<Object>, Cloneable, RandomAcc
         return list.set(index, element);
     }
 
+    @Override
     public void add(int index, Object element) {
         list.add(index, element);
     }
 
+    @Override
     public Object remove(int index) {
         return list.remove(index);
     }
 
+    @Override
     public int indexOf(Object o) {
         return list.indexOf(o);
     }
 
+    @Override
     public int lastIndexOf(Object o) {
         return list.lastIndexOf(o);
     }
 
+    @Override
     public ListIterator<Object> listIterator() {
         return list.listIterator();
     }
 
+    @Override
     public ListIterator<Object> listIterator(int index) {
         return list.listIterator(index);
     }
 
+    @Override
     public List<Object> subList(int fromIndex, int toIndex) {
         return list.subList(fromIndex, toIndex);
     }
 
+    @Override
     public Object get(int index) {
         return list.get(index);
     }
@@ -201,10 +217,12 @@ public class JsonList extends Json implements List<Object>, Cloneable, RandomAcc
         return new JsonList(new ArrayList<Object>(list));
     }
 
+    @Override
     public boolean equals(Object obj) {
         return this.list.equals(obj);
     }
 
+    @Override
     public int hashCode() {
         return this.list.hashCode();
     }

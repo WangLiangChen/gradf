@@ -74,6 +74,8 @@ public class DefaultApplicationContextInitializer implements ApplicationContextI
         defaultProperties.setProperty("logging.file.path", logging_file_path);
 
         defaultProperties.setProperty("spring.jpa.properties.javax.persistence.validation.mode", "none");
+        defaultProperties.setProperty("spring.data.jpa.repositories.enabled", "false");
+        defaultProperties.setProperty(" spring.data.jpa.repositories.bootstrap-mode", "default");
         defaultProperties.setProperty("spring.autoconfigure.exclude", "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration");
         defaultProperties.setProperty("spring.autoconfigure.exclude[1]", "org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration");
         defaultProperties.setProperty("spring.autoconfigure.exclude[2]", "org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration");

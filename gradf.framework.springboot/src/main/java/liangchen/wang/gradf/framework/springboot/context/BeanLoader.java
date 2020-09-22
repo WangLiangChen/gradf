@@ -2,7 +2,6 @@ package liangchen.wang.gradf.framework.springboot.context;
 
 import liangchen.wang.gradf.framework.commons.exception.InfoException;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;

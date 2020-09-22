@@ -1,6 +1,5 @@
 package liangchen.wang.gradf.framework.data.dao.impl;
 
-;
 import liangchen.wang.gradf.framework.commons.exception.InfoException;
 import liangchen.wang.gradf.framework.data.condition.DataConditionAnnotation;
 import liangchen.wang.gradf.framework.data.dao.AbstractDBLock;
@@ -11,6 +10,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+
+;
 
 /**
  * @author LiangChen.Wang

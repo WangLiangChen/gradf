@@ -1,8 +1,6 @@
 package liangchen.wang.gradf.framework.data.test;
 
 import liangchen.wang.gradf.framework.data.annotation.EnableJdbc;
-import liangchen.wang.gradf.framework.data.datasource.DynamicDataSource;
-import liangchen.wang.gradf.framework.springboot.context.BeanLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -3,7 +3,6 @@ package liangchen.wang.gradf.framework.commons.json;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
-import liangchen.wang.gradf.framework.commons.validator.Assert;
 
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -49,8 +48,16 @@ public enum JsonUtil {
         return gson.fromJson(jsonString, clazz);
     }
 
+    public <T> T parseObject(JsonMap jsonMap, Class<T> clazz) {
+        return parseObject(gson.toJson(jsonMap), clazz);
+    }
+
     public <T> List<T> parseList(String jsonString, Class<T> clazz) {
         return gson.fromJson(jsonString, TypeToken.getParameterized(List.class, clazz).getType());
+    }
+
+    public <T> List<T> parseList(JsonList jsonList, Class<T> clazz) {
+        return parseList(gson.toJson(jsonList), clazz);
     }
 
     public <V> Map<String, V> parseMap(String jsonString, Class<V> valueClass) {
@@ -67,6 +74,10 @@ public enum JsonUtil {
     public Object parseParameterizedObject(String jsonString, Type rawType, Type... types) {
         Type type = TypeToken.getParameterized(rawType, types).getType();
         return gson.fromJson(jsonString, type);
+    }
+
+    public Object parseParameterizedObject(JsonMap jsonMap, Type rawType, Type... types) {
+        return parseParameterizedObject(gson.toJson(jsonMap), rawType, types);
     }
 
 
@@ -94,7 +105,7 @@ public enum JsonUtil {
             } else if (e.isJsonObject()) {
                 list.add(toJsonMap((JsonObject) e));
             } else if (e.isJsonPrimitive()) {
-                list.add(e.getAsJsonPrimitive());
+                list.add(e.getAsString());
             }
         });
         return new JsonList(list);
@@ -111,7 +122,7 @@ public enum JsonUtil {
             } else if (value.isJsonArray()) {
                 map.put(key, toJsonList((JsonArray) value));
             } else if (value.isJsonPrimitive()) {
-                map.put(key, value.getAsJsonPrimitive());
+                map.put(key, value.getAsString());
             } else {
                 map.put(key, null);
             }

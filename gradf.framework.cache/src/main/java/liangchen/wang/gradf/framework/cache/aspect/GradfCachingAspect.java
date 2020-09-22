@@ -11,12 +11,10 @@ import liangchen.wang.gradf.framework.cache.primary.GradfCacheManager;
 import liangchen.wang.gradf.framework.commons.enumeration.Symbol;
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import liangchen.wang.gradf.framework.commons.exception.InfoException;
-import liangchen.wang.gradf.framework.commons.json.Json;
 import liangchen.wang.gradf.framework.commons.json.JsonMap;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
 import liangchen.wang.gradf.framework.commons.lock.LocalLockUtil;
 import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
-import liangchen.wang.gradf.framework.commons.utils.JsonStringParser;
 import liangchen.wang.gradf.framework.commons.utils.RandomUtil;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
@@ -301,16 +299,16 @@ public class GradfCachingAspect {
         }
         //处理List
         if (jsonMap.containsKey(_LIST)) {
-            return JsonUtil.INSTANCE.parseObject(jsonMap.getString(_LIST), _class);
+            return JsonUtil.INSTANCE.parseList(jsonMap.getJSONList(_LIST), _class);
         }
         //处理Set
         if (jsonMap.containsKey(_SET)) {
-            List<?> list = JsonUtil.INSTANCE.parseList(jsonMap.getString(_SET), _class);
+            List<?> list = JsonUtil.INSTANCE.parseList(jsonMap.getJSONList(_SET), _class);
             return new HashSet<>(list);
         }
         //处理PaginationResult
         if (jsonMap.containsKey(_PAGINATION)) {
-            Object paginationResult = JsonUtil.INSTANCE.parseParameterizedObject(_PAGINATION, PaginationResult.class, _class);
+            Object paginationResult = JsonUtil.INSTANCE.parseParameterizedObject(jsonMap.getJSONMap(_PAGINATION), PaginationResult.class, _class);
             return paginationResult;
         }
         throw new InfoException("暂不支持缓存此格式的数据");

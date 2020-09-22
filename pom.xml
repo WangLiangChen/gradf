@@ -11,6 +11,7 @@
         <module>gradf.framework.web</module>
         <module>gradf.framework.data</module>
         <module>gradf.framework.cache</module>
+        <module>../example</module>
     </modules>
     <packaging>pom</packaging>
 

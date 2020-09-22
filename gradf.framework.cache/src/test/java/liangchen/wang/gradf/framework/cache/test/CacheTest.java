@@ -7,7 +7,6 @@ import liangchen.wang.gradf.framework.commons.utils.ConcurrentUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cache.Cache;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.inject.Inject;

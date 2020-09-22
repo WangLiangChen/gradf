@@ -1,10 +1,8 @@
 package liangchen.wang.gradf.framework.data.annotation;
 
-import liangchen.wang.gradf.framework.commons.exception.InfoException;
 import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
 import liangchen.wang.gradf.framework.commons.utils.NetUtil;
 import liangchen.wang.gradf.framework.commons.utils.Printer;
-import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.data.configuration.JdbcAutoConfiguration;
 import liangchen.wang.gradf.framework.data.datasource.DynamicDataSourceRegister;

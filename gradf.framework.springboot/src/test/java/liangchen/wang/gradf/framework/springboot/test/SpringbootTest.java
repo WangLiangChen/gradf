@@ -1,7 +1,6 @@
 package liangchen.wang.gradf.framework.springboot.test;
 
 import liangchen.wang.gradf.framework.springboot.test.aspect.ChildTestAspect;
-import liangchen.wang.gradf.framework.springboot.test.aspect.ITestAspect;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,12 +16,14 @@ import javax.inject.Inject;
 public class SpringbootTest {
     @Inject
     private ChildTestAspect testAspect;
+
     @Test
     public void testInit() {
 
     }
+
     @Test
-    public void testAspect(){
+    public void testAspect() {
         testAspect.childMethod();
         testAspect.parentMethod();
         testAspect.interfaceMethod();

@@ -59,6 +59,9 @@ public class JsonMap extends Json implements Map<String, Object>, Cloneable, Ser
         if (null == value) {
             return null;
         }
+        if (value instanceof Json) {
+            return JsonUtil.INSTANCE.toJsonString(value);
+        }
         return String.valueOf(value);
     }
 
@@ -126,11 +129,23 @@ public class JsonMap extends Json implements Map<String, Object>, Cloneable, Ser
         return value.booleanValue();
     }
 
-    public <T> T getObject(String key, Class<T> clazz) {
-        Object object = get(key);
-        // 使用Json转换
-        String mapJson = JsonUtil.INSTANCE.toJsonString(object);
-        return JsonUtil.INSTANCE.parseObject(mapJson, clazz);
+    public <T> T getJavaObject(String key, Class<T> clazz) {
+        Object value = map.get(key);
+        if (value instanceof String) {
+            return clazz.cast(value);
+        }
+        if (value instanceof JsonMap) {
+            return JsonUtil.INSTANCE.parseObject((JsonMap) value, clazz);
+        }
+        throw new RuntimeException("object is not a JavaObject");
+    }
+
+    public <T> List<T> getJavaList(String key, Class<T> clazz) {
+        Object value = map.get(key);
+        if (value instanceof JsonList) {
+            return JsonUtil.INSTANCE.parseList((JsonList) value, clazz);
+        }
+        throw new RuntimeException("object is not a JavaObject");
     }
 
     @SuppressWarnings("unchecked")
@@ -142,9 +157,7 @@ public class JsonMap extends Json implements Map<String, Object>, Cloneable, Ser
         if (clazz == Object.class) {
             return (T) this;
         }
-        // 使用Json转换
-        String mapJson = JsonUtil.INSTANCE.toJsonString(this.map);
-        return JsonUtil.INSTANCE.parseObject(mapJson, clazz);
+        return JsonUtil.INSTANCE.parseObject(this, clazz);
     }
 
     public String toJSONString() {

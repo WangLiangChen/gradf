@@ -51,7 +51,7 @@ public class ResponseUtil {
     }
 
     public ResponseUtil setFormat(String format) {
-        Assert.INSTANCE.isTrue((JSON.equals(format) || XML.equals(format)),  "数据格式必须是{}或{}", JSON, XML);
+        Assert.INSTANCE.isTrue((JSON.equals(format) || XML.equals(format)), "数据格式必须是{}或{}", JSON, XML);
         this.format = format;
         return this;
     }
@@ -171,6 +171,7 @@ public class ResponseUtil {
                     public boolean shouldSkipField(FieldAttributes field) {
                         return ArrayUtils.contains(excludeProperties, field.getName());
                     }
+
                     @Override
                     public boolean shouldSkipClass(Class<?> clazz) {
                         return false;

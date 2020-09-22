@@ -1,10 +1,8 @@
 package liangchen.wang.gradf.framework.commons.object;
 
-import com.google.common.collect.Maps;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 import com.thoughtworks.xstream.io.xml.XmlFriendlyNameCoder;
-import com.thoughtworks.xstream.io.xml.Xpp3Driver;
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import liangchen.wang.gradf.framework.commons.exception.InfoException;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;

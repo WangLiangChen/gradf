@@ -4,7 +4,6 @@ import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import liangchen.wang.gradf.framework.commons.utils.DateTimeUtil;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
-import liangchen.wang.gradf.framework.commons.validator.AssertLevel;
 import liangchen.wang.gradf.framework.data.condition.DataConditionAnnotation;
 import liangchen.wang.gradf.framework.data.dao.IDesignerDao;
 import liangchen.wang.gradf.framework.data.domain.DesignerDomain;

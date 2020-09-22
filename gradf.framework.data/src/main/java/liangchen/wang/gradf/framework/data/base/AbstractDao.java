@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * @author LiangChen.Wang 2019/11/12 15:15
  */
-public abstract class AbstractDao<E extends RootEntity,Q extends RootQuery> implements IAbstractDao<E,Q> {
+public abstract class AbstractDao<E extends RootEntity, Q extends RootQuery> implements IAbstractDao<E, Q> {
     @Resource(name = "jdbcTemplate")
     protected JdbcTemplate jdbcTemplate;
     @Resource(name = "sqlSessionTemplate")

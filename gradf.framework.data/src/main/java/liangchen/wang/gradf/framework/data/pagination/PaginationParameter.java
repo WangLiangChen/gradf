@@ -1,7 +1,6 @@
 package liangchen.wang.gradf.framework.data.pagination;
 
 import liangchen.wang.gradf.framework.commons.object.EnhancedObject;
-import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 
 import java.util.ArrayList;
@@ -62,9 +61,10 @@ public class PaginationParameter extends EnhancedObject {
             page = page < 1 ? 1 : page;
             return page;
         }
-        if (null != offset && null != rows) {
-            page = offset / rows + 1;
+        if (null == offset || null == rows) {
+            return 1;
         }
+        page = offset / rows + 1;
         return page;
     }
 
@@ -88,6 +88,9 @@ public class PaginationParameter extends EnhancedObject {
     }
 
     public Integer getRows() {
+        if (null == rows) {
+            return 10;
+        }
         if (null != rows && rows < 1) {
             return 1;
         }
