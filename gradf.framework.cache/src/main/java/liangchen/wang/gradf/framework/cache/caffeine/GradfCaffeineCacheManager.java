@@ -1,6 +1,5 @@
 package liangchen.wang.gradf.framework.cache.caffeine;
 
-import com.github.benmanes.caffeine.cache.Caffeine;
 import liangchen.wang.gradf.framework.cache.primary.CacheNameResolver;
 import liangchen.wang.gradf.framework.cache.primary.GradfCache;
 import liangchen.wang.gradf.framework.cache.primary.GradfCacheManager;
@@ -28,7 +27,7 @@ public class GradfCaffeineCacheManager implements GradfCacheManager {
         String md5Name = md5Name(name);
         try {
             return LocalLockUtil.INSTANCE.readWriteInReadWriteLock(md5Name, () -> this.cacheMap.get(md5Name), () -> {
-                GradfCaffeineCache newCache = obtainCaffeineCache(md5Name, timeUnit, ttl);
+                GradfCaffeineCache newCache = obtainCaffeineCache(md5Name, ttl, timeUnit);
                 this.cacheMap.put(md5Name, newCache);
                 return newCache;
             });
@@ -69,12 +68,7 @@ public class GradfCaffeineCacheManager implements GradfCacheManager {
         return name;
     }
 
-    private GradfCaffeineCache obtainCaffeineCache(String name, TimeUnit timeUnit, long ttl) {
-        Caffeine<Object, Object> cacheBuilder = Caffeine.newBuilder();
-        if (ttl > 0) {
-            cacheBuilder.expireAfterWrite(ttl, timeUnit);
-        }
-        com.github.benmanes.caffeine.cache.Cache<Object, Object> nativeCaffeineCache = cacheBuilder.build();
-        return new GradfCaffeineCache(name, nativeCaffeineCache);
+    private GradfCaffeineCache obtainCaffeineCache(String name, long ttl, TimeUnit timeUnit) {
+        return new GradfCaffeineCache(name, true, ttl, timeUnit);
     }
 }

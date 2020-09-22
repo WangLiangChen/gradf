@@ -29,42 +29,35 @@ public class LocalRedisCache extends AbstractValueAdaptingCache {
     private static final Logger logger = LoggerFactory.getLogger(LocalRedisCache.class);
     private final String name;
     private final String rawName;
-    private final TimeUnit timeUnit;
+    private final boolean allowNullValues;
     private final long ttl;
+    private final TimeUnit timeUnit;
+    private final StringRedisTemplate stringRedisTemplate;
     private final GradfCache localCache;
     private final RedisCache redisCache;
-    private final StringRedisTemplate stringRedisTemplate;
 
-    LocalRedisCache(String name, String rawName, TimeUnit timeUnit, long ttl, boolean allowNullValues, StringRedisTemplate stringRedisTemplate) {
+    LocalRedisCache(String name, String rawName, boolean allowNullValues, long ttl, TimeUnit timeUnit, StringRedisTemplate stringRedisTemplate) {
         super(allowNullValues);
-        this.rawName = rawName;
         this.name = name;
-        this.timeUnit = timeUnit;
+        this.rawName = rawName;
+        this.allowNullValues = allowNullValues;
         this.ttl = ttl;
+        this.timeUnit = timeUnit;
         this.stringRedisTemplate = stringRedisTemplate;
         localCache = obtainLocalCache();
         redisCache = obtainRedisCache();
-    }
-
-
-    LocalRedisCache(String name, String rawName, TimeUnit timeUnit, long ttl, boolean allowNullValues) {
-        this(name, rawName, timeUnit, ttl, allowNullValues, null);
-    }
-
-    LocalRedisCache(String name, String rawName, TimeUnit timeUnit, long ttl) {
-        this(name, rawName, timeUnit, ttl, true);
     }
 
     @Override
     public void put(Object key, Object value) {
         Object md5Key = md5Key(key);
         if (ClusterStatus.INSTANCE.isRedisEnable()) {
-            redisCache.putKey(md5Key, key);
+            redisCache.putKey(String.valueOf(md5Key), String.valueOf(key));
             logger.debug("写入RedisCache,rawName:{},name:{},rawKey:{},key:{},value:{}", rawName, name, key, md5Key, value);
             redisCache.put(md5Key, value);
         }
-        localCache.putKey(md5Key, key);
-        logger.debug("写入CaffeineCache,rawName:{},name:{},rawKey:{},key:{},value:{}", rawName, name, key, md5Key, value);
+        localCache.putKey(String.valueOf(md5Key), String.valueOf(key));
+        logger.debug("写入LocalCache,rawName:{},name:{},rawKey:{},key:{},value:{}", rawName, name, key, md5Key, value);
         localCache.put(md5Key, value);
     }
 
@@ -72,7 +65,7 @@ public class LocalRedisCache extends AbstractValueAdaptingCache {
     public ValueWrapper putIfAbsent(Object key, Object value) {
         Object md5Key = md5Key(key);
         if (ClusterStatus.INSTANCE.isRedisEnable()) {
-            redisCache.putKey(md5Key, key);
+            redisCache.putKey(String.valueOf(md5Key), String.valueOf(key));
             logger.debug("写入RedisCache,rawName:{},name:{},OriginalKey:{},Key:{},value:{}", rawName, name, key, md5Key, value);
             ValueWrapper valueWrapper = redisCache.putIfAbsent(md5Key, value);
             // 已存在,不写入,直接返回
@@ -80,13 +73,13 @@ public class LocalRedisCache extends AbstractValueAdaptingCache {
                 return valueWrapper;
             }
             // 直接写入本地缓存
-            localCache.putKey(md5Key, key);
-            logger.debug("写入CaffeineCache,rawName:{},name:{},OriginalKey:{},Key:{},value:{}", rawName, name, key, md5Key, value);
+            localCache.putKey(String.valueOf(md5Key), String.valueOf(key));
+            logger.debug("写入LocalCache,rawName:{},name:{},OriginalKey:{},Key:{},value:{}", rawName, name, key, md5Key, value);
             localCache.put(md5Key, value);
             return null;
         }
-        localCache.putKey(md5Key, key);
-        logger.debug("写入CaffeineCache,rawName:{},name:{},OriginalKey:{},Key:{},value:{}", rawName, name, key, md5Key, value);
+        localCache.putKey(String.valueOf(md5Key), String.valueOf(key));
+        logger.debug("写入LocalCache,rawName:{},name:{},OriginalKey:{},Key:{},value:{}", rawName, name, key, md5Key, value);
         ValueWrapper valueWrapper = localCache.putIfAbsent(md5Key, value);
         return valueWrapper;
     }
@@ -94,7 +87,7 @@ public class LocalRedisCache extends AbstractValueAdaptingCache {
     @Override
     public ValueWrapper get(Object key) {
         Object md5Key = md5Key(key);
-        if (localCache.containsKey(md5Key)) {
+        if (localCache.containsKey(String.valueOf(md5Key))) {
             return getFromLocal(md5Key, key);
         }
         return getFromRemote(md5Key, key);
@@ -112,7 +105,7 @@ public class LocalRedisCache extends AbstractValueAdaptingCache {
     @Override
     public <T> T get(Object key, Callable<T> valueLoader) {
         Object md5Key = md5Key(key);
-        if (localCache.containsKey(md5Key)) {
+        if (localCache.containsKey(String.valueOf(md5Key))) {
             return getFromLocal(md5Key, key, valueLoader);
         }
         return getFromRemote(md5Key, key, valueLoader);
@@ -132,13 +125,13 @@ public class LocalRedisCache extends AbstractValueAdaptingCache {
 
     public void evict(Object key, Consumer<CacheMessage> consumer) {
         Object md5Key = md5Key(key);
-        localCache.evictKey(md5Key);
+        localCache.evictKey(String.valueOf(md5Key));
         logger.debug("清除localCache,rawName:{},name:{},OriginalKey:{},Key:{}", rawName, name, key, md5Key);
         localCache.evict(md5Key);
         if (!ClusterStatus.INSTANCE.isRedisEnable()) {
             return;
         }
-        redisCache.evictKey(md5Key);
+        redisCache.evictKey(String.valueOf(md5Key));
         logger.debug("清除redisCache,rawName:{},name:{},OriginalKey:{},Key:{}", rawName, name, key, md5Key);
         redisCache.evict(md5Key);
         if (null != consumer) {
@@ -180,7 +173,7 @@ public class LocalRedisCache extends AbstractValueAdaptingCache {
 
     public void evictLocal(Object key) {
         logger.debug("根据Redis消息,清除localCache,rawName:{},name:{},Key:{}", rawName, name, key);
-        localCache.evictKey(key);
+        localCache.evictKey(String.valueOf(key));
         localCache.evict(key);
     }
 
@@ -189,7 +182,7 @@ public class LocalRedisCache extends AbstractValueAdaptingCache {
         localCache.clear();
     }
 
-    public Set<Object> keys() {
+    public Set<String> keys() {
         if (ClusterStatus.INSTANCE.isRedisEnable()) {
             return redisCache.keys();
         }
@@ -213,12 +206,7 @@ public class LocalRedisCache extends AbstractValueAdaptingCache {
     }
 
     private GradfCache obtainLocalCache() {
-        Caffeine<Object, Object> cacheBuilder = Caffeine.newBuilder();
-        if (ttl > 0) {
-            cacheBuilder.expireAfterWrite(ttl, timeUnit);
-        }
-        com.github.benmanes.caffeine.cache.Cache<Object, Object> nativeCaffeineCache = cacheBuilder.build();
-        return new GradfCaffeineCache(name, nativeCaffeineCache);
+        return new GradfCaffeineCache(name, allowNullValues, ttl, timeUnit);
     }
 
     private RedisCache obtainRedisCache() {
@@ -239,7 +227,7 @@ public class LocalRedisCache extends AbstractValueAdaptingCache {
     }
 
     private ValueWrapper getFromLocal(Object key, Object rawKey) {
-        if (!localCache.containsKey(key)) {
+        if (!localCache.containsKey(String.valueOf(key))) {
             return null;
         }
         ValueWrapper valueWrapper = localCache.get(key);
@@ -248,7 +236,7 @@ public class LocalRedisCache extends AbstractValueAdaptingCache {
     }
 
     private ValueWrapper getFromRemote(Object key, Object rawKey) {
-        if (!ClusterStatus.INSTANCE.isRedisEnable() || !redisCache.containsKey(key)) {
+        if (!ClusterStatus.INSTANCE.isRedisEnable() || !redisCache.containsKey(String.valueOf(key))) {
             return null;
         }
         ValueWrapper valueWrapper = redisCache.get(key);
@@ -263,7 +251,7 @@ public class LocalRedisCache extends AbstractValueAdaptingCache {
     }
 
     private <T> T getFromLocal(Object key, Object rawKey, Callable<T> valueLoader) {
-        if (!localCache.containsKey(key)) {
+        if (!localCache.containsKey(String.valueOf(key))) {
             return null;
         }
         T value = localCache.get(rawKey, valueLoader);
@@ -272,7 +260,7 @@ public class LocalRedisCache extends AbstractValueAdaptingCache {
     }
 
     private <T> T getFromRemote(Object key, Object rawKey, Callable<T> valueLoader) {
-        if (!ClusterStatus.INSTANCE.isRedisEnable() || !redisCache.containsKey(key)) {
+        if (!ClusterStatus.INSTANCE.isRedisEnable() || !redisCache.containsKey(String.valueOf(key))) {
             return null;
         }
         T value = redisCache.get(key, valueLoader);
