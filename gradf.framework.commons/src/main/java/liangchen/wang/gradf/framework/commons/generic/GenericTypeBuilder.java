@@ -116,6 +116,6 @@ public class GenericTypeBuilder {
         if (args.isEmpty()) {
             return raw;
         }
-        return new ParameterizedTypeImpl(raw, args.toArray(new Type[args.size()]), null);
+        return new GradfParameterizedType(raw, args.toArray(new Type[args.size()]), null);
     }
 }

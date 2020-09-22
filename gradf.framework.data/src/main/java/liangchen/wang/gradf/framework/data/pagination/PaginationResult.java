@@ -94,6 +94,6 @@ public class PaginationResult<E> {
 
     @Override
     public String toString() {
-        return JsonUtil.INSTANCE.toJSONString(this);
+        return JsonUtil.INSTANCE.toJsonString(this);
     }
 }

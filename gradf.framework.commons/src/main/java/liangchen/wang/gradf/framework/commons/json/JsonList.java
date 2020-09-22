@@ -80,7 +80,7 @@ public class JsonList extends Json implements List<Object>, Cloneable, RandomAcc
         List<T> list = new ArrayList<>(this.list.size());
 
         for (Object e : this.list) {
-            String jsonString = JsonUtil.INSTANCE.toJSONString(e);
+            String jsonString = JsonUtil.INSTANCE.toJsonString(e);
             T t = JsonUtil.INSTANCE.parseObject(jsonString, clazz);
             list.add(t);
         }
@@ -88,7 +88,7 @@ public class JsonList extends Json implements List<Object>, Cloneable, RandomAcc
     }
 
     public String toJSONString() {
-        return JsonUtil.INSTANCE.toJSONString(this.list);
+        return JsonUtil.INSTANCE.toJsonString(this.list);
     }
 
     public int size() {

@@ -16,17 +16,17 @@ import java.util.Objects;
  * Type listType = new ParameterizedTypeImpl(List.class, new Class[]{clazz});
  * Type type = new ParameterizedTypeImpl(XXX.class, new Type[]{listType});
  */
-public class ParameterizedTypeImpl implements ParameterizedType {
+public class GradfParameterizedType implements ParameterizedType {
     private final Class raw;
     private final Type[] args;
     private final Type owner;
 
-    public ParameterizedTypeImpl(Class raw, Type[] args) {
+    public GradfParameterizedType(Class raw, Type[] args) {
         this(raw, args, null);
 
     }
 
-    public ParameterizedTypeImpl(Class raw, Type[] args, Type owner) {
+    public GradfParameterizedType(Class raw, Type[] args, Type owner) {
         this.raw = raw;
         this.args = args != null ? args : new Type[0];
         this.owner = owner;
@@ -112,7 +112,7 @@ public class ParameterizedTypeImpl implements ParameterizedType {
             return false;
         }
 
-        ParameterizedTypeImpl that = (ParameterizedTypeImpl) o;
+        GradfParameterizedType that = (GradfParameterizedType) o;
 
         if (!raw.equals(that.raw)) {
             return false;

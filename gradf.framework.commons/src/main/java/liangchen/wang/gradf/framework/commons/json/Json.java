@@ -5,6 +5,6 @@ package liangchen.wang.gradf.framework.commons.json;
  */
 public abstract class Json {
     public static String toJSONString(Object object) {
-        return JsonUtil.INSTANCE.toJSONString(object);
+        return JsonUtil.INSTANCE.toJsonString(object);
     }
 }

@@ -48,14 +48,14 @@ public class LoggerAspect {
             log.setLength(0);
             log.append("方法参数：");
             for (int i = 0; i < args.length; i++) {
-                log.append(System.getProperty("line.separator")).append("[").append(parameterTypes[i].getSimpleName()).append(" ").append(parameterNames[i]).append("]:").append(JsonUtil.INSTANCE.toJSONStringWithTransientField(args[i]));
+                log.append(System.getProperty("line.separator")).append("[").append(parameterTypes[i].getSimpleName()).append(" ").append(parameterNames[i]).append("]:").append(JsonUtil.INSTANCE.toJsonStringWithTransientField(args[i]));
             }
             outputLog(level, log.toString());
         }
         Class<?> returnType = method.getReturnType();
         Object retVal = point.proceed();
         log.setLength(0);
-        log.append("返回值[").append(returnType.getSimpleName()).append("]:").append(JsonUtil.INSTANCE.toJSONString(retVal));
+        log.append("返回值[").append(returnType.getSimpleName()).append("]:").append(JsonUtil.INSTANCE.toJsonString(retVal));
         outputLog(level, log.toString());
 
         time = System.currentTimeMillis() - time;

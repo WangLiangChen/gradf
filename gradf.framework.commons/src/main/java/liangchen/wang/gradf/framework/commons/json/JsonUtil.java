@@ -30,7 +30,7 @@ public enum JsonUtil {
         return resultMap;
     }).create();
 
-    public String toJSONStringWithTransientField(Object object) {
+    public String toJsonStringWithTransientField(Object object) {
         if (null == object) {
             return null;
         }
@@ -38,7 +38,7 @@ public enum JsonUtil {
         return gson.toJson(object);
     }
 
-    public String toJSONString(Object object) {
+    public String toJsonString(Object object) {
         if (null == object) {
             return null;
         }
@@ -49,107 +49,69 @@ public enum JsonUtil {
         return gson.fromJson(jsonString, clazz);
     }
 
+    public <T> List<T> parseList(String jsonString, Class<T> clazz) {
+        return gson.fromJson(jsonString, TypeToken.getParameterized(List.class, clazz).getType());
+    }
+
+    public <V> Map<String, V> parseMap(String jsonString, Class<V> valueClass) {
+        Map<?, ?> map = gson.fromJson(jsonString, Map.class);
+        Map<String, V> beanMap = new HashMap<>(map.size());
+        map.forEach((k, v) -> {
+            String key = String.valueOf(k);
+            V value = gson.fromJson((JsonElement) v, valueClass);
+            beanMap.put(key, value);
+        });
+        return beanMap;
+    }
+
     public Object parseParameterizedObject(String jsonString, Type rawType, Type... types) {
         Type type = TypeToken.getParameterized(rawType, types).getType();
         return gson.fromJson(jsonString, type);
     }
 
-    public Map<String, Object> parseMap(String jsonString) {
-        if (StringUtil.INSTANCE.isBlank(jsonString)) {
-            return Collections.emptyMap();
-        }
-        JsonElement jsonElement = JsonParser.parseString(jsonString);
-        Assert.INSTANCE.isTrue(jsonElement.isJsonObject(), "Json字符串必须为JsonObject");
-        return toMap(jsonElement.getAsJsonObject());
-    }
 
-    public List<Object> parseList(String jsonString) {
-        if (StringUtil.INSTANCE.isBlank(jsonString)) {
-            return Collections.emptyList();
-        }
-        JsonElement jsonElement = JsonParser.parseString(jsonString);
-        Assert.INSTANCE.isTrue(jsonElement.isJsonArray(), "Json字符串必须为JsonArray");
-        return toList(jsonElement.getAsJsonArray());
-    }
-
-    public JsonMap parseJSONMap(String jsonString) {
+    public JsonMap parseJsonMap(String jsonString) {
         if (StringUtil.INSTANCE.isBlank(jsonString)) {
             return new JsonMap();
         }
-        JsonElement jsonElement = JsonParser.parseString(jsonString);
-        Assert.INSTANCE.isTrue(jsonElement.isJsonObject(), "Json字符串必须为JsonObject");
-        return toJSONMap(jsonElement.getAsJsonObject());
+        JsonObject jsonObject = gson.fromJson(jsonString, JsonObject.class);
+        return toJsonMap(jsonObject);
     }
 
-    public JsonList parseJSONList(String jsonString) {
+    public JsonList parseJsonList(String jsonString) {
         if (StringUtil.INSTANCE.isBlank(jsonString)) {
             return new JsonList();
         }
-        JsonElement jsonElement = JsonParser.parseString(jsonString);
-        Assert.INSTANCE.isTrue(jsonElement.isJsonArray(), "Json字符串必须为JsonArray");
-        return toJSONList(jsonElement.getAsJsonArray());
+        JsonArray jsonArray = gson.fromJson(jsonString, JsonArray.class);
+        return toJsonList(jsonArray);
     }
 
-
-    private List<Object> toList(JsonArray json) {
+    private JsonList toJsonList(JsonArray jsonArray) {
         List<Object> list = new ArrayList<>();
-        json.forEach(e -> {
+        jsonArray.forEach(e -> {
             if (e.isJsonArray()) {
-                list.add(toList((JsonArray) e));
+                list.add(toJsonList((JsonArray) e));
             } else if (e.isJsonObject()) {
-                list.add(toMap((JsonObject) e));
+                list.add(toJsonMap((JsonObject) e));
             } else if (e.isJsonPrimitive()) {
-                list.add(e.getAsString());
-            }
-        });
-        return list;
-    }
-
-    private Map<String, Object> toMap(JsonObject json) {
-        Map<String, Object> map = new HashMap<>();
-        Set<Map.Entry<String, JsonElement>> entrySet = json.entrySet();
-        entrySet.stream().forEach(e -> {
-            String key = e.getKey();
-            JsonElement value = e.getValue();
-            if (value.isJsonObject()) {
-                map.put(key, toMap((JsonObject) value));
-            } else if (value.isJsonArray()) {
-                map.put(key, toList((JsonArray) value));
-            } else if (value.isJsonPrimitive()) {
-                map.put(key, value.getAsString());
-            } else {
-                map.put(key, null);
-            }
-        });
-        return map;
-    }
-
-    private JsonList toJSONList(JsonArray json) {
-        List<Object> list = new ArrayList<>();
-        json.forEach(e -> {
-            if (e.isJsonArray()) {
-                list.add(toJSONList((JsonArray) e));
-            } else if (e.isJsonObject()) {
-                list.add(toJSONMap((JsonObject) e));
-            } else if (e.isJsonPrimitive()) {
-                list.add(e.getAsString());
+                list.add(e.getAsJsonPrimitive());
             }
         });
         return new JsonList(list);
     }
 
-    private JsonMap toJSONMap(JsonObject json) {
+    private JsonMap toJsonMap(JsonObject jsonObject) {
         Map<String, Object> map = new HashMap<>();
-        Set<Map.Entry<String, JsonElement>> entrySet = json.entrySet();
+        Set<Map.Entry<String, JsonElement>> entrySet = jsonObject.entrySet();
         entrySet.stream().forEach(e -> {
             String key = e.getKey();
             JsonElement value = e.getValue();
             if (value.isJsonObject()) {
-                map.put(key, toJSONMap((JsonObject) value));
+                map.put(key, toJsonMap((JsonObject) value));
             } else if (value.isJsonArray()) {
-                map.put(key, toJSONList((JsonArray) value));
+                map.put(key, toJsonList((JsonArray) value));
             } else if (value.isJsonPrimitive()) {
-                map.put(key, value.getAsString());
+                map.put(key, value.getAsJsonPrimitive());
             } else {
                 map.put(key, null);
             }

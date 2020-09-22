@@ -181,7 +181,7 @@ public abstract class EnhancedObject implements Serializable, Cloneable {
 
     @Override
     public String toString() {
-        return JsonUtil.INSTANCE.toJSONString(this);
+        return JsonUtil.INSTANCE.toJsonString(this);
     }
 
     @Override

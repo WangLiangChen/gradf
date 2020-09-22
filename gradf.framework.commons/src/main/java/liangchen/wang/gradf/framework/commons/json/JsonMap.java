@@ -126,6 +126,13 @@ public class JsonMap extends Json implements Map<String, Object>, Cloneable, Ser
         return value.booleanValue();
     }
 
+    public <T> T getObject(String key, Class<T> clazz) {
+        Object object = get(key);
+        // 使用Json转换
+        String mapJson = JsonUtil.INSTANCE.toJsonString(object);
+        return JsonUtil.INSTANCE.parseObject(mapJson, clazz);
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T toJavaObject(Class<T> clazz) {
         if (clazz == Map.class || clazz == JsonMap.class) {
@@ -136,22 +143,25 @@ public class JsonMap extends Json implements Map<String, Object>, Cloneable, Ser
             return (T) this;
         }
         // 使用Json转换
-        String mapJson = JsonUtil.INSTANCE.toJSONString(this.map);
+        String mapJson = JsonUtil.INSTANCE.toJsonString(this.map);
         return JsonUtil.INSTANCE.parseObject(mapJson, clazz);
     }
 
     public String toJSONString() {
-        return JsonUtil.INSTANCE.toJSONString(this.map);
+        return JsonUtil.INSTANCE.toJsonString(this.map);
     }
 
+    @Override
     public int size() {
         return map.size();
     }
 
+    @Override
     public boolean isEmpty() {
         return map.isEmpty();
     }
 
+    @Override
     public boolean containsKey(Object key) {
         boolean result = map.containsKey(key);
         if ((!result) && key instanceof Number) {
@@ -160,10 +170,12 @@ public class JsonMap extends Json implements Map<String, Object>, Cloneable, Ser
         return result;
     }
 
+    @Override
     public boolean containsValue(Object value) {
         return map.containsValue(value);
     }
 
+    @Override
     public Object get(Object key) {
         Object val = map.get(key);
         if (val == null && key instanceof Number) {
@@ -172,30 +184,37 @@ public class JsonMap extends Json implements Map<String, Object>, Cloneable, Ser
         return val;
     }
 
+    @Override
     public Object put(String key, Object value) {
         return map.put(key, value);
     }
 
+    @Override
     public void putAll(Map<? extends String, ? extends Object> m) {
         map.putAll(m);
     }
 
+    @Override
     public void clear() {
         map.clear();
     }
 
+    @Override
     public Object remove(Object key) {
         return map.remove(key);
     }
 
+    @Override
     public Set<String> keySet() {
         return map.keySet();
     }
 
+    @Override
     public Collection<Object> values() {
         return map.values();
     }
 
+    @Override
     public Set<Entry<String, Object>> entrySet() {
         return map.entrySet();
     }
@@ -205,12 +224,13 @@ public class JsonMap extends Json implements Map<String, Object>, Cloneable, Ser
         return new JsonMap(map instanceof LinkedHashMap ? new LinkedHashMap<String, Object>(map) : new HashMap<String, Object>(map));
     }
 
+    @Override
     public boolean equals(Object obj) {
         return this.map.equals(obj);
     }
 
+    @Override
     public int hashCode() {
         return this.map.hashCode();
     }
-
 }

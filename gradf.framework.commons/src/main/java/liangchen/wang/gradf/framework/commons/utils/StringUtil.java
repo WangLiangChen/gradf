@@ -79,4 +79,11 @@ public enum StringUtil {
         chars[0] = first;
         return new String(chars);
     }
+
+    public String clearBlank(String source) {
+        if (null == source) {
+            return null;
+        }
+        return source.replaceAll("\\s", "");
+    }
 }

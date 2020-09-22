@@ -95,7 +95,7 @@ public enum LocalLockUtil {
         }
     }
 
-    public <R> R readWriteInReadWriteLock(String key, Reader<R> reader, Writer<R> writer) throws Throwable {
+    public <R> R readWriteInReadWriteLock(String key, Reader<R> reader, Writer<R> writer) throws Exception {
         //第一级不加锁读取
         R result = reader.read();
         if (result != null) {
@@ -128,7 +128,7 @@ public enum LocalLockUtil {
                 }
                 logger.debug("key:{},第三级加写锁,验证读取失败", key);
                 result = writer.write();
-                logger.debug("key:{},第三级写锁:{}", key, result);
+                logger.debug("key:{},第三级加写锁，写入成功:{}", key, result);
                 return result;
             } finally {
                 //锁降级遵循 先获取写锁，然后获取读锁，然后释放写锁，再释放读锁.
