@@ -11,7 +11,7 @@
         <module>gradf.framework.web</module>
         <module>gradf.framework.data</module>
         <module>gradf.framework.cache</module>
-        <module>../example</module>
+        <module>gradf.framework.cluster</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -63,6 +63,11 @@
             <dependency>
                 <groupId>liangchen.wang</groupId>
                 <artifactId>gradf.framework.cache</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>liangchen.wang</groupId>
+                <artifactId>gradf.framework.cluster</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>
