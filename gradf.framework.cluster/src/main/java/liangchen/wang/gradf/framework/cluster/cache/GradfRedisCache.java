@@ -1,45 +1,49 @@
-package liangchen.wang.gradf.framework.cache.caffeine;
+package liangchen.wang.gradf.framework.cluster.cache;
 
 import liangchen.wang.gradf.framework.cache.primary.GradfCache;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.caffeine.CaffeineCache;
+import org.springframework.data.redis.cache.RedisCache;
+import org.springframework.data.redis.core.BoundSetOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * 扩展补充spring的RedisCache
+ *
  * @author LiangChen.Wang
  */
-public class GradfCaffeineCache extends CaffeineCache implements GradfCache {
-    private final static Logger logger = LoggerFactory.getLogger(GradfCaffeineCache.class);
+public class GradfRedisCache extends RedisCache implements GradfCache {
+    private final static Logger logger = LoggerFactory.getLogger(GradfRedisCache.class);
     private final String name;
-    private final Set<Object> keys;
+    private final BoundSetOperations<Object, Object> boundSetOperations;
 
-    public GradfCaffeineCache(String name, boolean allowNullValues, long ttl, TimeUnit timeUnit) {
-        super(name, CaffeineCacheCreator.INSTANCE.nativeCaffeineCache(ttl, timeUnit), allowNullValues);
+    public GradfRedisCache(String name, long ttl, TimeUnit timeUnit, RedisTemplate<Object, Object> redisTemplate) {
+        super(name, RedisCacheCreator.INSTANCE.cacheWriter(redisTemplate), RedisCacheCreator.INSTANCE.cacheConfig(ttl, timeUnit));
         this.name = name;
-        this.keys = new ConcurrentSkipListSet<>();
+        String keys = this.createCacheKey("keys");
+        this.boundSetOperations = redisTemplate.boundSetOps(keys);
         logger.debug(loggerPrefix() + "is created,ttl:{}ms", name, timeUnit.toMillis(ttl));
     }
 
     @Override
     public Set<Object> keys() {
-        return keys;
+        return boundSetOperations.members();
     }
 
     @Override
     public boolean containsKey(Object key) {
-        Assert.INSTANCE.notNull(key, "key不能null");
-        return keys.contains(key);
+        Assert.INSTANCE.notNull(key, "key不能为null");
+        return boundSetOperations.isMember(key);
     }
 
     @Override
-    public <T> T get(Object key, Callable<T> callable) {
-        T t = super.get(key, callable);
+    public synchronized <T> T get(Object key, Callable<T> valueLoader) {
+        T t = super.get(key, valueLoader);
         if (null == t) {
             logger.debug(loggerPrefix() + ",get,key:{},missed", name, key);
             return null;
@@ -73,7 +77,7 @@ public class GradfCaffeineCache extends CaffeineCache implements GradfCache {
     @Override
     public void put(Object key, Object value) {
         super.put(key, value);
-        keys.add(key);
+        boundSetOperations.add(key);
         logger.debug(loggerPrefix() + ",put,key:{},value:{}", name, key, value);
     }
 
@@ -81,7 +85,7 @@ public class GradfCaffeineCache extends CaffeineCache implements GradfCache {
     public ValueWrapper putIfAbsent(Object key, Object value) {
         ValueWrapper valueWrapper = super.putIfAbsent(key, value);
         if (valueWrapper == null) {
-            keys.add(key);
+            boundSetOperations.add(key);
             logger.debug(loggerPrefix() + ",putIfAbsent,key:{},value:{},data is absent,put it", name, key, value);
         }
         logger.debug(loggerPrefix() + ",putIfAbsent key:{},value:{},data is present,abort it,existing:{} ", name, key, value, valueWrapper.get());
@@ -91,7 +95,7 @@ public class GradfCaffeineCache extends CaffeineCache implements GradfCache {
     @Override
     public void evict(Object key) {
         super.evict(key);
-        keys.remove(key);
+        boundSetOperations.remove(key);
         logger.debug(loggerPrefix() + ",evict,key:{}", name, key);
     }
 
@@ -99,7 +103,7 @@ public class GradfCaffeineCache extends CaffeineCache implements GradfCache {
     public boolean evictIfPresent(Object key) {
         boolean present = super.evictIfPresent(key);
         if (present) {
-            keys.remove(key);
+            boundSetOperations.remove(key);
         }
         logger.debug(loggerPrefix() + ",evictIfPresent,key:{},present:{}", name, key, present);
         return present;
@@ -108,7 +112,8 @@ public class GradfCaffeineCache extends CaffeineCache implements GradfCache {
     @Override
     public void clear() {
         super.clear();
-        keys.clear();
+        Set<Object> members = boundSetOperations.members();
+        boundSetOperations.remove(members.toArray());
         logger.debug(loggerPrefix() + ",clear", name);
     }
 
@@ -120,6 +125,6 @@ public class GradfCaffeineCache extends CaffeineCache implements GradfCache {
     }
 
     private String loggerPrefix() {
-        return "GradfCaffeineCache,name:{}";
+        return "GradfRedisCache,name:{}";
     }
 }

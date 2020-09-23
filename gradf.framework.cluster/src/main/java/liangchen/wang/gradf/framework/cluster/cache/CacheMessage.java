@@ -8,10 +8,6 @@ public class CacheMessage {
     private CacheAction action;
     private Object key;
 
-    public enum CacheAction {
-        clear, put, evict
-    }
-
     public CacheAction getAction() {
         return action;
     }
@@ -34,5 +30,10 @@ public class CacheMessage {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    enum CacheAction {
+        //
+        clear, put, evict
     }
 }

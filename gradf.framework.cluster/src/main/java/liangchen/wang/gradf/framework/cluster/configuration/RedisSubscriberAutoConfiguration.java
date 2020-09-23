@@ -1,7 +1,7 @@
 package liangchen.wang.gradf.framework.cluster.configuration;
 
 
-import liangchen.wang.crdf.framework.cluster.cache.CaffeineRedisCacheManager;
+import liangchen.wang.gradf.framework.cluster.cache.LocalRedisCacheManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.context.annotation.Bean;
@@ -21,8 +21,8 @@ public class RedisSubscriberAutoConfiguration extends CachingConfigurerSupport {
     public static final String CACHE_SYNCHRONIZATION_CHANNEL = "CrdfCacheSynchronization";
 
     @Bean
-    public RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory redisConnectionFactory, Executor executor, CaffeineRedisCacheManager caffeineRedisCacheManager) {
-        MessageListenerAdapter messageListenerAdapter = new MessageListenerAdapter(caffeineRedisCacheManager, "receiveRedisMessage");
+    public RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory redisConnectionFactory, Executor executor, LocalRedisCacheManager localRedisCacheManager) {
+        MessageListenerAdapter messageListenerAdapter = new MessageListenerAdapter(localRedisCacheManager, "receiveRedisMessage");
         messageListenerAdapter.setStringSerializer(new StringRedisSerializer());
         //因为不是spring的bean，所以要显式的调用afterPropertiesSet
         messageListenerAdapter.afterPropertiesSet();

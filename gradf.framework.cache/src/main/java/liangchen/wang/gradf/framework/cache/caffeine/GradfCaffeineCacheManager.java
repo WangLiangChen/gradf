@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author LiangChen.Wang 2020/9/21
  */
-@ConditionalOnMissingBean(GradfCacheManager.class)
 public class GradfCaffeineCacheManager implements GradfCacheManager {
     private final Map<String, GradfCaffeineCache> cacheMap = new ConcurrentHashMap<>(16);
 

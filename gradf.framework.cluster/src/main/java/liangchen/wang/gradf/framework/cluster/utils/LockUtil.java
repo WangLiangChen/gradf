@@ -1,10 +1,15 @@
 package liangchen.wang.gradf.framework.cluster.utils;
 
-import liangchen.wang.crdf.framework.cluster.enumeration.ClusterStatus;
-import liangchen.wang.crdf.framework.data.utils.DbLockUtil;
-import liangchen.wang.crdf.framework.springboot.api.ILock;
 
+import liangchen.wang.gradf.framework.cluster.enumeration.ClusterStatus;
+import liangchen.wang.gradf.framework.data.api.ILock;
+import liangchen.wang.gradf.framework.data.utils.DbLockUtil;
+
+/**
+ * @author LiangChen.Wang
+ */
 public enum LockUtil {
+    //
     INSTANCE;
 
     public ILock obtainLock() {

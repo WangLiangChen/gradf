@@ -1,6 +1,7 @@
 package liangchen.wang.gradf.framework.cluster.configuration;
 
-import liangchen.wang.crdf.framework.cluster.jgroups.BroadcastingCluster;
+
+import liangchen.wang.gradf.framework.cluster.jgroups.BroadcastingCluster;
 
 import javax.annotation.PostConstruct;
 

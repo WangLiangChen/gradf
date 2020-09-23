@@ -1,16 +1,19 @@
 package liangchen.wang.gradf.framework.cluster.utils;
 
-import liangchen.wang.crdf.framework.commons.validator.Assert;
-import liangchen.wang.crdf.framework.commons.validator.AssertLevel;
-import liangchen.wang.crdf.framework.springboot.api.ILock;
-import liangchen.wang.crdf.framework.springboot.context.BeanLoader;
+import liangchen.wang.gradf.framework.commons.validator.Assert;
+import liangchen.wang.gradf.framework.data.api.ILock;
+import liangchen.wang.gradf.framework.springboot.context.BeanLoader;
 
+/**
+ * @author LiangChen.Wang
+ */
 public enum RedisLockUtil {
+    //
     INSTANCE;
 
     public ILock obtainLock() {
         ILock lock = BeanLoader.getBean("Crdf_Distributed_RedisLock");
-        Assert.INSTANCE.notNull(lock, AssertLevel.INFO, "Redis未初始化");
+        Assert.INSTANCE.notNull(lock, "Redis未初始化");
         return lock;
     }
 

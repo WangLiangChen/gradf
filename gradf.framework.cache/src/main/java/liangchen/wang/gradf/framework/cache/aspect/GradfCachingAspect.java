@@ -8,6 +8,7 @@ import liangchen.wang.gradf.framework.cache.enumeration.MethodType;
 import liangchen.wang.gradf.framework.cache.primary.DefaultKeyGenerator;
 import liangchen.wang.gradf.framework.cache.primary.GradfCache;
 import liangchen.wang.gradf.framework.cache.primary.GradfCacheManager;
+import liangchen.wang.gradf.framework.commons.digest.HashUtil;
 import liangchen.wang.gradf.framework.commons.enumeration.Symbol;
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import liangchen.wang.gradf.framework.commons.exception.InfoException;
@@ -318,8 +319,9 @@ public class GradfCachingAspect {
         if (StringUtil.INSTANCE.isBlank(cacheName)) {
             return clazz.getName();
         }
-        logger.debug("cacheName:{}", cacheName);
-        return cacheName;
+        String md5 = md5(cacheName);
+        logger.debug("cacheName:{},md5:{}", cacheName, md5);
+        return md5;
     }
 
     private String resolveKey(String key, Object target, Method method, String[] parameterNames, Object[] args) {
@@ -327,8 +329,9 @@ public class GradfCachingAspect {
             DefaultKeyGenerator keyGenerator = new DefaultKeyGenerator();
             Object object = keyGenerator.generate(target, method, args);
             key = String.valueOf(object);
-            logger.debug("cacheKey:{}", key);
-            return key;
+            String md5 = md5(key);
+            logger.debug("cacheKey:{},md5:{}", key, md5);
+            return md5;
         }
 
         ExpressionParser expressionParser = new SpelExpressionParser();
@@ -339,8 +342,9 @@ public class GradfCachingAspect {
         //这里key必须为spel格式，纯字符串格式：'WangLiangChen'
         Expression expression = expressionParser.parseExpression(key);
         key = expression.getValue(evaluationContext, String.class);
-        logger.debug("cacheKey:{}", key);
-        return key;
+        String md5 = md5(key);
+        logger.debug("cacheKey:{},md5:{}", key, md5);
+        return md5;
     }
 
     private MethodType cachedMethodType(String className, String methodName, GradfAutoCacheable autoCacheable) {
@@ -385,5 +389,12 @@ public class GradfCachingAspect {
             }
         }
         return MethodType.NormalMethod;
+    }
+
+    private String md5(String string) {
+        if (string.length() > 32) {
+            return HashUtil.INSTANCE.md5Digest(string);
+        }
+        return string;
     }
 }

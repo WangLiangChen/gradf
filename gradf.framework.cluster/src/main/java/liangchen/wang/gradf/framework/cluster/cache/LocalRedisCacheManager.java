@@ -1,18 +1,18 @@
 package liangchen.wang.gradf.framework.cluster.cache;
 
-
-import liangchen.wang.crdf.framework.cache.primary.CacheNameResolver;
-import liangchen.wang.crdf.framework.commons.encryption.HashUtil;
-import liangchen.wang.crdf.framework.commons.exeception.ErrorException;
-import liangchen.wang.crdf.framework.commons.json.JSONUtil;
-import liangchen.wang.crdf.framework.commons.utils.LocalLockUtil;
-import liangchen.wang.crdf.framework.commons.utils.StringUtil;
+import liangchen.wang.gradf.framework.cache.primary.CacheNameResolver;
+import liangchen.wang.gradf.framework.cache.primary.GradfCache;
+import liangchen.wang.gradf.framework.cache.primary.GradfCacheManager;
+import liangchen.wang.gradf.framework.cluster.cache.CacheMessage.CacheAction;
+import liangchen.wang.gradf.framework.commons.exception.ErrorException;
+import liangchen.wang.gradf.framework.commons.json.JsonUtil;
+import liangchen.wang.gradf.framework.commons.lock.LocalLockUtil;
+import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.transaction.TransactionAwareCacheDecorator;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -22,38 +22,33 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author LiangChen.Wang
+ * 实现CacheManagerCustomizer接口，可以定制CacheManager参数
  */
-//实现CacheManagerCustomizer接口，可以定制CacheManager参数
-public class LocalRedisCacheManager implements CacheManager {
-    private static final Logger logger = LoggerFactory.getLogger(CaffeineRedisCacheManager.class);
-    private final Map<String, Cache> cacheMap = new HashMap<>();
+public class LocalRedisCacheManager implements GradfCacheManager {
+    private static final Logger logger = LoggerFactory.getLogger(LocalRedisCacheManager.class);
+    private final Map<String, GradfCache> cacheMap = new HashMap<>();
     private boolean transactionAware = false;
 
-    private final StringRedisTemplate stringRedisTemplate;
+    private final RedisTemplate<Object, Object> redisTemplate;
 
-    public CaffeineRedisCacheManager() {
+    public LocalRedisCacheManager() {
         this(null);
     }
 
     @SuppressWarnings("unchecked")
-    public CaffeineRedisCacheManager(StringRedisTemplate stringRedisTemplate) {
-        super();
-        this.stringRedisTemplate = stringRedisTemplate;
+    public LocalRedisCacheManager(RedisTemplate<Object, Object> redisTemplate) {
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
-    public Cache getCache(String name, TimeUnit timeUnit, long ttl) {
-        String md5Name = md5Name(name);
-        Cache cache = this.cacheMap.get(md5Name);
-        if (cache != null) {
-            return cache;
-        }
+    public GradfCache getCache(String name, TimeUnit timeUnit, long ttl) {
         try {
-            return LocalLockUtil.INSTANCE.readWriteInReadWriteLock(md5Name, () -> this.cacheMap.get(md5Name), () -> {
-                Cache newCache = new CaffeineRedisCache(md5Name, name, timeUnit, ttl, true, stringRedisTemplate);
+            return LocalLockUtil.INSTANCE.readWriteInReadWriteLock(name, () -> this.cacheMap.get(name), () -> {
+                Cache newCache = new LocalRedisCache(name, true, ttl, timeUnit, redisTemplate);
                 newCache = decorateCache(newCache);
-                this.cacheMap.put(md5Name, newCache);
-                return newCache;
+                GradfCache gradfCache = GradfCache.class.cast(newCache);
+                this.cacheMap.put(name, gradfCache);
+                return gradfCache;
             });
         } catch (Throwable t) {
             throw new ErrorException(t);
@@ -67,10 +62,9 @@ public class LocalRedisCacheManager implements CacheManager {
     }
 
     @Override
-    public Optional<Cache> getCacheIfPresent(String name) {
+    public Optional<GradfCache> getCacheIfPresent(String name) {
         CacheNameResolver cacheNameResolver = new CacheNameResolver(name);
-        String md5Name = md5Name(cacheNameResolver.getName());
-        return Optional.ofNullable(this.cacheMap.get(md5Name));
+        return Optional.ofNullable(this.cacheMap.get(cacheNameResolver.getName()));
     }
 
     @Override
@@ -88,31 +82,24 @@ public class LocalRedisCacheManager implements CacheManager {
         return (this.transactionAware ? new TransactionAwareCacheDecorator(cache) : cache);
     }
 
-    private String md5Name(String name) {
-        if (name.length() > 32) {
-            name = HashUtil.INSTANCE.md5Digest(name);
-        }
-        return name;
-    }
-
     public void receiveRedisMessage(String json) {
         logger.debug("接收到CacheMessage消息：{}", json);
         if (StringUtil.INSTANCE.isBlank(json)) {
             return;
         }
-        CacheMessage message = JSONUtil.INSTANCE.parseObject(json, CacheMessage.class);
+        CacheMessage message = JsonUtil.INSTANCE.parseObject(json, CacheMessage.class);
         String name = message.getName();
         if (StringUtil.INSTANCE.isBlank(name)) {
             logger.error("缓存名称为空");
             return;
         }
-        CaffeineRedisCache cache = (CaffeineRedisCache) this.getCache(name);
-        CacheMessage.CacheAction action = message.getAction();
+        LocalRedisCache cache = (LocalRedisCache) this.getCache(name);
+        CacheAction action = message.getAction();
         switch (action) {
-            case CacheMessage.CacheAction.clear:
+            case clear:
                 cache.clearLocal();
                 break;
-            case CacheMessage.CacheAction.evict:
+            case evict:
                 Object key = message.getKey();
                 if (null == key) {
                     logger.error("缓存Key为空");

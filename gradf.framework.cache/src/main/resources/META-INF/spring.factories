@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  liangchen.wang.gradf.framework.cache.configuration.CacheAutoConfiguration
