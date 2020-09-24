@@ -24,7 +24,8 @@ public @interface EnableGradfCaching {
             if (loaded) {
                 return new String[0];
             }
-            Printer.INSTANCE.prettyPrint("开启了缓存注解......");
+            Printer.INSTANCE.prettyPrint("@EnableGradfCaching 开启了缓存注解......");
+            Printer.INSTANCE.prettyPrint("@EnableGradfCaching 匹配的类: {}", annotationMetadata.getClassName());
             String[] imports = new String[]{GradfCachingAspect.class.getName()};
             loaded = true;
             return imports;

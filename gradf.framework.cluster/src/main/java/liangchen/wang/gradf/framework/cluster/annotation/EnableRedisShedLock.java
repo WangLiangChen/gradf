@@ -26,7 +26,8 @@ public @interface EnableRedisShedLock {
             if (loaded) {
                 return new String[0];
             }
-            Printer.INSTANCE.prettyPrint("开启了RedisShedLock注解......");
+            Printer.INSTANCE.prettyPrint("@EnableRedisShedLock 开启了RedisShedLock注解......");
+            Printer.INSTANCE.prettyPrint("@EnableRedisShedLock 匹配的类: {}", annotationMetadata.getClassName());
             String[] imports = new String[]{RedisShedLockProviderAutoConfiguration.class.getName()};
             loaded = true;
             return imports;

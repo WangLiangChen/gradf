@@ -1,5 +1,6 @@
 package liangchen.wang.gradf.framework.web.annotation;
 
+import liangchen.wang.gradf.framework.commons.utils.Printer;
 import liangchen.wang.gradf.framework.web.configuration.WebFluxAutoConfiguration;
 import liangchen.wang.gradf.framework.web.configuration.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Import;
@@ -29,13 +30,19 @@ public @interface EnableWeb {
     }
 
     class WebImportSelector implements ImportSelector {
+        private static boolean loaded = false;
 
         @Override
         public String[] selectImports(AnnotationMetadata annotationMetadata) {
+            if (loaded) {
+                return new String[0];
+            }
             Class<?> annotationType = EnableWeb.class;
             AnnotationAttributes attributes = AnnotationAttributes.fromMap(annotationMetadata.getAnnotationAttributes(annotationType.getName(), false));
             EnableWeb.WebType webType = (EnableWeb.WebType) attributes.get("webType");
-            String[] imports = null;
+            Printer.INSTANCE.prettyPrint("@EnableWeb 开启了Web模式:{}", webType.name());
+            Printer.INSTANCE.prettyPrint("@EnableWeb 匹配的类: {}", annotationMetadata.getClassName());
+            String[] imports;
             switch (webType) {
                 case WEBMVC:
                     imports = new String[]{DelegatingWebMvcConfiguration.class.getName(), WebMvcAutoConfiguration.class.getName()};
@@ -47,6 +54,7 @@ public @interface EnableWeb {
                     imports = new String[0];
                     break;
             }
+            loaded = true;
             return imports;
         }
     }

@@ -37,9 +37,9 @@ public @interface EnableJdbc {
             if (loaded) {
                 return new String[0];
             }
-            Printer.INSTANCE.prettyPrint("开启了Jdbc，尝试连接Mysql......");
+            Printer.INSTANCE.prettyPrint("@EnableJdbc 开启了Jdbc......");
+            Printer.INSTANCE.prettyPrint("@EnableJdbc 匹配的类: {}", annotationMetadata.getClassName());
             validateConnectionalbe();
-            Printer.INSTANCE.prettyPrint("连接Mysql成功");
             String[] imports = new String[]{DynamicDataSourceRegister.class.getName(), JdbcAutoConfiguration.class.getName()};
             loaded = true;
             // 设置全局jdbc状态
@@ -48,6 +48,7 @@ public @interface EnableJdbc {
         }
 
         private void validateConnectionalbe() {
+            Printer.INSTANCE.prettyPrint("尝试连接DB......");
             // 将配置分组
             Iterator<String> keys = configuration.getKeys();
             Map<String, Map<String, String>> datasourceMap = new HashMap<>();
@@ -73,6 +74,7 @@ public @interface EnableJdbc {
             datasourceMap.forEach((k, v) -> {
                 Assert.INSTANCE.isTrue(NetUtil.INSTANCE.isConnectable(v.get("host"), Integer.valueOf(v.get("port")), TIMEOUT), "{} 连接测试失败", k);
             });
+            Printer.INSTANCE.prettyPrint("DB连接测试成功......");
         }
     }
 }

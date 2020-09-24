@@ -27,7 +27,8 @@ public @interface EnableJdbcShedLock {
             if (loaded) {
                 return new String[0];
             }
-            Printer.INSTANCE.prettyPrint("开启了JdbcShedLock注解......");
+            Printer.INSTANCE.prettyPrint("@EnableJdbcShedLock 开启了JdbcShedLock注解......");
+            Printer.INSTANCE.prettyPrint("@EnableJdbcShedLock 匹配的类: {}", annotationMetadata.getClassName());
             String[] imports = new String[]{JdbcShedLockProviderAutoConfiguration.class.getName()};
             loaded = true;
             return imports;

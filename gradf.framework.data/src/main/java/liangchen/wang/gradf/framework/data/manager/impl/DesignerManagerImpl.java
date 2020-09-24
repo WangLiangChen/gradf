@@ -202,7 +202,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("    private static final " + entityName + " self = new " + entityName + "();");
         lines.add("");
         lines.add("    public static " + entityName + " newInstance() {");
-        lines.add("        return ClassBeanUtil.INSTANCE.classCast(self.clone());");
+        lines.add("        return ClassBeanUtil.INSTANCE.cast(self.clone());");
         lines.add("    }");
         lines.add("");
         List<Column> primaryKeys = columns.getPrimaryKeys();
@@ -275,7 +275,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("    private static final " + queryName + " self = new " + queryName + "();");
         lines.add("");
         lines.add("    public static " + queryName + " newInstance() {");
-        lines.add("        return ClassBeanUtil.INSTANCE.classCast(self.clone());");
+        lines.add("        return ClassBeanUtil.INSTANCE.cast(self.clone());");
         lines.add("    }");
         lines.add("");
         String primaryKeyParameter = columns.getPrimaryKeys().stream().map(e -> e.getJavaTypeName() + " " + e.getColumnName()).collect(Collectors.joining(", "));
@@ -356,6 +356,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         String entityClass = designerDomain.getEntityClass();
         String entityName = designerDomain.getEntityName();
         String queryClass = designerDomain.getQueryClass();
+        String queryName = designerDomain.getQueryName();
         String iDaoName = designerDomain.getIDaoName();
         String iDaoPath = designerDomain.getIDaoPath();
         Collection<String> lines = new ArrayList<>();
@@ -369,7 +370,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("/**");
         lines.add(" * @author " + author + " " + DateTimeUtil.INSTANCE.getYYYY_MM_DD_HH_MM_SS());
         lines.add("*/");
-        lines.add("public interface " + iDaoName + " extends IAbstractDao<" + entityName + "> {");
+        lines.add("public interface " + iDaoName + " extends IAbstractDao<" + entityName + "," + queryName + "> {");
         lines.add("");
         lines.add("}");
         File iDaoFile = new File(iDaoPath + File.separator + iDaoName + ".java");
@@ -407,6 +408,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         String daoBeanName = designerDomain.getDaoBeanName();
         String daoName = designerDomain.getDaoName();
         String entityName = designerDomain.getEntityName();
+        String queryName = designerDomain.getQueryName();
         String queryClass = designerDomain.getQueryClass();
         String iDaoName = designerDomain.getIDaoName();
         String daoPath = designerDomain.getDaoPath();
@@ -416,7 +418,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("");
         lines.add("import " + iDaoClass + ";");
         lines.add("import " + entityClass + ";");
-        lines.add("import liangchen.wang.gradf.framework.cache.annotation.CrdfAutoCacheable;");
+        lines.add("import liangchen.wang.gradf.framework.cache.annotation.GradfAutoCacheable;");
         lines.add("import liangchen.wang.gradf.framework.data.base.AbstractBaseDao;");
         lines.add("import org.springframework.stereotype.Repository;");
         lines.add("");
@@ -429,7 +431,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("*/");
         lines.add("@Repository(\"" + daoBeanName + "\")");
         lines.add("@CrdfAutoCacheable(clearMethods = {\"insert*\", \"delete*\", \"update*\"}, durationRange = \"1-24\", timeUnit = TimeUnit.HOURS)");
-        lines.add("public class " + daoName + " extends AbstractBaseDao<" + entityName + "> implements " + iDaoName + " {");
+        lines.add("public class " + daoName + " extends AbstractBaseDao<" + entityName + "," + queryName + "> implements " + iDaoName + " {");
         lines.add("");
         lines.add("}");
 
@@ -462,7 +464,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("    private static final " + parameterDomainName + " self = new " + parameterDomainName + "();");
         lines.add("");
         lines.add("    public static " + parameterDomainName + " newInstance() {");
-        lines.add("        return ClassBeanUtil.INSTANCE.classCast(self.clone());");
+        lines.add("        return ClassBeanUtil.INSTANCE.cast(self.clone());");
         lines.add("    }");
         lines.add("");
         List<Column> primaryKeys = columns.getPrimaryKeys();
@@ -528,7 +530,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("    private static final " + resultDomainName + " self = new " + resultDomainName + "();");
         lines.add("");
         lines.add("    public static " + resultDomainName + " newInstance() {");
-        lines.add("        return ClassBeanUtil.INSTANCE.classCast(self.clone());");
+        lines.add("        return ClassBeanUtil.INSTANCE.cast(self.clone());");
         lines.add("    }");
         lines.add("");
         List<Column> primaryKeys = columns.getPrimaryKeys();

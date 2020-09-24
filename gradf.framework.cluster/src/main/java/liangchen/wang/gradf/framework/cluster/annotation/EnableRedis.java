@@ -35,7 +35,8 @@ public @interface EnableRedis {
             if (loaded) {
                 return new String[0];
             }
-            Printer.INSTANCE.prettyPrint("开启了Redis......");
+            Printer.INSTANCE.prettyPrint("@EnableRedis 开启了Redis......");
+            Printer.INSTANCE.prettyPrint("@EnableRedis 匹配的类: {}", annotationMetadata.getClassName());
             //判断是否集群配置
             String cluster = configuration.getString("cluster.nodes");
             if (StringUtil.INSTANCE.isBlank(cluster)) {
