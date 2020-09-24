@@ -35,7 +35,7 @@ public @interface EnableRedis {
             if (loaded) {
                 return new String[0];
             }
-            Printer.INSTANCE.prettyPrint("开启了Redis,尝试连接Redis......");
+            Printer.INSTANCE.prettyPrint("开启了Redis......");
             //判断是否集群配置
             String cluster = configuration.getString("cluster.nodes");
             if (StringUtil.INSTANCE.isBlank(cluster)) {
@@ -44,7 +44,7 @@ public @interface EnableRedis {
                 int port = configuration.getInt("port", 0);
                 connectableCheck(host, port);
                 String[] imports = new String[]{RedisAutoConfiguration.class.getName()};
-                Printer.INSTANCE.prettyPrint("连接Redis单机成功");
+                Printer.INSTANCE.prettyPrint("Redis单机模式连接成功");
                 loaded = true;
                 // 设置全局redis状态
                 ClusterStatus.INSTANCE.setRedisEnable(true);
@@ -59,7 +59,7 @@ public @interface EnableRedis {
                 connectableCheck(hostAndPorts.get(0), Integer.parseInt(hostAndPorts.get(1)));
             }
             String[] imports = new String[]{RedisAutoConfiguration.class.getName()};
-            Printer.INSTANCE.prettyPrint("连接Redis集群成功");
+            Printer.INSTANCE.prettyPrint("Redis集群模式连接成功");
             loaded = true;
             // 设置全局redis状态
             ClusterStatus.INSTANCE.setRedisEnable(true);

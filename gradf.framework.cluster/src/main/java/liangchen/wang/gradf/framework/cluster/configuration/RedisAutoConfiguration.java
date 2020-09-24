@@ -22,16 +22,17 @@ public class RedisAutoConfiguration extends org.springframework.boot.autoconfigu
     //通过@Primary注解覆盖掉通过配置文件生成的RedisProperties
     @Bean
     @Primary
-    public RedisProperties loadRedisProperties(){
+    public RedisProperties loadRedisProperties() {
         Printer.INSTANCE.prettyPrint("create primary 'RedisProperties' from 'redis.properties'");
         org.apache.commons.configuration2.Configuration configuration = ConfigurationUtil.INSTANCE.getConfiguration("redis.properties");
         //动态绑定参数
         MapConfigurationPropertySource source = new MapConfigurationPropertySource();
         Iterator<String> keys = configuration.getKeys();
-        keys.forEachRemaining(k-> source.put(k,configuration.getProperty(k)));
+        keys.forEachRemaining(k -> source.put(k, configuration.getProperty(k)));
         Binder binder = new Binder(source);
         return binder.bind(ConfigurationPropertyName.EMPTY, Bindable.of(RedisProperties.class)).get();
     }
+
     @Bean
     @ConditionalOnBean(RedisConnectionFactory.class)
     public RedisLockRegistry redisLockRegistry(RedisConnectionFactory redisConnectionFactory) {
