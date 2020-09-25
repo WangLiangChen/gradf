@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
  */
 public interface GradfCacheManager extends CacheManager {
     @Nullable
-    GradfCache getCache(String name, TimeUnit timeUnit, long ttl);
+    GradfCache getCache(String name, long ttl, TimeUnit timeUnit);
 
     @Nullable
     Optional<GradfCache> getCacheIfPresent(String name);

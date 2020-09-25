@@ -196,7 +196,7 @@ public class GradfCachingAspect {
             duration = RandomUtil.INSTANCE.random(min, max);
             logger.debug("根据设置的过期时间范围:{},获取的随机数:{}", durationRange, duration);
         }
-        Cache cache = cacheManager.getCache(cacheName, timeUnit, duration);
+        GradfCache cache = cacheManager.getCache(cacheName, duration, timeUnit);
         // 加锁，防止并发多次穿透到业务层，如DB
         return LocalLockUtil.INSTANCE.readWriteInReadWriteLock(key, () -> {
             Cache.ValueWrapper valueWrapper = cache.get(key);
@@ -317,7 +317,7 @@ public class GradfCachingAspect {
 
     private String resolveCacheName(Class clazz, String cacheName) {
         if (StringUtil.INSTANCE.isBlank(cacheName)) {
-            return clazz.getName();
+            cacheName = clazz.getName();
         }
         String md5 = md5(cacheName);
         logger.debug("cacheName:{},md5:{}", cacheName, md5);

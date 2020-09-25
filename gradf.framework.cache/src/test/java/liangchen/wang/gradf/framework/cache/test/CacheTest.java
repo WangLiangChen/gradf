@@ -36,7 +36,7 @@ public class CacheTest {
     public void testCache() {
         for (int i = 0; i < 5; i++) {
             executor.execute(() -> {
-                GradfCache c = cacheManager.getCache("wanglc", TimeUnit.MINUTES, 1);
+                GradfCache c = cacheManager.getCache("wanglc", 1, TimeUnit.MINUTES);
                 System.out.println(c);
             });
         }

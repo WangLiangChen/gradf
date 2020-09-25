@@ -41,7 +41,7 @@ public class LocalRedisCacheManager implements GradfCacheManager {
     }
 
     @Override
-    public GradfCache getCache(String name, TimeUnit timeUnit, long ttl) {
+    public GradfCache getCache(String name, long ttl, TimeUnit timeUnit) {
         try {
             return LocalLockUtil.INSTANCE.readWriteInReadWriteLock(name, () -> this.cacheMap.get(name), () -> {
                 Cache newCache = new LocalRedisCache(name, true, ttl, timeUnit, redisTemplate);
@@ -58,7 +58,7 @@ public class LocalRedisCacheManager implements GradfCacheManager {
     @Override
     public Cache getCache(String name) {
         CacheNameResolver cacheNameResolver = new CacheNameResolver(name);
-        return getCache(cacheNameResolver.getName(), cacheNameResolver.getTimeUnit(), cacheNameResolver.getTtl());
+        return getCache(cacheNameResolver.getName(), cacheNameResolver.getTtl(), cacheNameResolver.getTimeUnit());
     }
 
     @Override

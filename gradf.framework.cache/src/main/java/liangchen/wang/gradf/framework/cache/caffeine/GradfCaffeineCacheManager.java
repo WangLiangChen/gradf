@@ -6,7 +6,6 @@ import liangchen.wang.gradf.framework.cache.primary.GradfCacheManager;
 import liangchen.wang.gradf.framework.commons.digest.HashUtil;
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import liangchen.wang.gradf.framework.commons.lock.LocalLockUtil;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.Cache;
 
 import java.util.Collection;
@@ -22,7 +21,7 @@ public class GradfCaffeineCacheManager implements GradfCacheManager {
     private final Map<String, GradfCaffeineCache> cacheMap = new ConcurrentHashMap<>(16);
 
     @Override
-    public GradfCache getCache(String name, TimeUnit timeUnit, long ttl) {
+    public GradfCache getCache(String name, long ttl, TimeUnit timeUnit) {
         String md5Name = md5Name(name);
         try {
             return LocalLockUtil.INSTANCE.readWriteInReadWriteLock(md5Name, () -> this.cacheMap.get(md5Name), () -> {
@@ -38,7 +37,7 @@ public class GradfCaffeineCacheManager implements GradfCacheManager {
     @Override
     public Cache getCache(String name) {
         CacheNameResolver cacheNameResolver = new CacheNameResolver(name);
-        return getCache(cacheNameResolver.getName(), cacheNameResolver.getTimeUnit(), cacheNameResolver.getTtl());
+        return getCache(cacheNameResolver.getName(), cacheNameResolver.getTtl(), cacheNameResolver.getTimeUnit());
     }
 
     @Override

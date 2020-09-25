@@ -16,7 +16,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-public class LocalRedisCache extends AbstractValueAdaptingCache {
+public class LocalRedisCache extends AbstractValueAdaptingCache implements GradfCache {
     private static final Logger logger = LoggerFactory.getLogger(LocalRedisCache.class);
     private final String name;
     private final boolean allowNullValues;
@@ -70,9 +70,9 @@ public class LocalRedisCache extends AbstractValueAdaptingCache {
     public ValueWrapper get(Object key) {
         //先从LocalCache获取，获取不到再去RemoteCache获取;这里不加锁了，无非是有一些请求穿透到RemoteCache
         if (localCache.containsKey(String.valueOf(key))) {
-            return getFromLocal(key, key);
+            return getFromLocal(key);
         }
-        return getFromRemote(key, key);
+        return getFromRemote(key);
     }
 
     @Override
@@ -88,9 +88,9 @@ public class LocalRedisCache extends AbstractValueAdaptingCache {
     public <T> T get(Object key, Callable<T> valueLoader) {
 
         if (localCache.containsKey(String.valueOf(key))) {
-            return getFromLocal(key, key, valueLoader);
+            return getFromLocal(key, valueLoader);
         }
-        return getFromRemote(key, key, valueLoader);
+        return getFromRemote(key, valueLoader);
     }
 
     @Override
@@ -160,11 +160,20 @@ public class LocalRedisCache extends AbstractValueAdaptingCache {
         logger.debug("根据Redis消息,清除LocalCache,name:{}", name);
     }
 
+    @Override
     public Set<Object> keys() {
         if (ClusterStatus.INSTANCE.isRedisEnable()) {
             return remoteCache.keys();
         }
         return localCache.keys();
+    }
+
+    @Override
+    public boolean containsKey(Object key) {
+        if (ClusterStatus.INSTANCE.isRedisEnable()) {
+            return remoteCache.containsKey(key);
+        }
+        return localCache.containsKey(key);
     }
 
     @Override
@@ -194,41 +203,41 @@ public class LocalRedisCache extends AbstractValueAdaptingCache {
         return new GradfRedisCache(name, ttl, timeUnit, redisTemplate);
     }
 
-    private ValueWrapper getFromLocal(Object key, Object rawKey) {
+    private ValueWrapper getFromLocal(Object key) {
         ValueWrapper valueWrapper = localCache.get(key);
-        logger.debug("从LocalCache取值,name:{},rawKey:{},key:{},value:{}", name, rawKey, key, valueWrapper == null ? null : valueWrapper.get());
+        logger.debug("从LocalCache取值,name:{},key:{},value:{}", name, key, valueWrapper == null ? null : valueWrapper.get());
         return valueWrapper;
     }
 
-    private ValueWrapper getFromRemote(Object key, Object rawKey) {
+    private ValueWrapper getFromRemote(Object key) {
         if (ClusterStatus.INSTANCE.isNotRedisEnable()) {
             return null;
         }
         ValueWrapper valueWrapper = remoteCache.get(key);
-        logger.debug("从RemoteCache取值,name:{},rawKey:{},key:{},value:{}", name, rawKey, key, valueWrapper == null ? null : valueWrapper.get());
+        logger.debug("从RemoteCache取值,name:{},key:{},value:{}", name, key, valueWrapper == null ? null : valueWrapper.get());
         if (null == valueWrapper) {
             return null;
         }
         localCache.put(key, valueWrapper.get());
-        logger.debug("从RemoteCache同步LocalCache,name:{},rawKey:{},key:{},value:{}", name, rawKey, key, valueWrapper == null ? null : valueWrapper.get());
+        logger.debug("从RemoteCache同步LocalCache,name:{},key:{},value:{}", name, key, valueWrapper == null ? null : valueWrapper.get());
         // 再次从本地缓存查询 力求最新
         return localCache.get(key);
     }
 
-    private <T> T getFromLocal(Object key, Object rawKey, Callable<T> valueLoader) {
-        T value = localCache.get(rawKey, valueLoader);
-        logger.debug("从LocalCache取值,name:{},rawKey:{},key:{},value:{}", name, rawKey, key, value);
+    private <T> T getFromLocal(Object key, Callable<T> valueLoader) {
+        T value = localCache.get(key, valueLoader);
+        logger.debug("从LocalCache取值,name:{},key:{},value:{}", name, key, value);
         return value;
     }
 
-    private <T> T getFromRemote(Object key, Object rawKey, Callable<T> valueLoader) {
+    private <T> T getFromRemote(Object key, Callable<T> valueLoader) {
         if (ClusterStatus.INSTANCE.isNotRedisEnable()) {
             return null;
         }
         T value = remoteCache.get(key, valueLoader);
-        logger.debug("从RemoteCache取值,name:{},rawKey:{},key:{},value:{}", name, rawKey, key, value);
+        logger.debug("从RemoteCache取值,name:{},key:{},value:{}", name, key, value);
         localCache.put(key, value);
-        logger.debug("从RemoteCache同步到LocalCache,name:{},rawKey:{},key:{},value:{}", name, rawKey, key, value);
+        logger.debug("从RemoteCache同步到LocalCache,name:{},key:{},value:{}", name, key, value);
         return localCache.get(key, valueLoader);
     }
 }

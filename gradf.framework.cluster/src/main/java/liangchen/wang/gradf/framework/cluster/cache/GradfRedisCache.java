@@ -27,6 +27,11 @@ public class GradfRedisCache extends RedisCache implements GradfCache {
         this.name = name;
         String keys = this.createCacheKey("keys");
         this.boundSetOperations = redisTemplate.boundSetOps(keys);
+        // 设置expire 有key才管用 所以先add
+        if (boundSetOperations.getExpire() < 0) {
+            this.boundSetOperations.add("");
+            this.boundSetOperations.expire(ttl, timeUnit);
+        }
         logger.debug(loggerPrefix() + "is created,ttl:{}ms", name, timeUnit.toMillis(ttl));
     }
 

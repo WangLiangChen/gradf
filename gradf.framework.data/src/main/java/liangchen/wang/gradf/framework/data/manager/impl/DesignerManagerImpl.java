@@ -364,7 +364,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("");
 
         lines.add("import " + entityClass + ";");
-        //lines.add("import " + queryClass + ";");
+        lines.add("import " + queryClass + ";");
         lines.add("import liangchen.wang.gradf.framework.data.base.IAbstractDao;");
         lines.add("");
         lines.add("/**");
@@ -418,6 +418,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("");
         lines.add("import " + iDaoClass + ";");
         lines.add("import " + entityClass + ";");
+        lines.add("import " + queryClass + ";");
         lines.add("import liangchen.wang.gradf.framework.cache.annotation.GradfAutoCacheable;");
         lines.add("import liangchen.wang.gradf.framework.data.base.AbstractBaseDao;");
         lines.add("import org.springframework.stereotype.Repository;");
@@ -430,7 +431,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add(" * @author " + author + " " + DateTimeUtil.INSTANCE.getYYYY_MM_DD_HH_MM_SS());
         lines.add("*/");
         lines.add("@Repository(\"" + daoBeanName + "\")");
-        lines.add("@CrdfAutoCacheable(clearMethods = {\"insert*\", \"delete*\", \"update*\"}, durationRange = \"1-24\", timeUnit = TimeUnit.HOURS)");
+        lines.add("@GradfAutoCacheable(clearMethods = {\"insert*\", \"delete*\", \"update*\"}, durationRange = \"1-24\", timeUnit = TimeUnit.HOURS)");
         lines.add("public class " + daoName + " extends AbstractBaseDao<" + entityName + "," + queryName + "> implements " + iDaoName + " {");
         lines.add("");
         lines.add("}");
