@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 改造以支持多个chainName和URL的匹配
@@ -28,9 +29,9 @@ public class GradfDefaultFilterChainManager extends DefaultFilterChainManager {
      * @param chainNames
      * @return
      */
-    public FilterChain proxy(FilterChain original, List<String> chainNames) {
+    public FilterChain proxy(FilterChain original, Set<String> chainNames) {
         logger.debug("execute proxy,chainNames:{}", JsonUtil.INSTANCE.toJsonString(chainNames));
-        NamedFilterList configured = new SimpleNamedFilterList(chainNames.toString());
+        NamedFilterList configured = new SimpleNamedFilterList("chainNames");
         //遍历判断是否既包含login又包含roles
         boolean containLogin = false, containRoles = false;
         for (String chainName : chainNames) {
@@ -48,8 +49,7 @@ public class GradfDefaultFilterChainManager extends DefaultFilterChainManager {
         if (containLogin && containRoles) {
             configured.removeIf(e -> e instanceof RolesAuthorizationFilter);
         }
-        FilterChain proxy = configured.proxy(original);
-        return proxy;
+        return configured.proxy(original);
     }
 
 }
