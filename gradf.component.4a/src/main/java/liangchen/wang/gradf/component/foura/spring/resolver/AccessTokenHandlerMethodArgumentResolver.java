@@ -10,9 +10,11 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 /**
+ * 将当前登录用户的ID通过注解@AccountId注入到方法参数
+ * 需要在Configuration中注入，addArgumentResolvers
+ *
  * @author LiangChen.Wang
  */
-//需要在Configuration中注入，addArgumentResolvers
 public class AccessTokenHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override

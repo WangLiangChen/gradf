@@ -12,11 +12,9 @@ organization:create OR organization:update OR organization:delete
 唯一缺点就是为了解析方便，所有内容必须用空格隔开
 
 
-我先是看到了这篇博客：http://jinnianshilongnian.iteye.com/blog/1864800
+看到了这篇博客：http://jinnianshilongnian.iteye.com/blog/1864800
 
-然后觉得可以实现的更完善一些，突然想到可以用逆波兰表达式实现复杂一些的表达式解析
-
-于是便有了这篇文章
+可以用逆波兰表达式实现复杂一些的表达式解析
 
 实现思路：
 

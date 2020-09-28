@@ -10,7 +10,7 @@ import liangchen.wang.gradf.component.foura.manager.IRoleManager;
 import liangchen.wang.gradf.component.foura.manager.domain.parameter.AuthUrlParameterDomain;
 import liangchen.wang.gradf.component.foura.manager.domain.parameter.RoleAccountParameterDomain;
 import liangchen.wang.gradf.component.foura.manager.domain.result.RoleResultDomain;
-import liangchen.wang.gradf.component.foura.shiro.filter.DefaultFilter;
+import liangchen.wang.gradf.component.foura.shiro.filter.GradfFilter;
 import liangchen.wang.gradf.component.foura.shiro.utils.ShiroFilterChainUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -94,11 +94,11 @@ public class AuthorizationManagerImpl implements IAuthorizationManager {
         //当前用户有权限的url pattern集合
         Set<String> urls = new HashSet<>();
         filters.forEach((filterName, filter) -> {
-            if (!(filter instanceof DefaultFilter)) {
+            if (!(filter instanceof GradfFilter)) {
                 return;
             }
-            DefaultFilter defaultFilter = (DefaultFilter) filter;
-            Map<String, Object> pathRoles = defaultFilter.appliedPaths();
+            GradfFilter gradfFilter = (GradfFilter) filter;
+            Map<String, Object> pathRoles = gradfFilter.appliedPaths();
             pathRoles.forEach((path, roles) -> {
                 if ("login".equals(filterName)) {
                     urls.add(path);

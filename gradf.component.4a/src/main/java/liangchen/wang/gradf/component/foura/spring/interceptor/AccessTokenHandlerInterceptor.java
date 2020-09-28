@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * 将当前登录账户Id和名称放入ThreadLocal
+ *
  * @author LiangChen.Wang
  */
 public class AccessTokenHandlerInterceptor extends HandlerInterceptorAdapter {

@@ -14,8 +14,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author LiangChen.Wang
  */
-//hasPermission支持复杂表达式（使用逆波兰表达式计算）
-public class AccountPasswordRealm extends DefaultRealm {
+public class AccountPasswordRealm extends GradfRealm {
     private static final Logger logger = LoggerFactory.getLogger(AccountPasswordRealm.class);
 
     @Override

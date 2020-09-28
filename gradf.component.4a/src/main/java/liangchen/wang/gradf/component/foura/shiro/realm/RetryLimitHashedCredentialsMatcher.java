@@ -1,5 +1,7 @@
 package liangchen.wang.gradf.component.foura.shiro.realm;
 
+import liangchen.wang.gradf.framework.cache.primary.GradfCacheManager;
+import liangchen.wang.gradf.framework.commons.exception.PromptException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
@@ -14,20 +16,20 @@ import java.util.concurrent.TimeUnit;
  */
 public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher {
     private static final Logger logger = LoggerFactory.getLogger(RetryLimitHashedCredentialsMatcher.class);
-    private final CacheManager cacheManager;
+    private final GradfCacheManager cacheManager;
 
-    public RetryLimitHashedCredentialsMatcher(CacheManager cacheManager) {
+    public RetryLimitHashedCredentialsMatcher(GradfCacheManager cacheManager) {
         this.cacheManager = cacheManager;
     }
 
-    //这里暂时不考虑并发情况
+    // 这里暂时不考虑并发情况
     @Override
     public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
         Object principal = token.getPrincipal();
         logger.debug("principal is : {}", principal);
         String loginKey = (String) principal;
         String retryCountKey = String.format("%s:RetryCount", loginKey);
-        Cache cache = cacheManager.getCache(retryCountKey, TimeUnit.MINUTES, 10);
+        Cache cache = cacheManager.getCache(retryCountKey, 5, TimeUnit.MINUTES);
         int count = cache.get("count", int.class);
         cache.put("count", ++count);
         if (count > 5) {

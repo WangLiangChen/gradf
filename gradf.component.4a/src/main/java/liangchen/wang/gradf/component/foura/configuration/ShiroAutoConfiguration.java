@@ -1,14 +1,14 @@
 package liangchen.wang.gradf.component.foura.configuration;
 
-import liangchen.wang.gradf.component.foura.shiro.authc.ModularRealmAuthenticator;
-import liangchen.wang.gradf.component.foura.shiro.filter.DefaultShiroFilterFactoryBean;
+import liangchen.wang.gradf.component.foura.shiro.authc.GradfModularRealmAuthenticator;
+import liangchen.wang.gradf.component.foura.shiro.filter.GradfShiroFilterFactoryBean;
 import liangchen.wang.gradf.component.foura.shiro.filter.LoginAuthorizationFilter;
 import liangchen.wang.gradf.component.foura.shiro.filter.PermissionsAuthorizationFilter;
 import liangchen.wang.gradf.component.foura.shiro.filter.RolesAuthorizationFilter;
-import liangchen.wang.gradf.component.foura.shiro.filterchain.DefaultFilterChainManager;
-import liangchen.wang.gradf.component.foura.shiro.filterchain.PathMatchingFilterChainResolver;
+import liangchen.wang.gradf.component.foura.shiro.filterchain.GradfDefaultFilterChainManager;
+import liangchen.wang.gradf.component.foura.shiro.filterchain.GradfPathMatchingFilterChainResolver;
 import liangchen.wang.gradf.component.foura.shiro.permission.BitAndWildPermissionResolver;
-import liangchen.wang.gradf.component.foura.shiro.permission.DefaultRolePermissionResolver;
+import liangchen.wang.gradf.component.foura.shiro.permission.GradfRolePermissionResolver;
 import liangchen.wang.gradf.component.foura.shiro.realm.*;
 import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
 import org.apache.shiro.SecurityUtils;
@@ -72,8 +72,8 @@ public class ShiroAutoConfiguration {
     }
 
     @Bean
-    public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager securityManager, PathMatchingFilterChainResolver filterChainResolver) {
-        DefaultShiroFilterFactoryBean shiroFilterFactoryBean = new DefaultShiroFilterFactoryBean();
+    public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager securityManager, GradfPathMatchingFilterChainResolver filterChainResolver) {
+        GradfShiroFilterFactoryBean shiroFilterFactoryBean = new GradfShiroFilterFactoryBean(filterChainResolver);
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         shiroFilterFactoryBean.setFilterChainResolver(filterChainResolver);
         return shiroFilterFactoryBean;
@@ -83,7 +83,7 @@ public class ShiroAutoConfiguration {
     public DefaultWebSecurityManager securityManager() {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         //认证器
-        securityManager.setAuthenticator(new ModularRealmAuthenticator());
+        securityManager.setAuthenticator(new GradfModularRealmAuthenticator());
         //授权器
         securityManager.setAuthorizer(authorizer());
         //realms
@@ -116,7 +116,7 @@ public class ShiroAutoConfiguration {
 
     @Bean
     public FilterChainManager filterChainManager() {
-        DefaultFilterChainManager defaultFilterChainManager = new DefaultFilterChainManager();
+        GradfDefaultFilterChainManager defaultFilterChainManager = new GradfDefaultFilterChainManager();
         defaultFilterChainManager.addFilter("login", new LoginAuthorizationFilter());
         defaultFilterChainManager.addFilter("roles", new RolesAuthorizationFilter());
         defaultFilterChainManager.addFilter("perms", new PermissionsAuthorizationFilter());
@@ -124,8 +124,8 @@ public class ShiroAutoConfiguration {
     }
 
     @Bean
-    public PathMatchingFilterChainResolver filterChainResolver(FilterChainManager filterChainManager) {
-        PathMatchingFilterChainResolver filterChainResolver = new PathMatchingFilterChainResolver();
+    public GradfPathMatchingFilterChainResolver filterChainResolver(FilterChainManager filterChainManager) {
+        GradfPathMatchingFilterChainResolver filterChainResolver = new GradfPathMatchingFilterChainResolver();
         filterChainResolver.setFilterChainManager(filterChainManager);
         return filterChainResolver;
     }
@@ -176,7 +176,7 @@ public class ShiroAutoConfiguration {
     private Authorizer authorizer() {
         ModularRealmAuthorizer authorizer = new ModularRealmAuthorizer();
         authorizer.setPermissionResolver(new BitAndWildPermissionResolver());
-        authorizer.setRolePermissionResolver(new DefaultRolePermissionResolver());
+        authorizer.setRolePermissionResolver(new GradfRolePermissionResolver());
         return authorizer;
     }
 

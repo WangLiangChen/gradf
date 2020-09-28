@@ -10,7 +10,7 @@ import javax.servlet.ServletResponse;
  * 按照权限值判断是否通过
  * defaultFilterChainManager.addFilter("perms", new PermissionsAuthorizationFilter());
  */
-public class PermissionsAuthorizationFilter extends DefaultFilter {
+public class PermissionsAuthorizationFilter extends GradfFilter {
 
     @Override
     public boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {

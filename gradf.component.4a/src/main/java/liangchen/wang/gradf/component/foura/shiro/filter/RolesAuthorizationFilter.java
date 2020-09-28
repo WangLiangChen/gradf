@@ -10,7 +10,7 @@ import javax.servlet.ServletResponse;
  * 按角色判断是否可通过
  * defaultFilterChainManager.addFilter("roles", new RolesAuthorizationFilter());
  */
-public class RolesAuthorizationFilter extends DefaultFilter {
+public class RolesAuthorizationFilter extends GradfFilter {
 
     @Override
     public boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {

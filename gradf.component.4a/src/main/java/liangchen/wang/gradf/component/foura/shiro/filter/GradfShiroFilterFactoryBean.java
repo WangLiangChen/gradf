@@ -10,16 +10,15 @@ import org.springframework.beans.factory.BeanInitializationException;
 /**
  * @author LiangChen.Wang
  */
-public class DefaultShiroFilterFactoryBean extends ShiroFilterFactoryBean {
-    private FilterChainResolver filterChainResolver;
+public class GradfShiroFilterFactoryBean extends ShiroFilterFactoryBean {
+    private final FilterChainResolver filterChainResolver;
 
-    public void setFilterChainResolver(FilterChainResolver filterChainResolver) {
+    public GradfShiroFilterFactoryBean(FilterChainResolver filterChainResolver) {
         this.filterChainResolver = filterChainResolver;
     }
 
     @Override
     protected AbstractShiroFilter createInstance() {
-
         SecurityManager securityManager = getSecurityManager();
         if (securityManager == null) {
             String msg = "SecurityManager property must be set.";

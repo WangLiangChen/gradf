@@ -9,7 +9,7 @@ import java.util.Collections;
 /**
  * @author LiangChen.Wang
  */
-public class DefaultRolePermissionResolver implements RolePermissionResolver {
+public class GradfRolePermissionResolver implements RolePermissionResolver {
     @Override
     public Collection<Permission> resolvePermissionsInRole(String roleString) {
         return Collections.emptyList();

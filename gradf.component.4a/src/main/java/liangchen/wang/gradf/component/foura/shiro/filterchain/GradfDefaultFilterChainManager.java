@@ -2,6 +2,8 @@ package liangchen.wang.gradf.component.foura.shiro.filterchain;
 
 import liangchen.wang.gradf.component.foura.shiro.filter.LoginAuthorizationFilter;
 import liangchen.wang.gradf.component.foura.shiro.filter.RolesAuthorizationFilter;
+import liangchen.wang.gradf.framework.commons.json.JsonUtil;
+import org.apache.shiro.web.filter.mgt.DefaultFilterChainManager;
 import org.apache.shiro.web.filter.mgt.NamedFilterList;
 import org.apache.shiro.web.filter.mgt.SimpleNamedFilterList;
 import org.slf4j.Logger;
@@ -12,14 +14,22 @@ import javax.servlet.FilterChain;
 import java.util.List;
 
 /**
+ * 改造以支持多个chainName和URL的匹配
+ *
  * @author LiangChen.Wang
- * 改造后支持多个chainName和URL的匹配
  */
-public class DefaultFilterChainManager extends org.apache.shiro.web.filter.mgt.DefaultFilterChainManager {
-    private static final Logger logger = LoggerFactory.getLogger(DefaultFilterChainManager.class);
+public class GradfDefaultFilterChainManager extends DefaultFilterChainManager {
+    private static final Logger logger = LoggerFactory.getLogger(GradfDefaultFilterChainManager.class);
 
+    /**
+     * 重载方法以处理多个chainName
+     *
+     * @param original
+     * @param chainNames
+     * @return
+     */
     public FilterChain proxy(FilterChain original, List<String> chainNames) {
-        logger.debug("execute proxy,chainNames:{}", chainNames);
+        logger.debug("execute proxy,chainNames:{}", JsonUtil.INSTANCE.toJsonString(chainNames));
         NamedFilterList configured = new SimpleNamedFilterList(chainNames.toString());
         //遍历判断是否既包含login又包含roles
         boolean containLogin = false, containRoles = false;
