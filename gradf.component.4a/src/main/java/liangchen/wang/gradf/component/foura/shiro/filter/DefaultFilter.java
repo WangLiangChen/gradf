@@ -1,9 +1,9 @@
 package liangchen.wang.gradf.component.foura.shiro.filter;
 
 import liangchen.wang.gradf.framework.commons.enumeration.ExceptionCode;
-import liangchen.wang.gradf.framework.commons.exeception.ExceptionData;
-import liangchen.wang.gradf.framework.commons.exeception.PromptException;
-import liangchen.wang.gradf.framework.commons.json.JSON;
+import liangchen.wang.gradf.framework.commons.exception.ExceptionData;
+import liangchen.wang.gradf.framework.commons.exception.PromptException;
+import liangchen.wang.gradf.framework.commons.json.JsonUtil;
 import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import liangchen.wang.gradf.component.foura.shiro.token.JwtToken;
@@ -56,7 +56,7 @@ public abstract class DefaultFilter extends AccessControlFilter {
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         Subject subject = this.getSubject(request, response);
-        logger.debug("mappedValue is:{},principal is:{}", JSON.toJSONString(mappedValue), subject.getPrincipal());
+        logger.debug("mappedValue is:{},principal is:{}", JsonUtil.INSTANCE.toJsonString(mappedValue), subject.getPrincipal());
         HttpServletRequest httpRequest = WebUtils.toHttp(request);
         String token = null;
         //先查询Header

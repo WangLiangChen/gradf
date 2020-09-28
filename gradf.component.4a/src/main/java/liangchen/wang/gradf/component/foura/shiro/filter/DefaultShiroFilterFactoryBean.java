@@ -12,7 +12,8 @@ import org.springframework.beans.factory.BeanInitializationException;
  */
 public class DefaultShiroFilterFactoryBean extends ShiroFilterFactoryBean {
     private FilterChainResolver filterChainResolver;
-    public void setFilterChainResolver(FilterChainResolver filterChainResolver){
+
+    public void setFilterChainResolver(FilterChainResolver filterChainResolver) {
         this.filterChainResolver = filterChainResolver;
     }
 

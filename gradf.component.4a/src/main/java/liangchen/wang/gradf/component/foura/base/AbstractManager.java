@@ -34,9 +34,9 @@ public abstract class AbstractManager<E extends RootEntity, Q extends RootQuery,
         this.dao = dao;
         Class<?> implClass = getClass();
         Type thisType = implClass.getGenericSuperclass();
-        Assert.INSTANCE.isTrue(thisType instanceof ParameterizedType, "必须设置泛型参数:<E extends RootEntity, R extends ResultDomain>");
+        Assert.INSTANCE.isTrue(thisType instanceof ParameterizedType, "必须设置泛型参数:<E extends RootEntity, Q extends RootQuery, R extends ResultDomain>");
         Type[] argTypes = ((ParameterizedType) thisType).getActualTypeArguments();
-        Assert.INSTANCE.isTrue(argTypes.length > 2, "必须设置泛型参数:<E extends RootEntity, R extends ResultDomain>");
+        Assert.INSTANCE.isTrue(argTypes.length > 2, "必须设置泛型参数:<E extends RootEntity, Q extends RootQuery, R extends ResultDomain>");
         entityClass = (Class<E>) argTypes[0];
         resultDomainClass = (Class<R>) argTypes[1];
     }
@@ -51,12 +51,12 @@ public abstract class AbstractManager<E extends RootEntity, Q extends RootQuery,
         return dao.insert(entity);
     }
 
-    protected int deleteByQuery(RootQuery query) {
+    protected int deleteByQuery(Q query) {
         Assert.INSTANCE.notNull(query, "查询参数不能为空");
         return dao.deleteByQuery(query);
     }
 
-    protected int updateByQuery(ParameterDomain<E> parameter, RootQuery query) {
+    protected int updateByQuery(ParameterDomain<E> parameter, Q query) {
         Assert.INSTANCE.notNull(query, "查询参数不能为空");
         Assert.INSTANCE.validate(parameter, UpdateGroup.class);
         E entity = parameter.copyTo(entityClass);
@@ -67,17 +67,17 @@ public abstract class AbstractManager<E extends RootEntity, Q extends RootQuery,
         return dao.updateByQuery(entity, query);
     }
 
-    protected boolean exist(RootQuery query) {
+    protected boolean exist(Q query) {
         Assert.INSTANCE.notNull(query, "查询参数不能为空");
         return dao.exist(query);
     }
 
-    protected int count(RootQuery query) {
+    protected int count(Q query) {
         Assert.INSTANCE.notNull(query, "查询参数不能为空");
         return dao.count(query);
     }
 
-    protected R one(RootQuery query, String... returnFields) {
+    protected R one(Q query, String... returnFields) {
         Assert.INSTANCE.notNull(query, "查询参数不能为空");
         E entity = dao.one(query, returnFields);
         if (null == entity) {
@@ -86,7 +86,7 @@ public abstract class AbstractManager<E extends RootEntity, Q extends RootQuery,
         return entity.copyTo(resultDomainClass);
     }
 
-    protected R one(RootQuery query, Consumer<R> consumer, String... returnFields) {
+    protected R one(Q query, Consumer<R> consumer, String... returnFields) {
         Assert.INSTANCE.notNull(query, "参数不能为空");
         E entity = dao.one(query, returnFields);
         if (null == entity) {
@@ -95,25 +95,25 @@ public abstract class AbstractManager<E extends RootEntity, Q extends RootQuery,
         return entity.copyTo(resultDomainClass, consumer);
     }
 
-    protected List<R> list(RootQuery query, String... returnFields) {
+    protected List<R> list(Q query, String... returnFields) {
         Assert.INSTANCE.notNull(query, "参数不能为空");
         List<E> entities = dao.list(query, returnFields);
-        return CollectionUtil.INSTANCE.copyToList(entities, resultDomainClass);
+        return CollectionUtil.INSTANCE.copyList(entities, resultDomainClass);
     }
 
-    protected List<R> list(RootQuery query, Consumer<R> consumer, String... returnFields) {
+    protected List<R> list(Q query, Consumer<R> consumer, String... returnFields) {
         Assert.INSTANCE.notNull(query, "参数不能为空");
         List<E> entities = dao.list(query, returnFields);
-        return CollectionUtil.INSTANCE.copyToList(entities, resultDomainClass, consumer);
+        return CollectionUtil.INSTANCE.copyList(entities, resultDomainClass, consumer);
     }
 
-    protected PaginationResult<R> pagination(RootQuery query, String... returnFields) {
+    protected PaginationResult<R> pagination(Q query, String... returnFields) {
         Assert.INSTANCE.notNull(query, "参数不能为空");
         PaginationResult<E> paginationEntity = dao.pagination(query, returnFields);
         return paginationEntity.copyTo(resultDomainClass);
     }
 
-    protected PaginationResult<R> pagination(RootQuery query, Consumer<R> consumer, String... returnFields) {
+    protected PaginationResult<R> pagination(Q query, Consumer<R> consumer, String... returnFields) {
         Assert.INSTANCE.notNull(query, "参数不能为空");
         PaginationResult<E> paginationEntity = dao.pagination(query, returnFields);
         return paginationEntity.copyTo(resultDomainClass, consumer);

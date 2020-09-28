@@ -1,7 +1,5 @@
 package liangchen.wang.gradf.component.foura.configuration;
 
-import liangchen.wang.gradf.framework.cache.primary.CacheManager;
-import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
 import liangchen.wang.gradf.component.foura.shiro.authc.ModularRealmAuthenticator;
 import liangchen.wang.gradf.component.foura.shiro.filter.DefaultShiroFilterFactoryBean;
 import liangchen.wang.gradf.component.foura.shiro.filter.LoginAuthorizationFilter;
@@ -12,6 +10,7 @@ import liangchen.wang.gradf.component.foura.shiro.filterchain.PathMatchingFilter
 import liangchen.wang.gradf.component.foura.shiro.permission.BitAndWildPermissionResolver;
 import liangchen.wang.gradf.component.foura.shiro.permission.DefaultRolePermissionResolver;
 import liangchen.wang.gradf.component.foura.shiro.realm.*;
+import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.credential.AllowAllCredentialsMatcher;
 import org.apache.shiro.authc.credential.CredentialsMatcher;
@@ -29,6 +28,7 @@ import org.apache.shiro.web.mgt.DefaultWebSubjectFactory;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

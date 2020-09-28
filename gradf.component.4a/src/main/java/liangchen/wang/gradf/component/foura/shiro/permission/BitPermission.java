@@ -5,65 +5,67 @@ import org.apache.shiro.authz.Permission;
 
 /**
  * 规则 +资源字符串+权限位+实例ID
- *
+ * <p>
  * 以+开头 中间通过+分割
- *
+ * <p>
  * 权限： 0 表示所有权限 1 新增 0001 2 修改 0010 4 删除 0100 8 查看 1000
- *
+ * <p>
  * 如 +user+10 表示对资源user拥有修改/查看权限
+ *
+ * @author LiangChen.Wang
  */
 public class BitPermission implements Permission {
 
-	private String resourceIdentify;
-	private int permissionBit;
-	private String instanceId;
+    private String resourceIdentify;
+    private int permissionBit;
+    private String instanceId;
 
-	BitPermission(String permissionString) {
-		String[] array = permissionString.split("\\+");
+    BitPermission(String permissionString) {
+        String[] array = permissionString.split("\\+");
 
-		if (array.length > 1) {
-			resourceIdentify = array[1];
-		}
+        if (array.length > 1) {
+            resourceIdentify = array[1];
+        }
 
-		if (StringUtils.isEmpty(resourceIdentify)) {
-			resourceIdentify = "*";
-		}
+        if (StringUtils.isEmpty(resourceIdentify)) {
+            resourceIdentify = "*";
+        }
 
-		if (array.length > 2) {
-			permissionBit = Integer.valueOf(array[2]);
-		}
+        if (array.length > 2) {
+            permissionBit = Integer.valueOf(array[2]);
+        }
 
-		if (array.length > 3) {
-			instanceId = array[3];
-		}
+        if (array.length > 3) {
+            instanceId = array[3];
+        }
 
-		if (StringUtils.isEmpty(instanceId)) {
-			instanceId = "*";
-		}
+        if (StringUtils.isEmpty(instanceId)) {
+            instanceId = "*";
+        }
 
-	}
+    }
 
-	@Override
-	public boolean implies(Permission p) {
-		if (!(p instanceof BitPermission)) {
-			return false;
-		}
-		BitPermission other = (BitPermission) p;
+    @Override
+    public boolean implies(Permission p) {
+        if (!(p instanceof BitPermission)) {
+            return false;
+        }
+        BitPermission other = (BitPermission) p;
 
-		if (!("*".equals(this.resourceIdentify) || this.resourceIdentify.equals(other.resourceIdentify))) {
-			return false;
-		}
+        if (!("*".equals(this.resourceIdentify) || this.resourceIdentify.equals(other.resourceIdentify))) {
+            return false;
+        }
 
-		if (!(this.permissionBit == 0 || (other.permissionBit & this.permissionBit) == other.permissionBit)) {
-			return false;
-		}
+        if (!(this.permissionBit == 0 || (other.permissionBit & this.permissionBit) == other.permissionBit)) {
+            return false;
+        }
 
         return "*".equals(this.instanceId) || this.instanceId.equals(other.instanceId);
     }
 
-	@Override
-	public String toString() {
-		return "BitPermission{" + "resourceIdentify='" + resourceIdentify + '\'' + ", permissionBit=" + permissionBit + ", instanceId='" + instanceId + '\'' + '}';
-	}
+    @Override
+    public String toString() {
+        return "BitPermission{" + "resourceIdentify='" + resourceIdentify + '\'' + ", permissionBit=" + permissionBit + ", instanceId='" + instanceId + '\'' + '}';
+    }
 
 }

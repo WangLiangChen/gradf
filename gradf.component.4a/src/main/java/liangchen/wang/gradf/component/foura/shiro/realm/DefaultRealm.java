@@ -1,7 +1,7 @@
 package liangchen.wang.gradf.component.foura.shiro.realm;
 
-import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
 import liangchen.wang.gradf.component.foura.utils.FouraUtil;
+import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
@@ -54,10 +54,10 @@ public abstract class DefaultRealm extends AuthorizingRealm {
             authorizationInfo.setStringPermissions(permissions);
         }
         /*用户Premissions来源构成,以下三个的合集
-        * 1、authorizationInfo.setObjectPermissions
-        * 2、authorizationInfo.setStringPermissions
-        * 3、RolePermissionResolver.resolvePermissionsInRole
-        * */
+         * 1、authorizationInfo.setObjectPermissions
+         * 2、authorizationInfo.setStringPermissions
+         * 3、RolePermissionResolver.resolvePermissionsInRole
+         * */
         return authorizationInfo;
     }
 }

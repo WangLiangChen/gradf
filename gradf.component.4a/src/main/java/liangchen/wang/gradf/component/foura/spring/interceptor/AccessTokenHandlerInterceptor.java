@@ -1,7 +1,7 @@
 package liangchen.wang.gradf.component.foura.spring.interceptor;
 
-import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
 import liangchen.wang.gradf.component.foura.utils.FouraUtil;
+import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;

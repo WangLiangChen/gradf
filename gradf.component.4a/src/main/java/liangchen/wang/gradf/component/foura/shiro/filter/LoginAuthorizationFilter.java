@@ -12,17 +12,17 @@ import javax.servlet.ServletResponse;
  */
 public class LoginAuthorizationFilter extends DefaultFilter {
 
-	@Override
-	public boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
-		boolean accessAllowed = super.isAccessAllowed(request, response, mappedValue);
-		if (!accessAllowed) {
-			return false;
-		}
-		Subject subject = getSubject(request, response);
-		if(subject.isAuthenticated()){
-			return true;
-		}
-		// 跳到onAccessDenied处理
-		return false;
-	}
+    @Override
+    public boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
+        boolean accessAllowed = super.isAccessAllowed(request, response, mappedValue);
+        if (!accessAllowed) {
+            return false;
+        }
+        Subject subject = getSubject(request, response);
+        if (subject.isAuthenticated()) {
+            return true;
+        }
+        // 跳到onAccessDenied处理
+        return false;
+    }
 }

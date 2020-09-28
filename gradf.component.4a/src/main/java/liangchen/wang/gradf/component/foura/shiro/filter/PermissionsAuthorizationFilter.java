@@ -12,14 +12,14 @@ import javax.servlet.ServletResponse;
  */
 public class PermissionsAuthorizationFilter extends DefaultFilter {
 
-	@Override
-	public boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue)  {
+    @Override
+    public boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         boolean accessAllowed = super.isAccessAllowed(request, response, mappedValue);
         if (!accessAllowed) {
-			return false;
-		}
-		
-		Subject subject = getSubject(request, response);
+            return false;
+        }
+
+        Subject subject = getSubject(request, response);
         String[] perms = (String[]) mappedValue;
 
         boolean isPermitted = true;
@@ -36,6 +36,6 @@ public class PermissionsAuthorizationFilter extends DefaultFilter {
         }
         // 跳到onAccessDenied处理
         return isPermitted;
-	}
+    }
 
 }

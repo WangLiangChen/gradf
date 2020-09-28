@@ -1,7 +1,5 @@
 package liangchen.wang.gradf.component.foura.shiro.realm;
 
-import liangchen.wang.gradf.framework.cache.primary.CacheManager;
-import liangchen.wang.gradf.framework.commons.exeception.PromptException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;

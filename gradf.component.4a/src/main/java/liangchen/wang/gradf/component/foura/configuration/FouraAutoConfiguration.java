@@ -1,11 +1,11 @@
 package liangchen.wang.gradf.component.foura.configuration;
 
 
-import liangchen.wang.gradf.framework.commons.exeception.ErrorException;
-import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
 import liangchen.wang.gradf.component.foura.spring.interceptor.AccessTokenHandlerInterceptor;
 import liangchen.wang.gradf.component.foura.spring.resolver.AccessTokenHandlerMethodArgumentResolver;
-import liangchen.wang.gradf.framework.webmvc.enumeration.Constant;
+import liangchen.wang.gradf.framework.commons.exception.ErrorException;
+import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
+import liangchen.wang.gradf.framework.web.enumeration.Constant;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -25,10 +25,10 @@ import java.util.List;
 @Configuration
 @AutoConfigureAfter(ShiroAutoConfiguration.class)
 public class FouraAutoConfiguration implements WebMvcConfigurer {
-	private final org.apache.commons.configuration2.Configuration configuration = ConfigurationUtil.INSTANCE.getConfiguration("4a.properties");
+    private final org.apache.commons.configuration2.Configuration configuration = ConfigurationUtil.INSTANCE.getConfiguration("4a.properties");
 
-	@Bean
-	public FilterRegistrationBean<Filter> filterRegistrationBean(ShiroFilterFactoryBean shiroFilterFactoryBean)  {
+    @Bean
+    public FilterRegistrationBean<Filter> filterRegistrationBean(ShiroFilterFactoryBean shiroFilterFactoryBean) {
         Filter shiroFilter;
         try {
             shiroFilter = (Filter) shiroFilterFactoryBean.getObject();
@@ -36,21 +36,22 @@ public class FouraAutoConfiguration implements WebMvcConfigurer {
             throw new ErrorException(e);
         }
         FilterRegistrationBean<Filter> filterRegistration = new FilterRegistrationBean<>(shiroFilter);
-		filterRegistration.addUrlPatterns(Constant.Path.AUTH.getPath("*"));
-		boolean enableAuth = configuration.getBoolean("enableAuth",true);
-		filterRegistration.setEnabled(enableAuth);
-		//filterRegistration.setOrder();
-		return filterRegistration;
-	}
-	@Override
-	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-		resolvers.add(new AccessTokenHandlerMethodArgumentResolver());
-	}
+        filterRegistration.addUrlPatterns(Constant.Path.AUTH.getPath("*"));
+        boolean enableAuth = configuration.getBoolean("enableAuth", true);
+        filterRegistration.setEnabled(enableAuth);
+        //filterRegistration.setOrder();
+        return filterRegistration;
+    }
 
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-	    //注意这里的path配置,是/auth/**，而不是/business/auth/**
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(new AccessTokenHandlerMethodArgumentResolver());
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        //注意这里的path配置,是/auth/**，而不是/business/auth/**
         //因为Interceptor是Spring的，而spring的映射路径是/business
-		registry.addInterceptor(new AccessTokenHandlerInterceptor()).addPathPatterns("/auth/**");
-	}
+        registry.addInterceptor(new AccessTokenHandlerInterceptor()).addPathPatterns("/auth/**");
+    }
 }

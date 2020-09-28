@@ -2,12 +2,12 @@ package liangchen.wang.gradf.component.foura.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
-import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
 import liangchen.wang.gradf.component.foura.manager.IAuthenticationManager;
 import liangchen.wang.gradf.component.foura.manager.IAuthorizationManager;
 import liangchen.wang.gradf.component.foura.manager.domain.result.AccountPasswordResultDomain;
+import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
 import liangchen.wang.gradf.framework.springboot.context.BeanLoader;
-import liangchen.wang.gradf.framework.webmvc.jwts.AccessTokenUtil;
+import liangchen.wang.gradf.framework.web.jwts.AccessTokenUtil;
 
 import java.util.Set;
 

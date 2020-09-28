@@ -20,6 +20,15 @@
             <groupId>liangchen.wang</groupId>
             <artifactId>gradf.framework.cluster</artifactId>
         </dependency>
+        <dependency>
+            <groupId>liangchen.wang</groupId>
+            <artifactId>gradf.framework.web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-spring</artifactId>
+            <version>1.6.0</version>
+        </dependency>
     </dependencies>
 
 </project>

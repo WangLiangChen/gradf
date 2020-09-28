@@ -17,28 +17,29 @@ import java.util.List;
  */
 public class DefaultFilterChainManager extends org.apache.shiro.web.filter.mgt.DefaultFilterChainManager {
     private static final Logger logger = LoggerFactory.getLogger(DefaultFilterChainManager.class);
-	public FilterChain proxy(FilterChain original, List<String> chainNames) {
-	    logger.debug("execute proxy,chainNames:{}",chainNames);
-		NamedFilterList configured = new SimpleNamedFilterList(chainNames.toString());
-		//遍历判断是否既包含login又包含roles
-		boolean containLogin = false,containRoles = false;
-		for (String chainName : chainNames) {
-			NamedFilterList chain = getChain(chainName);
-			for (Filter filter : chain) {
-				configured.add(filter);
-				if(filter instanceof LoginAuthorizationFilter){
-					containLogin = true;
-				}else if(filter instanceof RolesAuthorizationFilter){
-					containRoles = true;
-				}
-			}
-		}
-		//如果都包含则移除Roles
-		if(containLogin && containRoles){
-			configured.removeIf(e->e instanceof RolesAuthorizationFilter);
-		}
+
+    public FilterChain proxy(FilterChain original, List<String> chainNames) {
+        logger.debug("execute proxy,chainNames:{}", chainNames);
+        NamedFilterList configured = new SimpleNamedFilterList(chainNames.toString());
+        //遍历判断是否既包含login又包含roles
+        boolean containLogin = false, containRoles = false;
+        for (String chainName : chainNames) {
+            NamedFilterList chain = getChain(chainName);
+            for (Filter filter : chain) {
+                configured.add(filter);
+                if (filter instanceof LoginAuthorizationFilter) {
+                    containLogin = true;
+                } else if (filter instanceof RolesAuthorizationFilter) {
+                    containRoles = true;
+                }
+            }
+        }
+        //如果都包含则移除Roles
+        if (containLogin && containRoles) {
+            configured.removeIf(e -> e instanceof RolesAuthorizationFilter);
+        }
         FilterChain proxy = configured.proxy(original);
         return proxy;
-	}
+    }
 
 }
