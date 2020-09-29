@@ -17,7 +17,7 @@ import java.awt.image.BufferedImage;
  * @author LiangChen.Wang
  */
 @RestController
-@RequestMapping(value = "/crdf/qrcode")
+@RequestMapping(value = "/gradf/qrcode")
 public class QRCodeController {
 
     @GetMapping("/base64")

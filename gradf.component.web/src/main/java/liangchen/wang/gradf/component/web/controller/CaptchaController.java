@@ -1,6 +1,12 @@
 package liangchen.wang.gradf.component.web.controller;
 
 
+import liangchen.wang.gradf.component.web.manager.ICaptchaManager;
+import liangchen.wang.gradf.component.web.manager.domain.parameter.CaptchaParameterDomain;
+import liangchen.wang.gradf.component.web.manager.domain.parameter.CaptchaRefreshDomain;
+import liangchen.wang.gradf.component.web.manager.domain.parameter.CaptchaValidateDomain;
+import liangchen.wang.gradf.component.web.manager.domain.result.CaptchaResultDomain;
+import liangchen.wang.gradf.framework.web.result.ResponseUtil;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +18,7 @@ import javax.inject.Inject;
  * @author LiangChen.Wang
  */
 @RestController
-@RequestMapping(value = "/crdf/captcha")
+@RequestMapping(value = "/gradf/captcha")
 public class CaptchaController {
     private final ICaptchaManager manager;
 
