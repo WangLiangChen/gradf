@@ -14,13 +14,13 @@ import java.time.LocalDateTime;
  * @author LiangChen.Wang
  */
 @DataConditionAnnotation
-@Repository("Crdf_Data_UpdateLockLock")
+@Repository("Gradf_Data_UpdateLockLock")
 public class UpdateLockImpl extends AbstractDBLock {
     private int maxRetry = 3;
     private long retryPeriod = 500L;
 
-    private final String UPDATE_FOR_LOCK = "update crdf_lock set lock_datetime=? where lock_key=?";
-    private final String INSERT_LOCK = "insert into crdf_lock values(?,?,?,?)";
+    private final String UPDATE_FOR_LOCK = "update gradf_lock set lock_datetime=? where lock_key=?";
+    private final String INSERT_LOCK = "insert into gradf_lock values(?,?,?,?)";
 
     @Override
     protected void executeLockSQL(final Connection connection, final String lockName) {
@@ -71,7 +71,7 @@ public class UpdateLockImpl extends AbstractDBLock {
             ps.setObject(3, LocalDateTime.now());
             ps.setString(4, "");
             if (ps.executeUpdate() != 1) {
-                throw new SQLException("No row exists, and one could not be inserted in table crdf_lock for lock named: " + lockName);
+                throw new SQLException("No row exists, and one could not be inserted in table gradf_lock for lock named: " + lockName);
             }
         } finally {
             ps.close();

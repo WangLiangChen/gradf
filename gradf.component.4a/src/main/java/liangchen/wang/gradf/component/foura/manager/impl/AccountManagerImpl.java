@@ -1,15 +1,6 @@
 package liangchen.wang.gradf.component.foura.manager.impl;
 
-import liangchen.wang.gradf.component.business.base.AbstractManager;
-import liangchen.wang.gradf.framework.commons.exeception.InfoException;
-import liangchen.wang.gradf.framework.commons.exeception.PromptException;
-import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
-import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
-import liangchen.wang.gradf.framework.commons.utils.StringUtil;
-import liangchen.wang.gradf.framework.commons.validator.Assert;
-import liangchen.wang.gradf.framework.commons.validator.AssertLevel;
-import liangchen.wang.gradf.framework.data.enumeration.Status;
-import liangchen.wang.gradf.framework.data.utils.UidDb;
+import liangchen.wang.gradf.component.web.base.AbstractManager;
 import liangchen.wang.gradf.component.foura.dao.IAccountDao;
 import liangchen.wang.gradf.component.foura.dao.IAccountLoginDao;
 import liangchen.wang.gradf.component.foura.dao.entity.Account;
@@ -23,6 +14,15 @@ import liangchen.wang.gradf.component.foura.manager.domain.parameter.ModifyPassw
 import liangchen.wang.gradf.component.foura.manager.domain.result.AccountResultDomain;
 import liangchen.wang.gradf.component.foura.utils.FouraUtil;
 import liangchen.wang.gradf.component.foura.utils.PasswordUtil;
+import liangchen.wang.gradf.framework.commons.exception.InfoException;
+import liangchen.wang.gradf.framework.commons.exception.PromptException;
+import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
+import liangchen.wang.gradf.framework.commons.utils.StringUtil;
+import liangchen.wang.gradf.framework.commons.validator.Assert;
+import liangchen.wang.gradf.framework.commons.validator.AssertLevel;
+import liangchen.wang.gradf.framework.data.enumeration.Status;
+import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
+import liangchen.wang.gradf.framework.data.utils.UidDb;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 
@@ -35,13 +35,13 @@ import java.util.List;
 /**
  * @author LiangChen.Wang 2019-12-19 10:03:02
  */
-@Component("Crdf_Foura_DefaultAccountManager")
-public class AccountManagerImpl extends AbstractManager<Account, AccountResultDomain> implements IAccountManager {
+@Component("Gradf_Foura_DefaultAccountManager")
+public class AccountManagerImpl extends AbstractManager<Account, AccountQuery, AccountResultDomain> implements IAccountManager {
     private final IAccountLoginDao accountLoginDao;
 
     @Inject
-    public AccountManagerImpl(@Named("Crdf_Foura_DefaultAccountDao") IAccountDao dao,
-                              @Named("Crdf_Foura_DefaultAccountLoginDao") IAccountLoginDao accountLoginDao) {
+    public AccountManagerImpl(@Named("Gradf_Foura_DefaultAccountDao") IAccountDao dao,
+                              @Named("Gradf_Foura_DefaultAccountLoginDao") IAccountLoginDao accountLoginDao) {
         super("账户", "Account", dao);
         this.accountLoginDao = accountLoginDao;
     }
@@ -55,7 +55,7 @@ public class AccountManagerImpl extends AbstractManager<Account, AccountResultDo
     @Override
     @Transactional(rollbackOn = Exception.class)
     public boolean insert(AccountParameterDomain parameter, boolean requireChangePassword) {
-        Assert.INSTANCE.notNull(parameter, AssertLevel.INFO, "参数不能为空");
+        Assert.INSTANCE.notNull(parameter, "参数不能为空");
         String login_name = parameter.getLogin_name();
         String mobile = parameter.getMobile();
         String email = parameter.getEmail();
@@ -122,8 +122,8 @@ public class AccountManagerImpl extends AbstractManager<Account, AccountResultDo
 
     @Override
     public boolean updateNickName(Long account_id, String nick_name) {
-        Assert.INSTANCE.notNull(account_id, AssertLevel.INFO, "account_id不能为空");
-        Assert.INSTANCE.notBlank(nick_name, AssertLevel.INFO, "nick_name不能为空");
+        Assert.INSTANCE.notNull(account_id, "account_id不能为空");
+        Assert.INSTANCE.notBlank(nick_name, "nick_name不能为空");
         AccountQuery query = AccountQuery.newInstance();
         query.setAccount_id(account_id);
         AccountParameterDomain parameter = AccountParameterDomain.newInstance();
@@ -143,8 +143,8 @@ public class AccountManagerImpl extends AbstractManager<Account, AccountResultDo
 
     @Override
     public boolean updateStatusByPrimaryKey(Long account_id, String statusTo, String[] statusIn, String[] statusNotIn) {
-        Assert.INSTANCE.notNull(account_id, AssertLevel.INFO, "account_id不能为空");
-        Assert.INSTANCE.notBlank(statusTo, AssertLevel.INFO, "statusTo不能为空");
+        Assert.INSTANCE.notNull(account_id, "account_id不能为空");
+        Assert.INSTANCE.notBlank(statusTo, "statusTo不能为空");
         AccountParameterDomain parameter = AccountParameterDomain.newInstance();
         parameter.setStatus(statusTo);
         AccountQuery query = AccountQuery.newInstance();
@@ -168,13 +168,13 @@ public class AccountManagerImpl extends AbstractManager<Account, AccountResultDo
     @Override
     public AccountResultDomain byPrimaryKeyOrThrow(Long account_id, String[] statusIn, String[] statusNotIn, String... returnFields) {
         AccountResultDomain resultDomain = byPrimaryKey(account_id, statusIn, statusNotIn, returnFields);
-        Assert.INSTANCE.notNull(resultDomain, AssertLevel.INFO, "数据不存在或者状态错误");
+        Assert.INSTANCE.notNull(resultDomain, "数据不存在或者状态错误");
         return resultDomain;
     }
 
     @Override
     public AccountResultDomain byPrimaryKey(Long account_id, String[] statusIn, String[] statusNotIn, String... returnFields) {
-        Assert.INSTANCE.notNull(account_id, AssertLevel.INFO, "account_id不能为空");
+        Assert.INSTANCE.notNull(account_id, "account_id不能为空");
         AccountQuery query = AccountQuery.newInstance();
         query.setAccount_id(account_id);
         query.setStatusIn(statusIn);
@@ -194,11 +194,11 @@ public class AccountManagerImpl extends AbstractManager<Account, AccountResultDo
 
     @Override
     public Long idByKey(String accountKey) {
-        Assert.INSTANCE.notBlank(accountKey, AssertLevel.INFO, "账户Key不能为空");
+        Assert.INSTANCE.notBlank(accountKey, "账户Key不能为空");
         AccountLoginQuery query = AccountLoginQuery.newInstance();
         query.setLogin_name(accountKey);
         AccountLogin accountLogin = accountLoginDao.one(query, "account_id");
-        Assert.INSTANCE.notNull(accountLogin, AssertLevel.INFO, "账户不存在");
+        Assert.INSTANCE.notNull(accountLogin, "账户不存在");
         return accountLogin.getAccount_id();
     }
 
@@ -210,7 +210,7 @@ public class AccountManagerImpl extends AbstractManager<Account, AccountResultDo
 
     @Override
     public boolean exist(String accountKey) {
-        Assert.INSTANCE.notBlank(accountKey, AssertLevel.INFO, "账户Key不能为空");
+        Assert.INSTANCE.notBlank(accountKey, "账户Key不能为空");
         AccountLoginQuery query = AccountLoginQuery.newInstance();
         query.setLogin_name(accountKey);
         return accountLoginDao.exist(query);
@@ -218,7 +218,7 @@ public class AccountManagerImpl extends AbstractManager<Account, AccountResultDo
 
     @Override
     public boolean exist(Long accountId) {
-        Assert.INSTANCE.notNull(accountId, AssertLevel.INFO, "账户ID不能为空");
+        Assert.INSTANCE.notNull(accountId, "账户ID不能为空");
         AccountQuery query = AccountQuery.newInstance();
         query.setAccount_id(accountId);
         return super.exist(query);
@@ -231,8 +231,8 @@ public class AccountManagerImpl extends AbstractManager<Account, AccountResultDo
 
     @Override
     public void resetPassword(Long account_id, String password, boolean requireChangePassword) {
-        Assert.INSTANCE.notNull(account_id, AssertLevel.INFO, "account_id不能为空");
-        Assert.INSTANCE.notBlank(password, AssertLevel.INFO, "password不能为空");
+        Assert.INSTANCE.notNull(account_id, "account_id不能为空");
+        Assert.INSTANCE.notBlank(password, "password不能为空");
         boolean exist = exist(account_id);
         Assert.INSTANCE.isTrue(exist, AssertLevel.PROMPT, "账户不存在");
         AccountParameterDomain parameter = AccountParameterDomain.newInstance();
@@ -252,7 +252,7 @@ public class AccountManagerImpl extends AbstractManager<Account, AccountResultDo
 
     @Override
     public void modifyPassword(ModifyPasswordParameterDomain parameter) {
-        Assert.INSTANCE.validate(parameter, AssertLevel.INFO);
+        Assert.INSTANCE.validate(parameter);
         //验证原始密码
         Long operator = FouraUtil.INSTANCE.getOperator();
         AccountQuery query = new AccountQuery();

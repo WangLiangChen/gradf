@@ -13,7 +13,7 @@ public class RoleInitialization extends FouraInitialization {
     private static final RoleInitialization self = new RoleInitialization();
 
     public static RoleInitialization newInstance(String roleKey, String roleText) {
-        RoleInitialization roleInitialization = ClassBeanUtil.INSTANCE.classCast(self.clone());
+        RoleInitialization roleInitialization = ClassBeanUtil.INSTANCE.cast(self.clone());
         roleInitialization.roleKey = roleKey;
         roleInitialization.roleText = roleText;
         return roleInitialization;

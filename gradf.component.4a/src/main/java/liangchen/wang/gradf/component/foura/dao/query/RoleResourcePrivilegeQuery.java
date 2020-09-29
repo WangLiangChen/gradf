@@ -10,12 +10,12 @@ import javax.persistence.Table;
 /**
  * @author LiangChen.Wang 2020-04-12 23:55:23
 */
-@Table(name = "crdf_role_resource_privilege")
+@Table(name = "gradf_role_resource_privilege")
 public class RoleResourcePrivilegeQuery extends RootQuery {
     private static final RoleResourcePrivilegeQuery self = new RoleResourcePrivilegeQuery();
 
     public static RoleResourcePrivilegeQuery newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     public static RoleResourcePrivilegeQuery newInstance(Long role_id, Long resource_id) {

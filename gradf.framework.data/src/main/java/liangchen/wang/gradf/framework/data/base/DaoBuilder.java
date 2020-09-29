@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  * @author LiangChen.Wang
  */
 @DataConditionAnnotation
-@Repository("Crdf_Data_DaoBuilder")
+@Repository("Gradf_Data_DaoBuilder")
 public class DaoBuilder {
     protected final Logger logger = LoggerFactory.getLogger(DaoBuilder.class);
     private final static Map<String, Storer> storerMap = new ConcurrentHashMap<>(100);
@@ -118,17 +118,17 @@ public class DaoBuilder {
                 StringBuilder sqlBuilder = new StringBuilder();
                 sqlBuilder.append("<script>update ").append(entityStorer.getTableName()).append("<set>");
                 entityStorer.getFields().forEach(e -> {
-                    sqlBuilder.append("<if test=\"@liangchen.wang.gradf.framework.data.CrdfOgnl@isNotEmpty(entity.").append(e).append(")\">");
+                    sqlBuilder.append("<if test=\"@liangchen.wang.gradf.framework.data.GradfOgnl@isNotEmpty(entity.").append(e).append(")\">");
                     sqlBuilder.append(e).append("=#{entity.").append(e).append("},");
                     sqlBuilder.append("</if>");
                 });
 
-                sqlBuilder.append("<if test=\"@liangchen.wang.gradf.framework.data.CrdfOgnl@isNotEmpty(entity.dynamicFields)\">");
+                sqlBuilder.append("<if test=\"@liangchen.wang.gradf.framework.data.GradfOgnl@isNotEmpty(entity.dynamicFields)\">");
                 sqlBuilder.append("<foreach collection=\"entity.dynamicFields.keys\" item=\"key\" separator=\",\">");
-                sqlBuilder.append("<if test=\"@liangchen.wang.gradf.framework.data.CrdfOgnl@isNull(entity.dynamicFields[key])\">");
+                sqlBuilder.append("<if test=\"@liangchen.wang.gradf.framework.data.GradfOgnl@isNull(entity.dynamicFields[key])\">");
                 sqlBuilder.append("${key} = null");
                 sqlBuilder.append("</if>");
-                sqlBuilder.append("<if test=\"@liangchen.wang.gradf.framework.data.CrdfOgnl@isNotNull(entity.dynamicFields[key])\">");
+                sqlBuilder.append("<if test=\"@liangchen.wang.gradf.framework.data.GradfOgnl@isNotNull(entity.dynamicFields[key])\">");
                 sqlBuilder.append("${key} = #{entity.dynamicFields.${key}}");
                 sqlBuilder.append("</if>");
                 sqlBuilder.append("</foreach>");
@@ -183,7 +183,7 @@ public class DaoBuilder {
                 listSql.append("<script>select <trim suffixOverrides=\",\"><foreach collection=\"returnFields\" item=\"item\" index=\"index\" separator=\",\">${item}</foreach></trim> from ").append(entityStorer.getTableName());
                 listSql.append(findWhereSql(queryClass));
                 listSql.append("<if test=\"true==forUpdate\">").append("for update").append("</if>");
-                listSql.append("<if test=\"@liangchen.wang.gradf.framework.data.CrdfOgnl@isNotEmpty(orderBy)\"> order by <foreach collection=\"orderBy\" item=\"item\" index=\"index\" separator=\",\"> ${item.orderBy} ${item.direction} </foreach></if>");
+                listSql.append("<if test=\"@liangchen.wang.gradf.framework.data.GradfOgnl@isNotEmpty(orderBy)\"> order by <foreach collection=\"orderBy\" item=\"item\" index=\"index\" separator=\",\"> ${item.orderBy} ${item.direction} </foreach></if>");
                 listSql.append("<if test=\"null!=offset and null!=rows\">limit #{offset},#{rows}</if>");
                 listSql.append("</script>");
                 buildMappedStatement(cacheKey, SqlCommandType.SELECT, listSql.toString(), queryClass, entityClass);
@@ -209,7 +209,7 @@ public class DaoBuilder {
             if (columnName.length() == 0) {
                 columnName = fieldName;
             }
-            whereSql.append("<if test=\"@liangchen.wang.gradf.framework.data.CrdfOgnl@isNotEmpty(").append(fieldName).append(")\">");
+            whereSql.append("<if test=\"@liangchen.wang.gradf.framework.data.GradfOgnl@isNotEmpty(").append(fieldName).append(")\">");
             AndOr andOr = annotation.andOr();
             whereSql.append(andOr.getAndOr()).append(columnName);
             Operator operator = annotation.operator();

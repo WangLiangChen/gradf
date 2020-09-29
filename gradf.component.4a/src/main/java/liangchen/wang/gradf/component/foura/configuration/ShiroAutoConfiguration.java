@@ -10,6 +10,7 @@ import liangchen.wang.gradf.component.foura.shiro.filterchain.GradfPathMatchingF
 import liangchen.wang.gradf.component.foura.shiro.permission.BitAndWildPermissionResolver;
 import liangchen.wang.gradf.component.foura.shiro.permission.GradfRolePermissionResolver;
 import liangchen.wang.gradf.component.foura.shiro.realm.*;
+import liangchen.wang.gradf.framework.cache.primary.GradfCacheManager;
 import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.credential.AllowAllCredentialsMatcher;
@@ -28,7 +29,6 @@ import org.apache.shiro.web.mgt.DefaultWebSubjectFactory;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -54,15 +54,19 @@ import java.util.HashSet;
 @AutoConfigureAfter(ShiroLifecycleConfiguration.class)
 public class ShiroAutoConfiguration {
     private final static org.apache.commons.configuration2.Configuration config = ConfigurationUtil.INSTANCE.getConfiguration("4a.properties");
-    private final CacheManager cacheManager;
+    private final GradfCacheManager cacheManager;
 
     @Inject
-    public ShiroAutoConfiguration(CacheManager cacheManager) {
+    public ShiroAutoConfiguration(GradfCacheManager cacheManager) {
         this.cacheManager = cacheManager;
     }
 
-    // 相当于调用SecurityUtils.setSecurityManager(securityManager)
-    //@Bean
+    /**
+     * 相当于调用SecurityUtils.setSecurityManager(securityManager)
+     *
+     * @param securityManager
+     * @return
+     */
     @Deprecated
     public MethodInvokingFactoryBean securityUtils(DefaultWebSecurityManager securityManager) {
         MethodInvokingFactoryBean factoryBean = new MethodInvokingFactoryBean();
@@ -75,7 +79,6 @@ public class ShiroAutoConfiguration {
     public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager securityManager, GradfPathMatchingFilterChainResolver filterChainResolver) {
         GradfShiroFilterFactoryBean shiroFilterFactoryBean = new GradfShiroFilterFactoryBean(filterChainResolver);
         shiroFilterFactoryBean.setSecurityManager(securityManager);
-        shiroFilterFactoryBean.setFilterChainResolver(filterChainResolver);
         return shiroFilterFactoryBean;
     }
 
@@ -85,11 +88,11 @@ public class ShiroAutoConfiguration {
         //认证器
         securityManager.setAuthenticator(new GradfModularRealmAuthenticator());
         //授权器
-        securityManager.setAuthorizer(authorizer());
+        securityManager.setAuthorizer(realmAuthorizer());
         //realms
         Collection<Realm> realms = new HashSet<>();
-        realms.add(accountPasswordRealm());
         realms.add(statelessRealm());
+        realms.add(accountPasswordRealm());
         realms.add(mobileCaptchaRealm());
         securityManager.setRealms(realms);
 
@@ -109,7 +112,7 @@ public class ShiroAutoConfiguration {
             sessionManager.setSessionIdCookieEnabled(false);
             securityManager.setSessionManager(sessionManager);
         }
-        //设置静态方法
+        // 设置静态方法
         SecurityUtils.setSecurityManager(securityManager);
         return securityManager;
     }
@@ -173,7 +176,7 @@ public class ShiroAutoConfiguration {
         return jwtRealm;
     }
 
-    private Authorizer authorizer() {
+    private Authorizer realmAuthorizer() {
         ModularRealmAuthorizer authorizer = new ModularRealmAuthorizer();
         authorizer.setPermissionResolver(new BitAndWildPermissionResolver());
         authorizer.setRolePermissionResolver(new GradfRolePermissionResolver());

@@ -58,7 +58,7 @@ class JdbcTemplateStorageAccessor extends AbstractStorageAccessor {
 
     @Override
     public boolean insertRecord(LockConfiguration lockConfiguration) {
-        String sql = "INSERT INTO crdf_lock (lock_key, lock_datetime, lock_until, lock_by) VALUES(?, ?, ?, ?)";
+        String sql = "INSERT INTO gradf_lock (lock_key, lock_datetime, lock_until, lock_by) VALUES(?, ?, ?, ?)";
         Boolean result = transactionTemplate.execute(status -> {
             try {
                 int insertedRows = jdbcTemplate.update(sql, preparedStatement -> {
@@ -80,7 +80,7 @@ class JdbcTemplateStorageAccessor extends AbstractStorageAccessor {
 
     @Override
     public boolean updateRecord(LockConfiguration lockConfiguration) {
-        String sql = "UPDATE crdf_lock SET lock_datetime = ?, lock_until = ?, lock_by = ? WHERE lock_key = ? AND lock_until <= ?";
+        String sql = "UPDATE gradf_lock SET lock_datetime = ?, lock_until = ?, lock_by = ? WHERE lock_key = ? AND lock_until <= ?";
         Boolean result = transactionTemplate.execute(status -> {
             int updatedRows = jdbcTemplate.update(sql, statement -> {
                 Instant now = Instant.now();
@@ -97,7 +97,7 @@ class JdbcTemplateStorageAccessor extends AbstractStorageAccessor {
 
     @Override
     public boolean extend(LockConfiguration lockConfiguration) {
-        String sql = "UPDATE crdf_lock SET lock_until = ? WHERE lock_key = ? AND lock_by = ? AND lock_until > ? ";
+        String sql = "UPDATE gradf_lock SET lock_until = ? WHERE lock_key = ? AND lock_by = ? AND lock_until > ? ";
 
         logger.debug("Extending lock={} until={}", lockConfiguration.getName(), lockConfiguration.getLockAtMostUntil());
         Boolean result = transactionTemplate.execute(status -> {
@@ -122,7 +122,7 @@ class JdbcTemplateStorageAccessor extends AbstractStorageAccessor {
 
     @Override
     public void unlock(LockConfiguration lockConfiguration) {
-        String sql = "UPDATE crdf_lock SET lock_until = ? WHERE lock_key = ?";
+        String sql = "UPDATE gradf_lock SET lock_until = ? WHERE lock_key = ?";
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {

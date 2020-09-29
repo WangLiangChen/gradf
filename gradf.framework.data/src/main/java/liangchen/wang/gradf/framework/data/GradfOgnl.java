@@ -7,9 +7,9 @@ import java.util.Map;
 /**
  * @author LiangChen.Wang
  * 提供给mybatis判断使用
- * <if test="@liangchen.wang.gradf.framework.data.CrdfOgnl@isNotBlank(tenantId)">
+ * <if test="@liangchen.wang.gradf.framework.data.GradfOgnl@isNotBlank(tenantId)">
  */
-public class CrdfOgnl {
+public class GradfOgnl {
     public static boolean isTrue(Boolean bool) {
         return null != bool && bool;
     }

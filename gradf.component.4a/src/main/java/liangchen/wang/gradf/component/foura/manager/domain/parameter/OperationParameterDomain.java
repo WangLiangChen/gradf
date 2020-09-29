@@ -1,6 +1,6 @@
 package liangchen.wang.gradf.component.foura.manager.domain.parameter;
 
-import liangchen.wang.gradf.component.business.base.ParameterDomain;
+import liangchen.wang.gradf.component.web.base.ParameterDomain;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
 import liangchen.wang.gradf.component.foura.dao.entity.Operation;
 
@@ -11,7 +11,7 @@ public class OperationParameterDomain extends ParameterDomain<Operation> {
     private static final OperationParameterDomain self = new OperationParameterDomain();
 
     public static OperationParameterDomain newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     private Long operation_id;

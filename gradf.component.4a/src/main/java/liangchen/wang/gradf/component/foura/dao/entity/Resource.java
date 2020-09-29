@@ -11,12 +11,12 @@ import java.time.LocalDateTime;
 /**
  * @author LiangChen.Wang 2020-04-12 00:45:06
  */
-@Entity(name = "crdf_resource")
+@Entity(name = "gradf_resource")
 public class Resource extends RootEntity {
     private static final Resource self = new Resource();
 
     public static Resource newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     @Id

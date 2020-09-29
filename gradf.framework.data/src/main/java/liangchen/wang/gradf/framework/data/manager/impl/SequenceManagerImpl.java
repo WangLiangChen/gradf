@@ -9,13 +9,13 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.Transactional;
 
-@Component("Crdf_Data_SequenceManager")
+@Component("Gradf_Data_SequenceManager")
 @ConditionalOnBean(ISequenceDao.class)
 public class SequenceManagerImpl implements ISequenceManager {
     private final ISequenceDao dao;
 
     @Inject
-    public SequenceManagerImpl(@Named("Crdf_Data_SequenceDao") ISequenceDao dao) {
+    public SequenceManagerImpl(@Named("Gradf_Data_SequenceDao") ISequenceDao dao) {
         this.dao = dao;
     }
 

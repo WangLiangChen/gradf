@@ -10,12 +10,12 @@ import javax.persistence.Table;
 /**
  * @author LiangChen.Wang 2020-04-13 00:40:41
  */
-@Table(name = "crdf_url")
+@Table(name = "gradf_url")
 public class UrlQuery extends RootQuery {
     private static final UrlQuery self = new UrlQuery();
 
     public static UrlQuery newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     public static UrlQuery newInstance(Long url_id) {

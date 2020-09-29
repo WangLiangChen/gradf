@@ -9,12 +9,12 @@ import javax.persistence.Id;
 /**
  * @author LiangChen.Wang 2020-04-12 00:45:06
  */
-@Entity(name = "crdf_account")
+@Entity(name = "gradf_account")
 public class Account extends BaseEntity {
     private static final Account self = new Account();
 
     public static Account newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     @Id

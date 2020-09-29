@@ -10,12 +10,12 @@ import javax.persistence.Table;
 /**
  * @author LiangChen.Wang 2020-04-12 00:45:06
 */
-@Table(name = "crdf_group_account")
+@Table(name = "gradf_group_account")
 public class GroupAccountQuery extends RootQuery {
     private static final GroupAccountQuery self = new GroupAccountQuery();
 
     public static GroupAccountQuery newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     public static GroupAccountQuery newInstance(Long group_id, Long account_id) {

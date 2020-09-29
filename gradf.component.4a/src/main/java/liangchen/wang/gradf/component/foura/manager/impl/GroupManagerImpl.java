@@ -1,6 +1,6 @@
 package liangchen.wang.gradf.component.foura.manager.impl;
 
-import liangchen.wang.gradf.component.business.base.AbstractManager;
+import liangchen.wang.gradf.component.web.base.AbstractManager;
 import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
 import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
@@ -25,10 +25,10 @@ import java.util.List;
 /**
  * @author LiangChen.Wang 2020-04-12 01:44:04
  */
-@Component("Crdf_Foura_DefaultGroupManager")
+@Component("Gradf_Foura_DefaultGroupManager")
 public class GroupManagerImpl extends AbstractManager<Group, GroupResultDomain> implements IGroupManager {
     @Inject
-    public GroupManagerImpl(@Named("Crdf_Foura_DefaultGroupDao") IGroupDao dao) {
+    public GroupManagerImpl(@Named("Gradf_Foura_DefaultGroupDao") IGroupDao dao) {
         super("群组", "Group", dao);
     }
 
@@ -36,7 +36,7 @@ public class GroupManagerImpl extends AbstractManager<Group, GroupResultDomain> 
     public boolean insert(GroupParameterDomain parameter) {
         Assert.INSTANCE.notNull(parameter, AssertLevel.INFO,"参数不能为空");
         parameter.populateEntity((group) -> {
-            Assert.INSTANCE.notNull(group.getGroup_id(), () -> group.setGroup_id(UidDb.INSTANCE.uid()));
+            Assert.INSTANCE.notNullElseRun(group.getGroup_id(), () -> group.setGroup_id(UidDb.INSTANCE.uid()));
             Assert.INSTANCE.notBlank(group.getStatus(), () -> group.setStatus(Status.NORMAL.name()));
             group.initOperator();
             group.initFields();
@@ -62,7 +62,7 @@ public class GroupManagerImpl extends AbstractManager<Group, GroupResultDomain> 
 
     @Override
     public boolean updateByPrimaryKey(GroupParameterDomain parameter) {
-        Assert.INSTANCE.notNull(parameter, AssertLevel.INFO, "参数不能为空");
+        Assert.INSTANCE.notNull(parameter, "参数不能为空");
         GroupQuery query = GroupQuery.newInstance();
         query.setGroup_id(parameter.getGroup_id());
         int rows = updateByQuery(parameter, query);
@@ -71,8 +71,8 @@ public class GroupManagerImpl extends AbstractManager<Group, GroupResultDomain> 
 
     @Override
     public int updateByQuery(GroupParameterDomain parameter, GroupQuery query) {
-        Assert.INSTANCE.notNull(parameter, AssertLevel.INFO, "参数不能为空");
-        Assert.INSTANCE.notNull(query, AssertLevel.INFO, "查询参数不能为空");
+        Assert.INSTANCE.notNull(parameter, "参数不能为空");
+        Assert.INSTANCE.notNull(query, "查询参数不能为空");
         parameter.populateEntity((group) -> {
             group.setModify_datetime(LocalDateTime.now());
             group.setModifier(ContextUtil.INSTANCE.getOperator());
@@ -93,8 +93,8 @@ public class GroupManagerImpl extends AbstractManager<Group, GroupResultDomain> 
 
     @Override
     public boolean updateStatusByPrimaryKey(Long group_id, String statusTo, String[] statusIn, String[] statusNotIn) {
-        Assert.INSTANCE.notBlank(group_id, AssertLevel.INFO, "群组ID不能为空");
-        Assert.INSTANCE.notBlank(statusTo, AssertLevel.INFO, "状态不能为空");
+        Assert.INSTANCE.notBlank(group_id, "群组ID不能为空");
+        Assert.INSTANCE.notBlank(statusTo, "状态不能为空");
         GroupParameterDomain parameter = GroupParameterDomain.newInstance();
         parameter.setStatus(statusTo);
         GroupQuery query = GroupQuery.newInstance();
@@ -118,13 +118,13 @@ public class GroupManagerImpl extends AbstractManager<Group, GroupResultDomain> 
     @Override
     public GroupResultDomain byPrimaryKeyOrThrow(Long group_id, String[] statusIn, String[] statusNotIn, String... returnFields) {
         GroupResultDomain resultDomain = byPrimaryKey(group_id, statusIn, statusNotIn, returnFields);
-        Assert.INSTANCE.notNull(resultDomain, AssertLevel.INFO, "数据不存在或者状态错误");
+        Assert.INSTANCE.notNull(resultDomain, "数据不存在或者状态错误");
         return resultDomain;
     }
 
     @Override
     public GroupResultDomain byPrimaryKey(Long group_id, String[] statusIn, String[] statusNotIn, String... returnFields) {
-        Assert.INSTANCE.notNull(group_id, AssertLevel.INFO, "群组ID不能为空");
+        Assert.INSTANCE.notNull(group_id, "群组ID不能为空");
         GroupQuery query = GroupQuery.newInstance();
         query.setGroup_id(group_id);
         query.setStatusIn(statusIn);
@@ -144,11 +144,11 @@ public class GroupManagerImpl extends AbstractManager<Group, GroupResultDomain> 
 
     @Override
     public Long idByKey(String group_key) {
-        Assert.INSTANCE.notBlank(group_key, AssertLevel.INFO, "群组Key不能为空");
+        Assert.INSTANCE.notBlank(group_key, "群组Key不能为空");
         GroupQuery query = GroupQuery.newInstance();
         query.setGroup_key(group_key);
         GroupResultDomain groupResultDomain = one(query, "group_id");
-        Assert.INSTANCE.notNull(groupResultDomain, AssertLevel.INFO, "数据不存在");
+        Assert.INSTANCE.notNull(groupResultDomain, "数据不存在");
         return groupResultDomain.getGroup_id();
     }
 

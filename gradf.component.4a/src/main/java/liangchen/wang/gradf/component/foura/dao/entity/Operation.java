@@ -11,12 +11,12 @@ import java.time.LocalDateTime;
 /**
  * @author LiangChen.Wang 2020-04-12 23:47:02
  */
-@Entity(name = "crdf_operation")
+@Entity(name = "gradf_operation")
 public class Operation extends RootEntity {
     private static final Operation self = new Operation();
 
     public static Operation newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     @Id

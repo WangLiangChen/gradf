@@ -2,7 +2,7 @@ package liangchen.wang.gradf.component.foura.controller;
 
 import liangchen.wang.gradf.component.foura.manager.IAuthorizationManager;
 import liangchen.wang.gradf.component.foura.manager.domain.parameter.AuthUrlParameterDomain;
-import liangchen.wang.gradf.framework.webmvc.result.ResponseUtil;
+import liangchen.wang.gradf.framework.web.result.ResponseUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -14,12 +14,12 @@ import java.util.Map;
  * @author LiangChen.Wang 2019/8/7 13:40
  */
 @RestController
-@RequestMapping("/auth/crdf/4a/authorization")
+@RequestMapping("/auth/gradf/4a/authorization")
 public class AuthorizationController {
     private final IAuthorizationManager manager;
 
     @Inject
-    public AuthorizationController(@Named("Crdf_Foura_DefaultAuthorizationManager") IAuthorizationManager manager) {
+    public AuthorizationController(@Named("Gradf_Foura_DefaultAuthorizationManager") IAuthorizationManager manager) {
         this.manager = manager;
     }
 

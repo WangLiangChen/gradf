@@ -14,7 +14,7 @@ public class GroupInitialization extends FouraInitialization {
     private static final GroupInitialization self = new GroupInitialization();
 
     public static GroupInitialization newInstance(String groupKey,String groupText) {
-        GroupInitialization groupInitialization = ClassBeanUtil.INSTANCE.classCast(self.clone());
+        GroupInitialization groupInitialization = ClassBeanUtil.INSTANCE.cast(self.clone());
         groupInitialization.groupKey = groupKey;
         groupInitialization.groupText = groupText;
         return groupInitialization;

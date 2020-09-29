@@ -17,7 +17,7 @@ import java.util.Map;
 public enum BroadcastingCluster {
     //
     INSTANCE;
-    private final String clusterName = "CrdfBroadcastingCluster";
+    private final String clusterName = "GradfBroadcastingCluster";
     private final Map<String, String> states = new HashMap<>();
     private final JChannel channel;
     private final String channelName;

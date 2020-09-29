@@ -10,12 +10,12 @@ import javax.persistence.Table;
 /**
  * @author LiangChen.Wang 2020-04-12 23:47:02
 */
-@Table(name = "crdf_operation")
+@Table(name = "gradf_operation")
 public class OperationQuery extends RootQuery {
     private static final OperationQuery self = new OperationQuery();
 
     public static OperationQuery newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     public static OperationQuery newInstance(Long operation_id) {

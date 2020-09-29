@@ -21,23 +21,24 @@ public abstract class GradfRealm extends AuthorizingRealm {
     private static final Logger logger = LoggerFactory.getLogger(GradfRealm.class);
 
     /**
-     * 改写获取授权信息，根据认证信息里的account_id获取对应的角色key
+     * 改写获取授权信息，根据认证信息里的account_id获取对应的role
      *
      * @param principals
      * @return
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
         Object primaryPrincipal = principals.getPrimaryPrincipal();
         logger.debug("primaryPrincipal is:{}", primaryPrincipal);
         Subject subject = SecurityUtils.getSubject();
-        // 因为非正常退出，即没有显式调用 SecurityUtils.getSubject().logout(),(可能是关闭浏览器，或超时)，但此时缓存依旧存在(principals)，所以会自己跑到授权方法里。
+        SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
+        // 因为非正常退出，即没有显式调用 SecurityUtils.getSubject().logout(),(可能是关闭浏览器，或超时)，但此时缓存依旧存在(principals)，要判断一下。
         if (!subject.isAuthenticated()) {
             doClearCache(principals);
             subject.logout();
             return authorizationInfo;
         }
+        // principalCollection
         Collection<?> collection = principals.fromRealm(getName());
         if (collection.isEmpty()) {
             return authorizationInfo;

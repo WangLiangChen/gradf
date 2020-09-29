@@ -9,12 +9,12 @@ import javax.persistence.Id;
 /**
  * @author LiangChen.Wang 2020-04-12 00:45:06
 */
-@Entity(name = "crdf_role_account")
+@Entity(name = "gradf_role_account")
 public class RoleAccount extends RootEntity {
     private static final RoleAccount self = new RoleAccount();
 
     public static RoleAccount newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     @Id

@@ -9,7 +9,7 @@ public class AccountInitialization extends FouraInitialization {
     private static final AccountInitialization self = new AccountInitialization();
 
     public static AccountInitialization newInstance(String loginName,String nickName,String password) {
-        AccountInitialization accountInitialization = ClassBeanUtil.INSTANCE.classCast(self.clone());
+        AccountInitialization accountInitialization = ClassBeanUtil.INSTANCE.cast(self.clone());
         accountInitialization.loginName = loginName;
         accountInitialization.nickName = nickName;
         accountInitialization.password = password;

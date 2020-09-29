@@ -10,12 +10,12 @@ import javax.persistence.Table;
 /**
  * @author LiangChen.Wang 2020-04-12 23:55:49
 */
-@Table(name = "crdf_role_resource_operation")
+@Table(name = "gradf_role_resource_operation")
 public class RoleResourceOperationQuery extends RootQuery {
     private static final RoleResourceOperationQuery self = new RoleResourceOperationQuery();
 
     public static RoleResourceOperationQuery newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     public static RoleResourceOperationQuery newInstance(Long role_id, Long resource_id, Long operation_id) {

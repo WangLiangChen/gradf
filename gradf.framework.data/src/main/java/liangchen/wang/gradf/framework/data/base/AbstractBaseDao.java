@@ -21,7 +21,7 @@ public abstract class AbstractBaseDao<E extends RootEntity, Q extends RootQuery>
     private final Class<E> entityClass;
     private final Class<Q> queryClass;
     @Inject
-    @Named("Crdf_Data_DaoBuilder")
+    @Named("Gradf_Data_DaoBuilder")
     private DaoBuilder daoBuilder;
 
     @SuppressWarnings({"unchecked"})

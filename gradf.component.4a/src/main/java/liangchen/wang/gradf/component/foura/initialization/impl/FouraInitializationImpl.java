@@ -3,7 +3,7 @@ package liangchen.wang.gradf.component.foura.initialization.impl;
 import liangchen.wang.gradf.component.foura.enumeration.FouraDefaultRoles;
 import liangchen.wang.gradf.component.foura.initialization.IFouraInitialization;
 import liangchen.wang.gradf.component.foura.initialization.domain.*;
-import liangchen.wang.gradf.framework.webmvc.enumeration.Constant;
+import liangchen.wang.gradf.framework.web.enumeration.Constant;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * @author .LiangChen.Wang
  */
-@Component("Crdf_Foura_DefaultFouraInitialization")
+@Component("Gradf_Foura_DefaultFouraInitialization")
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class FouraInitializationImpl implements IFouraInitialization {
     @Override
@@ -55,8 +55,8 @@ public class FouraInitializationImpl implements IFouraInitialization {
     @Override
     public UrlRolesInitialization urlRoles() {
         UrlRolesInitialization urlRolesInitialization = UrlRolesInitialization.newInstance();
-        urlRolesInitialization.put(Constant.Path.AUTH.getPath("crdf/4a/mine/**"));
-        urlRolesInitialization.put(Constant.Path.AUTH.getPath("crdf/4a/authorization/validateAuthWithUrl"));
+        urlRolesInitialization.put(Constant.Path.AUTH.getPath("gradf/4a/mine/**"));
+        urlRolesInitialization.put(Constant.Path.AUTH.getPath("gradf/4a/authorization/validateAuthWithUrl"));
         urlRolesInitialization.put(Constant.Path.AUTH.getPath("**"), FouraDefaultRoles.ROOT.name());
         return urlRolesInitialization;
     }

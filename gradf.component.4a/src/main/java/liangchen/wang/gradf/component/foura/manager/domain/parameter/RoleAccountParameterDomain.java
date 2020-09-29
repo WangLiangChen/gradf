@@ -1,6 +1,6 @@
 package liangchen.wang.gradf.component.foura.manager.domain.parameter;
 
-import liangchen.wang.gradf.component.business.base.ParameterDomain;
+import liangchen.wang.gradf.component.web.base.ParameterDomain;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
 import liangchen.wang.gradf.component.foura.dao.entity.RoleAccount;
 
@@ -13,7 +13,7 @@ public class RoleAccountParameterDomain extends ParameterDomain<RoleAccount> {
     private static final RoleAccountParameterDomain self = new RoleAccountParameterDomain();
 
     public static RoleAccountParameterDomain newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     @NotNull(message = "角色ID不能为空")

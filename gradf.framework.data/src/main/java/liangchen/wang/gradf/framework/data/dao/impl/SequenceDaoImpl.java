@@ -12,10 +12,10 @@ import javax.inject.Named;
  * @author LiangChen.Wang
  */
 @DataConditionAnnotation
-@Repository("Crdf_Data_SequenceDao")
+@Repository("Gradf_Data_SequenceDao")
 public class SequenceDaoImpl implements ISequenceDao {
-    private static final String SELECT_SQL = "select sequence_number from crdf_sequence where sequence_key=?";
-    private static final String INSERT_SQL = "insert into crdf_sequence values(?,?) on duplicate key update sequence_number=sequence_number+1";
+    private static final String SELECT_SQL = "select sequence_number from gradf_sequence where sequence_key=?";
+    private static final String INSERT_SQL = "insert into gradf_sequence values(?,?) on duplicate key update sequence_number=sequence_number+1";
     private final JdbcTemplate jdbcTemplate;
 
     @Inject

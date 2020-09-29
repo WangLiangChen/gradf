@@ -39,7 +39,7 @@ public class FouraAutoConfiguration implements WebMvcConfigurer {
         filterRegistration.addUrlPatterns(Constant.Path.AUTH.getPath("*"));
         boolean enableAuth = configuration.getBoolean("enableAuth", true);
         filterRegistration.setEnabled(enableAuth);
-        //filterRegistration.setOrder();
+        // filterRegistration.setOrder();
         return filterRegistration;
     }
 
@@ -50,8 +50,10 @@ public class FouraAutoConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        //注意这里的path配置,是/auth/**，而不是/business/auth/**
-        //因为Interceptor是Spring的，而spring的映射路径是/business
+        /**
+         *注意这里的path配置,是/auth/**，而不是/business/auth/**
+         *因为Interceptor是Spring的，而spring的映射路径是/business
+         */
         registry.addInterceptor(new AccessTokenHandlerInterceptor()).addPathPatterns("/auth/**");
     }
 }

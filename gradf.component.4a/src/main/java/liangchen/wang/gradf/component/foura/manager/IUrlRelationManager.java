@@ -1,6 +1,5 @@
 package liangchen.wang.gradf.component.foura.manager;
 
-import liangchen.wang.gradf.component.business.base.IAbstractManager;
 import liangchen.wang.gradf.component.foura.dao.query.UrlRelationQuery;
 import liangchen.wang.gradf.component.foura.manager.domain.parameter.UrlRelationParameterDomain;
 import liangchen.wang.gradf.component.foura.manager.domain.result.UrlRelationResultDomain;

@@ -18,16 +18,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Component("Crdf_Foura_DefaultMineManager")
+@Component("Gradf_Foura_DefaultMineManager")
 public class MineManagerImpl implements IMineManager {
     private final IAccountManager accountManager;
     private final IRoleManager roleManager;
     private final IRoleAccountManager roleAccountManager;
 
     @Inject
-    public MineManagerImpl(@Named("Crdf_Foura_DefaultAccountManager") IAccountManager accountManager,
-                           @Named("Crdf_Foura_DefaultRoleManager") IRoleManager roleManager,
-                           @Named("Crdf_Foura_DefaultRoleAccountManager") IRoleAccountManager roleAccountManager) {
+    public MineManagerImpl(@Named("Gradf_Foura_DefaultAccountManager") IAccountManager accountManager,
+                           @Named("Gradf_Foura_DefaultRoleManager") IRoleManager roleManager,
+                           @Named("Gradf_Foura_DefaultRoleAccountManager") IRoleAccountManager roleAccountManager) {
         this.accountManager = accountManager;
         this.roleManager = roleManager;
         this.roleAccountManager = roleAccountManager;

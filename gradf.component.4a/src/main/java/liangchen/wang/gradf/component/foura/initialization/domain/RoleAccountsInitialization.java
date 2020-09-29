@@ -13,7 +13,7 @@ public class RoleAccountsInitialization extends FouraInitialization {
     private static final RoleAccountsInitialization self = new RoleAccountsInitialization();
     private Map<String, Set<String>> map = new HashMap<>();
     public static RoleAccountsInitialization newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     public RoleAccountsInitialization put(String roleKey, String... loginNames) {

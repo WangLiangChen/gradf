@@ -20,7 +20,7 @@ import java.util.HashSet;
  */
 public abstract class AbstractDBLock implements IDBLock {
     private static final Logger logger = LoggerFactory.getLogger(AbstractDBLock.class);
-    private static final String DELETESQL = "delete from crdf_lock where lock_key=?";
+    private static final String DELETESQL = "delete from gradf_lock where lock_key=?";
     // 持有锁的线程
     private TransmittableThreadLocal<HashSet<String>> lockOwnerThreads = new TransmittableThreadLocal<>();
     @Inject

@@ -14,7 +14,7 @@ public class GroupAccountsInitialization extends FouraInitialization {
     private Map<String, Set<String>> map = new HashMap<>();
 
     public static GroupAccountsInitialization newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     public GroupAccountsInitialization put(String groupKey, String... loginNames) {

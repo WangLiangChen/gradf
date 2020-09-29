@@ -9,12 +9,12 @@ import javax.persistence.Id;
 /**
  * @author LiangChen.Wang 2020-04-12 23:55:23
 */
-@Entity(name = "crdf_role_resource_privilege")
+@Entity(name = "gradf_role_resource_privilege")
 public class RoleResourcePrivilege extends RootEntity {
     private static final RoleResourcePrivilege self = new RoleResourcePrivilege();
 
     public static RoleResourcePrivilege newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     @Id

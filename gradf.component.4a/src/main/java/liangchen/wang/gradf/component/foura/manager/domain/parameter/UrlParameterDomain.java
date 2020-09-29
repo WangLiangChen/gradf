@@ -1,6 +1,6 @@
 package liangchen.wang.gradf.component.foura.manager.domain.parameter;
 
-import liangchen.wang.gradf.component.business.base.ParameterDomain;
+import liangchen.wang.gradf.component.web.base.ParameterDomain;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
 import liangchen.wang.gradf.framework.commons.validator.UpdateGroup;
 import liangchen.wang.gradf.component.foura.dao.entity.Url;
@@ -15,7 +15,7 @@ public class UrlParameterDomain extends ParameterDomain<Url> {
     private static final UrlParameterDomain self = new UrlParameterDomain();
 
     public static UrlParameterDomain newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     @NotNull(message = "url_id不能为空",groups = {UpdateGroup.class})

@@ -9,12 +9,12 @@ import javax.persistence.Id;
 /**
  * @author LiangChen.Wang 2020-04-12 01:44:04
 */
-@Entity(name = "crdf_group")
+@Entity(name = "gradf_group")
 public class Group extends BaseEntity {
     private static final Group self = new Group();
 
     public static Group newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     @Id

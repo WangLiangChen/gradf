@@ -10,6 +10,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>gradf.component.commons</artifactId>
-
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>liangchen.wang</groupId>
+            <artifactId>gradf.component.4a</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

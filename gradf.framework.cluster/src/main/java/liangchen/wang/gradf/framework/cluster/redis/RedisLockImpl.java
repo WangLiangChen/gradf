@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import java.util.concurrent.locks.Lock;
 
-@Component("Crdf_Distributed_RedisLock")
+@Component("Gradf_Distributed_RedisLock")
 @ConditionalOnBean(RedisLockRegistry.class)
 public class RedisLockImpl implements ILock {
     private final RedisLockRegistry redisLockRegistry;

@@ -11,14 +11,14 @@ import javax.inject.Named;
 /**
  * @author LiangChen.Wang 2019/7/5 15:42
  */
-@RestController("Crdf_Foura_DefaultAuthedAccountController")
-@RequestMapping("/auth/crdf/4a/account")
+@RestController("Gradf_Foura_DefaultAuthedAccountController")
+@RequestMapping("/auth/gradf/4a/account")
 public class AuthedAccountController {
 
     private final IAccountManager manager;
 
     @Inject
-    public AuthedAccountController(@Named("Crdf_Foura_DefaultAccountManager") IAccountManager manager) {
+    public AuthedAccountController(@Named("Gradf_Foura_DefaultAccountManager") IAccountManager manager) {
         this.manager = manager;
     }
 }

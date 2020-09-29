@@ -1,4 +1,4 @@
-package liangchen.wang.gradf.component.foura.base;
+package liangchen.wang.gradf.component.web.base;
 
 import liangchen.wang.gradf.framework.commons.object.EnhancedObject;
 import liangchen.wang.gradf.framework.data.base.RootEntity;

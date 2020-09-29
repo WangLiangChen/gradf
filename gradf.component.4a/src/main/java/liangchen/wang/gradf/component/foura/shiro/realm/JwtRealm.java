@@ -41,6 +41,7 @@ public class JwtRealm extends GradfRealm {
         if (StringUtils.isEmpty(tokenString)) {
             throw new AuthenticationException("token不存在");
         }
+        logger.debug("access_token is :{}", tokenString);
         AccountPasswordResultDomain accountPassword = FouraUtil.INSTANCE.authenticationInfoByJwt(tokenString);
         SimplePrincipalCollection principalCollection = new SimplePrincipalCollection();
         String realmName = getName();

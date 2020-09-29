@@ -23,7 +23,7 @@ import java.util.List;
  * @author LiangChen.Wang 2019/11/19 21:11
  */
 @DataConditionAnnotation
-@Repository("Crdf_Data_DesignerDao")
+@Repository("Gradf_Data_DesignerDao")
 public class DesignerDaoImpl implements IDesignerDao {
     private final JdbcTemplate jdbcTemplate;
 

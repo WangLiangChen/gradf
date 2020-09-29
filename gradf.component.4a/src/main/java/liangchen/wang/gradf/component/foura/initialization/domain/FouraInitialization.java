@@ -1,6 +1,7 @@
 package liangchen.wang.gradf.component.foura.initialization.domain;
 
-import liangchen.wang.gradf.framework.commons.exeception.ErrorException;
+
+import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 
 import java.io.Serializable;
 

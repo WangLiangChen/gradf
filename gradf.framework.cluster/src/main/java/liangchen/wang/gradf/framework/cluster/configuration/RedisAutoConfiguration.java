@@ -36,6 +36,6 @@ public class RedisAutoConfiguration extends org.springframework.boot.autoconfigu
     @Bean
     @ConditionalOnBean(RedisConnectionFactory.class)
     public RedisLockRegistry redisLockRegistry(RedisConnectionFactory redisConnectionFactory) {
-        return new RedisLockRegistry(redisConnectionFactory, "CrdfLock");
+        return new RedisLockRegistry(redisConnectionFactory, "GradfLock");
     }
 }

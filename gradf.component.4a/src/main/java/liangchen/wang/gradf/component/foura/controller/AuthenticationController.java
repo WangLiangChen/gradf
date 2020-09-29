@@ -4,7 +4,7 @@ package liangchen.wang.gradf.component.foura.controller;
 import liangchen.wang.gradf.component.foura.manager.IAuthenticationManager;
 import liangchen.wang.gradf.component.foura.manager.domain.parameter.UsernamePasswordLoginParameterDomain;
 import liangchen.wang.gradf.component.foura.manager.domain.result.AccountLoginResultDomain;
-import liangchen.wang.gradf.framework.webmvc.result.ResponseUtil;
+import liangchen.wang.gradf.framework.web.result.ResponseUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -18,14 +18,14 @@ import javax.servlet.http.HttpServletRequest;
  * 授权Authorization
  * 审计Audit
  */
-@RestController("Crdf_Foura_DefaultAuthenticationController")
-@RequestMapping(value = {"/crdf/4a/authentication", "/auth/crdf/4a/authentication"})
+@RestController("Gradf_Foura_DefaultAuthenticationController")
+@RequestMapping(value = {"/gradf/4a/authentication", "/auth/gradf/4a/authentication"})
 public class AuthenticationController {
 
     private final IAuthenticationManager manager;
 
     @Inject
-    public AuthenticationController(@Named("Crdf_Foura_DefaultAuthenticationManager") IAuthenticationManager manager) {
+    public AuthenticationController(@Named("Gradf_Foura_DefaultAuthenticationManager") IAuthenticationManager manager) {
         this.manager = manager;
     }
 

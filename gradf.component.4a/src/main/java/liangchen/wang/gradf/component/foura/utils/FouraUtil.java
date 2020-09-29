@@ -19,8 +19,8 @@ public enum FouraUtil {
      * INSTANCE;
      */
     INSTANCE;
-    private IAuthorizationManager authorizationManager = BeanLoader.getBean("Crdf_Foura_DefaultAuthorizationManager");
-    private IAuthenticationManager authenticationManager = BeanLoader.getBean("Crdf_Foura_DefaultAuthenticationManager");
+    private IAuthorizationManager authorizationManager = BeanLoader.getBean("Gradf_Foura_DefaultAuthorizationManager");
+    private IAuthenticationManager authenticationManager = BeanLoader.getBean("Gradf_Foura_DefaultAuthenticationManager");
     private final String OPERATOR = "OPERATOR";
     private final String OPERATOR_NAME = "OPERATOR_NAME";
 

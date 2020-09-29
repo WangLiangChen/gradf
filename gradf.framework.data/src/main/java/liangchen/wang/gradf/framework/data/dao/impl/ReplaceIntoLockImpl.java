@@ -14,12 +14,12 @@ import java.time.LocalDateTime;
  * @author LiangChen.Wang
  */
 @DataConditionAnnotation
-@Repository("Crdf_Data_ReplaceIntoLock")
+@Repository("Gradf_Data_ReplaceIntoLock")
 public class ReplaceIntoLockImpl extends AbstractDBLock {
     private int maxRetry = 3;
     private long retryPeriod = 500L;
 
-    private final String REPLACE_LOCK = "replace into crdf_lock values (?,?,?,?)";
+    private final String REPLACE_LOCK = "replace into gradf_lock values (?,?,?,?)";
 
     @Override
     protected void executeLockSQL(final Connection connection, final String lockKey) {

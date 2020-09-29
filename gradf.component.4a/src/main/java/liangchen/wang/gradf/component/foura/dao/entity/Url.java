@@ -11,12 +11,12 @@ import java.time.LocalDateTime;
 /**
  * @author LiangChen.Wang 2020-04-13 00:40:41
  */
-@Entity(name = "crdf_url")
+@Entity(name = "gradf_url")
 public class Url extends RootEntity {
     private static final Url self = new Url();
 
     public static Url newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     @Id

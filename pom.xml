@@ -12,6 +12,7 @@
         <module>gradf.framework.data</module>
         <module>gradf.framework.cache</module>
         <module>gradf.framework.cluster</module>
+        <module>gradf.component.web</module>
         <module>gradf.component.4a</module>
         <module>gradf.component.commons</module>
         <module>gradf.component.bpm</module>
@@ -80,6 +81,11 @@
             <dependency>
                 <groupId>liangchen.wang</groupId>
                 <artifactId>gradf.framework.cluster</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>liangchen.wang</groupId>
+                <artifactId>gradf.component.web</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>
@@ -154,7 +160,7 @@
     <repositories>
         <!--
         <repository>
-            <id>crdf_nexus</id>
+            <id>gradf_nexus</id>
             <url>http://47.94.196.28:8888/repository/maven-public/</url>
             <releases>
                 <enabled>true</enabled>
@@ -169,11 +175,11 @@
     <distributionManagement>
         <!--
         <repository>
-            <id>crdf-release</id>
+            <id>gradf-release</id>
             <url>http://47.94.196.28:8888/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
-            <id>crdf-snapshots</id>
+            <id>gradf-snapshots</id>
             <url>http://47.94.196.28:8888/repository/maven-snapshots/</url>
         </snapshotRepository>
         <repository>

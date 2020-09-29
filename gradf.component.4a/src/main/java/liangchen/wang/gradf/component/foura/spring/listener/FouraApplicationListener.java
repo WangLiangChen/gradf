@@ -26,7 +26,7 @@ public class FouraApplicationListener implements ApplicationListener<Application
         if (!(applicationContext instanceof AnnotationConfigServletWebServerApplicationContext)) {
             return;
         }
-        IInitializationManager initializer = BeanLoader.getBean("Crdf_Foura_DefaultInitializationService", IInitializationManager.class);
+        IInitializationManager initializer = BeanLoader.getBean("Gradf_Foura_DefaultInitializationService", IInitializationManager.class);
         // 初始化数据和权限
         initializer.initData();
         initializer.initAuth();

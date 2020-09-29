@@ -1,12 +1,6 @@
 package liangchen.wang.gradf.component.foura.manager.impl;
 
-import liangchen.wang.gradf.component.business.annotation.EnableOperationLog;
-import liangchen.wang.gradf.component.business.annotation.OperationLog;
-import liangchen.wang.gradf.component.business.exception.CaptchaValidateException;
-import liangchen.wang.gradf.component.business.manager.ICaptchaManager;
-import liangchen.wang.gradf.component.business.utils.OperationLogUtil;
-import liangchen.wang.gradf.framework.commons.exeception.ExceptionData;
-import liangchen.wang.gradf.framework.commons.exeception.PromptException;
+
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.data.enumeration.Status;
@@ -20,8 +14,6 @@ import liangchen.wang.gradf.component.foura.manager.domain.result.AccountPasswor
 import liangchen.wang.gradf.component.foura.manager.domain.result.AccountResultDomain;
 import liangchen.wang.gradf.component.foura.utils.PasswordUtil;
 import liangchen.wang.gradf.framework.springboot.event.EventPublisher;
-import liangchen.wang.gradf.framework.webmvc.jwts.AccessToken;
-import liangchen.wang.gradf.framework.webmvc.jwts.AccessTokenUtil;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -30,7 +22,7 @@ import javax.inject.Named;
 /**
  * @author LiangChen.Wang
  */
-@Component("Crdf_Foura_DefaultAuthenticationManager")
+@Component("Gradf_Foura_DefaultAuthenticationManager")
 @EnableOperationLog(businessType = "Authentication", businessName = "认证")
 public class AuthenticationManagerImpl implements IAuthenticationManager {
     private final IAccountManager accountManager;
@@ -38,9 +30,9 @@ public class AuthenticationManagerImpl implements IAuthenticationManager {
     private final IAccountDao accountDao;
 
     @Inject
-    public AuthenticationManagerImpl(@Named("Crdf_Foura_DefaultAccountManager") IAccountManager accountManager,
-                                     @Named("Crdf_Commons_CaptchaManager") ICaptchaManager captchaManager,
-                                     @Named("Crdf_Foura_DefaultAccountDao") IAccountDao accountDao) {
+    public AuthenticationManagerImpl(@Named("Gradf_Foura_DefaultAccountManager") IAccountManager accountManager,
+                                     @Named("Gradf_Commons_CaptchaManager") ICaptchaManager captchaManager,
+                                     @Named("Gradf_Foura_DefaultAccountDao") IAccountDao accountDao) {
         this.accountManager = accountManager;
         this.captchaManager = captchaManager;
         this.accountDao = accountDao;

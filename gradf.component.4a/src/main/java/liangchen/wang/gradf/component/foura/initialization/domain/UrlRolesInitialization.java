@@ -13,7 +13,7 @@ public class UrlRolesInitialization extends FouraInitialization {
     private Map<String, Set<String>> map = new HashMap<>();
 
     public static UrlRolesInitialization newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     public UrlRolesInitialization put(String urlPath, String... roleKeys) {

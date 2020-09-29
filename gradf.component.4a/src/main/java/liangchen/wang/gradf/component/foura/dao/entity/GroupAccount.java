@@ -9,12 +9,12 @@ import javax.persistence.Id;
 /**
  * @author LiangChen.Wang 2020-04-12 00:45:06
 */
-@Entity(name = "crdf_group_account")
+@Entity(name = "gradf_group_account")
 public class GroupAccount extends RootEntity {
     private static final GroupAccount self = new GroupAccount();
 
     public static GroupAccount newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     @Id

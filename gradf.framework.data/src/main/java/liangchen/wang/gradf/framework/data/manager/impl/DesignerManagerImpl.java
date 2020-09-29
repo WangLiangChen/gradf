@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  * @author LiangChen.Wang 2019/11/20 12:34
  */
 @DataConditionAnnotation
-@Component("Crdf_Data_DesignerManager")
+@Component("Gradf_Data_DesignerManager")
 public class DesignerManagerImpl implements IDesignerManager {
     private final IDesignerDao dao;
 
@@ -455,7 +455,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("package " + parameterDomainPackage + ";");
         lines.add("");
         lines.add("import " + entityClass + ";");
-        lines.add("import liangchen.wang.gradf.component.business.base.ParameterDomain;");
+        lines.add("import liangchen.wang.gradf.component.foura.base.ParameterDomain;");
         lines.add("import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;");
         lines.add("");
         lines.add("/**");
@@ -521,7 +521,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         Collection<String> lines = new ArrayList<String>();
         lines.add("package " + resultDomainPackage + ";");
         lines.add("");
-        lines.add("import liangchen.wang.gradf.component.business.base.ResultDomain;");
+        lines.add("import liangchen.wang.gradf.component.foura.base.ResultDomain;");
         lines.add("import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;");
         lines.add("");
         lines.add("/**");
@@ -579,7 +579,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         Collection<String> lines = new ArrayList<>();
         lines.add("package " + iManagerPackage + ";");
         lines.add("");
-        lines.add("import liangchen.wang.gradf.component.business.base.IAbstractManager;");
+        lines.add("import liangchen.wang.gradf.component.foura.base.IAbstractManager;");
         lines.add("import " + queryClass + ";");
         lines.add("import " + parameterDomainClass + ";");
         lines.add("import " + resultDomainClass + ";");
@@ -655,9 +655,9 @@ public class DesignerManagerImpl implements IDesignerManager {
         Collection<String> lines = new ArrayList<>();
         lines.add("package " + managerPackage + ";");
         lines.add("");
-        lines.add("import liangchen.wang.gradf.component.business.base.AbstractManager;");
-        lines.add("import liangchen.wang.gradf.framework.cache.annotation.CrdfAutoCacheable;");
-        lines.add("import liangchen.wang.gradf.framework.commons.exeception.InfoException;");
+        lines.add("import liangchen.wang.gradf.component.foura.base.AbstractManager;");
+        lines.add("import liangchen.wang.gradf.framework.cache.annotation.GradfAutoCacheable;");
+        lines.add("import liangchen.wang.gradf.framework.commons.exception.InfoException;");
         lines.add("import liangchen.wang.gradf.framework.commons.pagination.PaginationResult;");
         lines.add("import liangchen.wang.gradf.framework.data.enumeration.Status;");
         lines.add("import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;");

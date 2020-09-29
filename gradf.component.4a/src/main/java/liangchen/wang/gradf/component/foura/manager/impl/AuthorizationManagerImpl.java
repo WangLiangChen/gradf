@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 /**
  * @author LiangChen.Wang
  */
-@Component("Crdf_Foura_DefaultAuthorizationManager")
+@Component("Gradf_Foura_DefaultAuthorizationManager")
 public class AuthorizationManagerImpl implements IAuthorizationManager {
     private final PathMatcher pathMatcher = new AntPathMatcher();
     private final IRoleAccountManager roleAccountManager;
@@ -36,9 +36,9 @@ public class AuthorizationManagerImpl implements IAuthorizationManager {
     private final IAccountManager accountManager;
 
     @Inject
-    public AuthorizationManagerImpl(@Named("Crdf_Foura_DefaultRoleAccountManager") IRoleAccountManager roleAccountManager,
-                                    @Named("Crdf_Foura_DefaultRoleManager") IRoleManager roleManager,
-                                    @Named("Crdf_Foura_DefaultAccountManager") IAccountManager accountManager) {
+    public AuthorizationManagerImpl(@Named("Gradf_Foura_DefaultRoleAccountManager") IRoleAccountManager roleAccountManager,
+                                    @Named("Gradf_Foura_DefaultRoleManager") IRoleManager roleManager,
+                                    @Named("Gradf_Foura_DefaultAccountManager") IAccountManager accountManager) {
         this.roleAccountManager = roleAccountManager;
         this.roleManager = roleManager;
         this.accountManager = accountManager;
@@ -46,7 +46,7 @@ public class AuthorizationManagerImpl implements IAuthorizationManager {
 
     @Override
     public List<RoleResultDomain> rolesByAccountId(Long account_id, String... returnFields) {
-        Assert.INSTANCE.notNull(account_id, AssertLevel.INFO, "账户ID不能为空");
+        Assert.INSTANCE.notNull(account_id,  "账户ID不能为空");
         // 根据account_id查询角色
         Set<Long> roleIds = roleAccountManager.roleIdsByAccountId(account_id);
         RoleQuery query = RoleQuery.newInstance();
@@ -56,7 +56,7 @@ public class AuthorizationManagerImpl implements IAuthorizationManager {
 
     @Override
     public Set<String> roleIdsByAccountId(Long account_id) {
-        Assert.INSTANCE.notNull(account_id, AssertLevel.INFO, "账户ID不能为空");
+        Assert.INSTANCE.notNull(account_id,  "账户ID不能为空");
         // 根据account_id查询角色
         Set<Long> roleIds = roleAccountManager.roleIdsByAccountId(account_id);
         return roleIds.stream().map(String::valueOf).collect(Collectors.toSet());
@@ -121,8 +121,8 @@ public class AuthorizationManagerImpl implements IAuthorizationManager {
     @Override
     @Transactional(rollbackOn = Exception.class)
     public void assign2Role(Long accountId, String roleKey) {
-        Assert.INSTANCE.notNull(accountId, AssertLevel.INFO, "账户不能为空");
-        Assert.INSTANCE.notNull(roleKey, AssertLevel.INFO, "角色不能为空");
+        Assert.INSTANCE.notNull(accountId,  "账户不能为空");
+        Assert.INSTANCE.notNull(roleKey,  "角色不能为空");
         Long role_id = roleManager.idByKey(roleKey);
         // 判断角色账户是否存在
         boolean exist = roleAccountManager.exist(role_id, accountId);
@@ -131,7 +131,7 @@ public class AuthorizationManagerImpl implements IAuthorizationManager {
         }
         // 判断账户是否存在
         exist = accountManager.exist(accountId);
-        Assert.INSTANCE.isTrue(exist, AssertLevel.INFO, "账户不存在");
+        Assert.INSTANCE.isTrue(exist,  "账户不存在");
         // 插入
         RoleAccountParameterDomain parameter = RoleAccountParameterDomain.newInstance();
         parameter.setRole_id(role_id);

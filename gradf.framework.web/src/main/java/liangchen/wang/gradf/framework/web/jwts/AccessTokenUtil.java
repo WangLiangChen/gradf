@@ -18,7 +18,7 @@ public enum AccessTokenUtil {
      *
      */
     INSTANCE;
-    public final static String DEFAULT_KEY = "crdf_43821_*(&^$%#!";
+    public final static String DEFAULT_KEY = "gradf_43821_*(&^$%#!";
 
     public String create(AccessToken accessToken, String key) {
         Date date = new Date();

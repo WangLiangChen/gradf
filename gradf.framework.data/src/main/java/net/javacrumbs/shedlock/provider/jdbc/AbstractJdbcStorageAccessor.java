@@ -40,7 +40,7 @@ public abstract class AbstractJdbcStorageAccessor extends AbstractStorageAccesso
     @Override
     public boolean insertRecord(LockConfiguration lockConfiguration) {
         // Try to insert if the record does not exists (not optimal, but the simplest platform agnostic way)
-        String sql = "INSERT INTO crdf_lock (lock_key, lock_datetime, lock_until, lock_by) VALUES(?, ?, ?, ?)";
+        String sql = "INSERT INTO gradf_lock (lock_key, lock_datetime, lock_until, lock_by) VALUES(?, ?, ?, ?)";
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement statement = connection.prepareStatement(sql)
@@ -65,7 +65,7 @@ public abstract class AbstractJdbcStorageAccessor extends AbstractStorageAccesso
 
     @Override
     public boolean updateRecord(LockConfiguration lockConfiguration) {
-        String sql = "UPDATE crdf_lock SET lock_until = ?, locked_datetime = ?, lock_by = ? WHERE lock_key = ? AND lock_until <= ?";
+        String sql = "UPDATE gradf_lock SET lock_until = ?, locked_datetime = ?, lock_by = ? WHERE lock_key = ? AND lock_until <= ?";
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement statement = connection.prepareStatement(sql)
@@ -88,7 +88,7 @@ public abstract class AbstractJdbcStorageAccessor extends AbstractStorageAccesso
 
     @Override
     public boolean extend(LockConfiguration lockConfiguration) {
-        String sql = "UPDATE crdf_lock SET lock_until = ? WHERE lock_key = ? AND lock_by = ? AND lock_until > ? ";
+        String sql = "UPDATE gradf_lock SET lock_until = ? WHERE lock_key = ? AND lock_by = ? AND lock_until > ? ";
 
         logger.debug("Extending lock={} until={}", lockConfiguration.getName(), lockConfiguration.getLockAtMostUntil());
 
@@ -113,7 +113,7 @@ public abstract class AbstractJdbcStorageAccessor extends AbstractStorageAccesso
 
     @Override
     public void unlock(LockConfiguration lockConfiguration) {
-        String sql = "UPDATE crdf_lock SET lock_until = ? WHERE lock_key = ?";
+        String sql = "UPDATE gradf_lock SET lock_until = ? WHERE lock_key = ?";
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement statement = connection.prepareStatement(sql)

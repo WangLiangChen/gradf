@@ -1,6 +1,6 @@
 package liangchen.wang.gradf.component.foura.manager.domain.result;
 
-import liangchen.wang.gradf.component.business.base.ResultDomain;
+import liangchen.wang.gradf.component.web.base.ResultDomain;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
 
 /**
@@ -10,7 +10,7 @@ public class AccountResultDomain extends ResultDomain {
     private static final AccountResultDomain self = new AccountResultDomain();
 
     public static AccountResultDomain newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     private Long account_id;

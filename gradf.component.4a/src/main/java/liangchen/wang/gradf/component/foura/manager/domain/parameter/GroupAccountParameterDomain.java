@@ -1,6 +1,6 @@
 package liangchen.wang.gradf.component.foura.manager.domain.parameter;
 
-import liangchen.wang.gradf.component.business.base.ParameterDomain;
+import liangchen.wang.gradf.component.web.base.ParameterDomain;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
 import liangchen.wang.gradf.component.foura.dao.entity.GroupAccount;
 
@@ -13,7 +13,7 @@ public class GroupAccountParameterDomain extends ParameterDomain<GroupAccount> {
     private static final GroupAccountParameterDomain self = new GroupAccountParameterDomain();
 
     public static GroupAccountParameterDomain newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     @NotNull(message = "群组ID不能为空")

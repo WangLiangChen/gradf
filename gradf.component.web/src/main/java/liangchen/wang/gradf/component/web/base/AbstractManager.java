@@ -1,4 +1,4 @@
-package liangchen.wang.gradf.component.foura.base;
+package liangchen.wang.gradf.component.web.base;
 
 import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;

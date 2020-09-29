@@ -17,13 +17,13 @@ import java.time.LocalDateTime;
  * @author LiangChen.Wang
  */
 @DataConditionAnnotation
-@Repository("Crdf_Data_ForUpdateLock")
+@Repository("Gradf_Data_ForUpdateLock")
 public class ForUpdateLockImpl extends AbstractDBLock {
     private int maxRetry = 3;
     private long retryPeriod = 500L;
 
-    private final String SELECT_FOR_LOCK = "select 0 from crdf_lock where lock_key=? for update";
-    private final String INSERT_LOCK = "insert into crdf_lock values(?,?,?,?)";
+    private final String SELECT_FOR_LOCK = "select 0 from gradf_lock where lock_key=? for update";
+    private final String INSERT_LOCK = "insert into gradf_lock values(?,?,?,?)";
 
 
     @Override
@@ -72,7 +72,7 @@ public class ForUpdateLockImpl extends AbstractDBLock {
                     // try again ...
                     continue;
                 }
-                throw new SQLException("No row exists, and one could not be inserted in table crdf_lock for lock named: " + lockName);
+                throw new SQLException("No row exists, and one could not be inserted in table gradf_lock for lock named: " + lockName);
             } catch (SQLException sqle) {
                 if (initCause == null) {
                     initCause = sqle;

@@ -12,7 +12,7 @@ public enum SequenceUtil {
      *
      */
     INSTANCE;
-    private final ISequenceManager sequenceManager = BeanLoader.getBean("Crdf_Data_SequenceManager");
+    private final ISequenceManager sequenceManager = BeanLoader.getBean("Gradf_Data_SequenceManager");
 
     public Long sequenceNumber(String sequenceKey) {
         return sequenceManager.sequenceNumber(sequenceKey);

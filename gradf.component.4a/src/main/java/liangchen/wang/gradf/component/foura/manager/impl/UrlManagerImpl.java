@@ -1,13 +1,9 @@
 package liangchen.wang.gradf.component.foura.manager.impl;
 
-import liangchen.wang.gradf.component.business.base.AbstractManager;
-import liangchen.wang.gradf.framework.commons.exeception.PromptException;
-import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
+import liangchen.wang.gradf.component.web.base.AbstractManager;
+import liangchen.wang.gradf.framework.commons.exception.PromptException;
 import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
-import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
-import liangchen.wang.gradf.framework.commons.validator.AssertLevel;
-import liangchen.wang.gradf.framework.data.enumeration.Status;
 import liangchen.wang.gradf.framework.data.utils.UidDb;
 import liangchen.wang.gradf.component.foura.dao.IUrlDao;
 import liangchen.wang.gradf.component.foura.dao.entity.Url;
@@ -20,24 +16,23 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
  * @author LiangChen.Wang 2020-04-13 00:40:41
  */
-@Component("Crdf_Foura_DefaultUrlManager")
+@Component("Gradf_Foura_DefaultUrlManager")
 public class UrlManagerImpl extends AbstractManager<Url, UrlResultDomain> implements IUrlManager {
     @Inject
-    public UrlManagerImpl(@Named("Crdf_Foura_DefaultUrlDao") IUrlDao dao) {
+    public UrlManagerImpl(@Named("Gradf_Foura_DefaultUrlDao") IUrlDao dao) {
         super("Url", "Url", dao);
     }
 
     @Override
     public boolean insert(UrlParameterDomain parameter) {
-        Assert.INSTANCE.notNull(parameter, AssertLevel.INFO, "参数不能为空");
+        Assert.INSTANCE.notNull(parameter, "参数不能为空");
         parameter.populateEntity((url) -> {
-            Assert.INSTANCE.notNull(url.getUrl_id(), () -> url.setUrl_id(UidDb.INSTANCE.uid()));
+            Assert.INSTANCE.notNullElseRun(url.getUrl_id(), () -> url.setUrl_id(UidDb.INSTANCE.uid()));
             url.initFields();
         });
         try {
@@ -49,7 +44,7 @@ public class UrlManagerImpl extends AbstractManager<Url, UrlResultDomain> implem
 
     @Override
     public boolean deleteByPrimaryKey(Long url_id) {
-        Assert.INSTANCE.notNull(url_id, AssertLevel.INFO, "url_id不能为空");
+        Assert.INSTANCE.notNull(url_id, "url_id不能为空");
         UrlQuery query = UrlQuery.newInstance();
         query.setUrl_id(url_id);
         return super.deleteByQuery(query) == 1;
@@ -57,7 +52,7 @@ public class UrlManagerImpl extends AbstractManager<Url, UrlResultDomain> implem
 
     @Override
     public boolean updateByPrimaryKey(UrlParameterDomain parameter) {
-        Assert.INSTANCE.notNull(parameter, AssertLevel.INFO, "参数不能为空");
+        Assert.INSTANCE.notNull(parameter, "参数不能为空");
         UrlQuery query = UrlQuery.newInstance();
         query.setUrl_id(parameter.getUrl_id());
         int rows = updateByQuery(parameter, query);
@@ -66,8 +61,8 @@ public class UrlManagerImpl extends AbstractManager<Url, UrlResultDomain> implem
 
     @Override
     public int updateByQuery(UrlParameterDomain parameter, UrlQuery query) {
-        Assert.INSTANCE.notNull(parameter, AssertLevel.INFO, "参数不能为空");
-        Assert.INSTANCE.notNull(query, AssertLevel.INFO, "查询参数不能为空");
+        Assert.INSTANCE.notNull(parameter, "参数不能为空");
+        Assert.INSTANCE.notNull(query, "查询参数不能为空");
         parameter.populateEntity((entity) -> {
 
         });
@@ -77,7 +72,7 @@ public class UrlManagerImpl extends AbstractManager<Url, UrlResultDomain> implem
 
     @Override
     public UrlResultDomain byPrimaryKey(Long url_id, String... returnFields) {
-        Assert.INSTANCE.notBlank(url_id, AssertLevel.INFO, "参数不能为空");
+        Assert.INSTANCE.notBlank(url_id, "参数不能为空");
         UrlQuery query = UrlQuery.newInstance();
         query.setUrl_id(url_id);
         return one(query, returnFields);
@@ -86,7 +81,7 @@ public class UrlManagerImpl extends AbstractManager<Url, UrlResultDomain> implem
     @Override
     public UrlResultDomain byPrimaryKeyOrThrow(Long url_id, String... returnFields) {
         UrlResultDomain resultDomain = byPrimaryKey(url_id, returnFields);
-        Assert.INSTANCE.notNull(resultDomain, AssertLevel.INFO, "数据不存在");
+        Assert.INSTANCE.notNull(resultDomain, "数据不存在");
         return resultDomain;
     }
 

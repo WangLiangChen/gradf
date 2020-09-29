@@ -1,7 +1,7 @@
 package liangchen.wang.gradf.component.foura.manager.domain.parameter;
 
 import liangchen.wang.gradf.component.foura.dao.entity.UrlRelation;
-import liangchen.wang.gradf.component.business.base.ParameterDomain;
+import liangchen.wang.gradf.component.web.base.ParameterDomain;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
 
 import javax.validation.constraints.NotNull;
@@ -13,7 +13,7 @@ public class UrlRelationParameterDomain extends ParameterDomain<UrlRelation> {
     private static final UrlRelationParameterDomain self = new UrlRelationParameterDomain();
 
     public static UrlRelationParameterDomain newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     private Long role_id;

@@ -1,10 +1,9 @@
 package liangchen.wang.gradf.component.foura.manager.impl;
 
-import liangchen.wang.gradf.component.business.base.AbstractManager;
-import liangchen.wang.gradf.framework.commons.exeception.PromptException;
+import liangchen.wang.gradf.component.web.base.AbstractManager;
+import liangchen.wang.gradf.framework.commons.exception.PromptException;
 import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
-import liangchen.wang.gradf.framework.commons.validator.AssertLevel;
 import liangchen.wang.gradf.framework.data.enumeration.Status;
 import liangchen.wang.gradf.component.foura.dao.IRoleAccountDao;
 import liangchen.wang.gradf.component.foura.dao.entity.RoleAccount;
@@ -24,10 +23,10 @@ import java.util.stream.Collectors;
 /**
  * @author LiangChen.Wang 2019-12-23 23:24:09
  */
-@Component("Crdf_Foura_DefaultRoleAccountManager")
-public class RoleAccountManagerImpl extends AbstractManager<RoleAccount, RoleAccountResultDomain> implements IRoleAccountManager {
+@Component("Gradf_Foura_DefaultRoleAccountManager")
+public class RoleAccountManagerImpl extends AbstractManager<RoleAccount,RoleAccountQuery, RoleAccountResultDomain> implements IRoleAccountManager {
     @Inject
-    public RoleAccountManagerImpl(@Named("Crdf_Foura_DefaultRoleAccountDao") IRoleAccountDao dao) {
+    public RoleAccountManagerImpl(@Named("Gradf_Foura_DefaultRoleAccountDao") IRoleAccountDao dao) {
         super("角色账户关系", "RoleAccount", dao);
     }
 
@@ -50,8 +49,8 @@ public class RoleAccountManagerImpl extends AbstractManager<RoleAccount, RoleAcc
 
     @Override
     public boolean deleteByPrimaryKey(Long role_id, Long account_id) {
-        Assert.INSTANCE.notNull(role_id, AssertLevel.INFO, "role_id不能为空");
-        Assert.INSTANCE.notNull(account_id, AssertLevel.INFO, "account_id不能为空");
+        Assert.INSTANCE.notNull(role_id, "role_id不能为空");
+        Assert.INSTANCE.notNull(account_id, "account_id不能为空");
         RoleAccountQuery query = RoleAccountQuery.newInstance();
         query.setRole_id(role_id);
         query.setAccount_id(account_id);
@@ -61,8 +60,8 @@ public class RoleAccountManagerImpl extends AbstractManager<RoleAccount, RoleAcc
 
     @Override
     public RoleAccountResultDomain byPrimaryKey(Long role_id, Long account_id, String... returnFields) {
-        Assert.INSTANCE.notNull(role_id, AssertLevel.INFO, "role_id不能为空");
-        Assert.INSTANCE.notNull(account_id, AssertLevel.INFO, "account_id不能为空");
+        Assert.INSTANCE.notNull(role_id, "role_id不能为空");
+        Assert.INSTANCE.notNull(account_id, "account_id不能为空");
         RoleAccountQuery query = RoleAccountQuery.newInstance();
         query.setRole_id(role_id);
         query.setAccount_id(account_id);
@@ -72,7 +71,7 @@ public class RoleAccountManagerImpl extends AbstractManager<RoleAccount, RoleAcc
     @Override
     public RoleAccountResultDomain byPrimaryKeyOrThrow(Long role_id, Long account_id, String... returnFields) {
         RoleAccountResultDomain roleAccountResultDomain = byPrimaryKey(role_id, account_id, returnFields);
-        Assert.INSTANCE.notNull(roleAccountResultDomain, AssertLevel.INFO, "数据不存在");
+        Assert.INSTANCE.notNull(roleAccountResultDomain, "数据不存在");
         return roleAccountResultDomain;
     }
 
@@ -88,8 +87,8 @@ public class RoleAccountManagerImpl extends AbstractManager<RoleAccount, RoleAcc
 
     @Override
     public boolean exist(Long role_id, Long account_id) {
-        Assert.INSTANCE.notNull(role_id, AssertLevel.INFO, "role_id不能为空");
-        Assert.INSTANCE.notNull(account_id, AssertLevel.INFO, "account_id不能为空");
+        Assert.INSTANCE.notNull(role_id, "role_id不能为空");
+        Assert.INSTANCE.notNull(account_id, "account_id不能为空");
         RoleAccountQuery query = RoleAccountQuery.newInstance();
         query.setRole_id(role_id);
         query.setAccount_id(account_id);
@@ -99,7 +98,7 @@ public class RoleAccountManagerImpl extends AbstractManager<RoleAccount, RoleAcc
 
     @Override
     public Set<Long> roleIdsByAccountId(Long account_id) {
-        Assert.INSTANCE.notNull(account_id, AssertLevel.INFO, "账户ID不能为空");
+        Assert.INSTANCE.notNull(account_id, "账户ID不能为空");
         RoleAccountQuery query = RoleAccountQuery.newInstance();
         query.setAccount_id(account_id);
         List<RoleAccountResultDomain> list = super.list(query, "role_id");
@@ -108,7 +107,7 @@ public class RoleAccountManagerImpl extends AbstractManager<RoleAccount, RoleAcc
 
     @Override
     public Set<Long> accountIdsByRoleId(Long role_id) {
-        Assert.INSTANCE.notNull(role_id, AssertLevel.INFO, "角色ID不能为空");
+        Assert.INSTANCE.notNull(role_id, "角色ID不能为空");
         RoleAccountQuery query = RoleAccountQuery.newInstance();
         query.setRole_id(role_id);
         List<RoleAccountResultDomain> list = super.list(query, "account_id");

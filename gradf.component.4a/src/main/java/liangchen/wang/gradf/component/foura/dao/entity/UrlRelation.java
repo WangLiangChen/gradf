@@ -9,12 +9,12 @@ import javax.persistence.Id;
 /**
  * @author LiangChen.Wang 2020-07-29 13:56:01
 */
-@Entity(name = "crdf_url_relation")
+@Entity(name = "gradf_url_relation")
 public class UrlRelation extends RootEntity {
     private static final UrlRelation self = new UrlRelation();
 
     public static UrlRelation newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     @Id

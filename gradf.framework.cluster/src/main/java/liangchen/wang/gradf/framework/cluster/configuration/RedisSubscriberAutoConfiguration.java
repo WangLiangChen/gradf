@@ -18,7 +18,7 @@ import java.util.concurrent.Executor;
  */
 @ConditionalOnBean(RedisConnectionFactory.class)
 public class RedisSubscriberAutoConfiguration extends CachingConfigurerSupport {
-    public static final String CACHE_SYNCHRONIZATION_CHANNEL = "CrdfCacheSynchronization";
+    public static final String CACHE_SYNCHRONIZATION_CHANNEL = "GradfCacheSynchronization";
 
     @Bean
     public RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory redisConnectionFactory, Executor executor, LocalRedisCacheManager localRedisCacheManager) {

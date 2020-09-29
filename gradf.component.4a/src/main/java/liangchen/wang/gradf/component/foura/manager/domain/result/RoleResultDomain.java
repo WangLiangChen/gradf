@@ -1,6 +1,6 @@
 package liangchen.wang.gradf.component.foura.manager.domain.result;
 
-import liangchen.wang.gradf.component.business.base.ResultDomain;
+import liangchen.wang.gradf.component.web.base.ResultDomain;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
 
 import java.time.LocalDateTime;
@@ -12,7 +12,7 @@ public class RoleResultDomain extends ResultDomain {
     private static final RoleResultDomain self = new RoleResultDomain();
 
     public static RoleResultDomain newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
     private Long role_id;
     private String role_key;

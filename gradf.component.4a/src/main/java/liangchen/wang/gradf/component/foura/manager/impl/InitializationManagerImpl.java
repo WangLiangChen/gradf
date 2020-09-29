@@ -1,38 +1,29 @@
 package liangchen.wang.gradf.component.foura.manager.impl;
 
-import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
-import liangchen.wang.gradf.framework.commons.utils.PrintUtil;
-import liangchen.wang.gradf.framework.data.annotation.EnableJdbcShedLock;
-import liangchen.wang.gradf.component.foura.dao.query.RoleQuery;
-import liangchen.wang.gradf.component.foura.dao.query.RoleResourceOperationQuery;
-import liangchen.wang.gradf.component.foura.dao.query.UrlQuery;
 import liangchen.wang.gradf.component.foura.dao.query.UrlRelationQuery;
 import liangchen.wang.gradf.component.foura.exception.DuplicateAccountException;
 import liangchen.wang.gradf.component.foura.initialization.IFouraInitialization;
 import liangchen.wang.gradf.component.foura.initialization.domain.*;
 import liangchen.wang.gradf.component.foura.manager.*;
 import liangchen.wang.gradf.component.foura.manager.domain.parameter.*;
-import liangchen.wang.gradf.component.foura.manager.domain.result.RoleResourceOperationResultDomain;
-import liangchen.wang.gradf.component.foura.manager.domain.result.RoleResultDomain;
 import liangchen.wang.gradf.component.foura.manager.domain.result.UrlRelationResultDomain;
-import liangchen.wang.gradf.component.foura.manager.domain.result.UrlResultDomain;
 import liangchen.wang.gradf.component.foura.shiro.utils.ShiroFilterChainUtil;
+import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
+import liangchen.wang.gradf.framework.commons.utils.Printer;
+import liangchen.wang.gradf.framework.data.annotation.EnableJdbcShedLock;
 import net.javacrumbs.shedlock.core.DefaultLockingTaskExecutor;
 import net.javacrumbs.shedlock.core.LockConfiguration;
 import net.javacrumbs.shedlock.core.LockProvider;
 import net.javacrumbs.shedlock.core.LockingTaskExecutor;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.HandlerResultHandler;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
-@Service("Crdf_Foura_DefaultInitializationService")
+@Service("Gradf_Foura_DefaultInitializationService")
 @EnableJdbcShedLock
 public class InitializationManagerImpl implements IInitializationManager {
     private final List<IFouraInitialization> customizedDatas;
@@ -51,17 +42,17 @@ public class InitializationManagerImpl implements IInitializationManager {
 
     @Inject
     public InitializationManagerImpl(List<IFouraInitialization> customizedDatas,
-                                     @Named("Crdf_Foura_DefaultGroupManager") IGroupManager groupManager,
-                                     @Named("Crdf_Foura_DefaultRoleManager") IRoleManager roleManager,
-                                     @Named("Crdf_Foura_DefaultAccountManager") IAccountManager accountManager,
-                                     @Named("Crdf_Foura_DefaultGroupAccountManager") IGroupAccountManager groupAccountManager,
-                                     @Named("Crdf_Foura_DefaultRoleAccountManager") IRoleAccountManager roleAccountManager,
-                                     @Named("Crdf_Foura_DefaultResourceManager") IResourceManager resourceManager,
-                                     @Named("Crdf_Foura_DefaultOperationManager") IOperationManager operationManager,
-                                     @Named("Crdf_Foura_DefaultRoleResourcePrivilegeManager") IRoleResourcePrivilegeManager roleResourcePrivilegeManager,
-                                     @Named("Crdf_Foura_DefaultRoleResourceOperationManager") IRoleResourceOperationManager roleResourceOperationManager,
-                                     @Named("Crdf_Foura_DefaultUrlManager") IUrlManager urlManager,
-                                     @Named("Crdf_Foura_DefaultUrlRelationManager") IUrlRelationManager urlRelationManager,
+                                     @Named("Gradf_Foura_DefaultGroupManager") IGroupManager groupManager,
+                                     @Named("Gradf_Foura_DefaultRoleManager") IRoleManager roleManager,
+                                     @Named("Gradf_Foura_DefaultAccountManager") IAccountManager accountManager,
+                                     @Named("Gradf_Foura_DefaultGroupAccountManager") IGroupAccountManager groupAccountManager,
+                                     @Named("Gradf_Foura_DefaultRoleAccountManager") IRoleAccountManager roleAccountManager,
+                                     @Named("Gradf_Foura_DefaultResourceManager") IResourceManager resourceManager,
+                                     @Named("Gradf_Foura_DefaultOperationManager") IOperationManager operationManager,
+                                     @Named("Gradf_Foura_DefaultRoleResourcePrivilegeManager") IRoleResourcePrivilegeManager roleResourcePrivilegeManager,
+                                     @Named("Gradf_Foura_DefaultRoleResourceOperationManager") IRoleResourceOperationManager roleResourceOperationManager,
+                                     @Named("Gradf_Foura_DefaultUrlManager") IUrlManager urlManager,
+                                     @Named("Gradf_Foura_DefaultUrlRelationManager") IUrlRelationManager urlRelationManager,
                                      LockProvider lockProvider) {
         this.customizedDatas = customizedDatas;
         this.groupManager = groupManager;
@@ -115,9 +106,9 @@ public class InitializationManagerImpl implements IInitializationManager {
 
 
     private void initGroups(Set<GroupInitialization> groupInitializations) {
-        PrintUtil.printInfo("初始化系统群组开始");
+        Printer.INSTANCE.prettyPrint("初始化系统群组开始");
         if (CollectionUtil.INSTANCE.isEmpty(groupInitializations)) {
-            PrintUtil.printInfo("未设置系统群组,无需初始化");
+            Printer.INSTANCE.prettyPrint("未设置系统群组,无需初始化");
             return;
         }
         groupInitializations.forEach(g -> {
@@ -128,18 +119,18 @@ public class InitializationManagerImpl implements IInitializationManager {
             groupParameterDomain.setGroup_text(g.getGroupText());
             try {
                 groupManager.insert(groupParameterDomain);
-                PrintUtil.printInfo("{}({})初始化完成", groupText, groupKey);
+                Printer.INSTANCE.prettyPrint("{}({})初始化完成", groupText, groupKey);
             } catch (DuplicateKeyException e) {
-                PrintUtil.printInfo("{}({})已存在", groupText, groupKey);
+                Printer.INSTANCE.prettyPrint("{}({})已存在", groupText, groupKey);
             }
         });
-        PrintUtil.printInfo("初始化系统群组完成");
+        Printer.INSTANCE.prettyPrint("初始化系统群组完成");
     }
 
     private void initRoles(Set<RoleInitialization> roleInitializations) {
-        PrintUtil.printInfo("初始化系统角色开始");
+        Printer.INSTANCE.prettyPrint("初始化系统角色开始");
         if (CollectionUtil.INSTANCE.isEmpty(roleInitializations)) {
-            PrintUtil.printInfo("未设置系统角色,无需初始化");
+            Printer.INSTANCE.prettyPrint("未设置系统角色,无需初始化");
             return;
         }
         roleInitializations.forEach(r -> {
@@ -150,18 +141,18 @@ public class InitializationManagerImpl implements IInitializationManager {
             roleParameterDomain.setRole_text(roleText);
             try {
                 roleManager.insert(roleParameterDomain);
-                PrintUtil.printInfo("{}({})初始化完成", roleText, roleKey);
+                Printer.INSTANCE.prettyPrint("{}({})初始化完成", roleText, roleKey);
             } catch (DuplicateKeyException e) {
-                PrintUtil.printInfo("{}({})已存在", roleText, roleKey);
+                Printer.INSTANCE.prettyPrint("{}({})已存在", roleText, roleKey);
             }
         });
-        PrintUtil.printInfo("初始化系统角色完成");
+        Printer.INSTANCE.prettyPrint("初始化系统角色完成");
     }
 
     private void initAccounts(Set<AccountInitialization> accountInitializations) {
-        PrintUtil.printInfo("初始化系统账户开始");
+        Printer.INSTANCE.prettyPrint("初始化系统账户开始");
         if (CollectionUtil.INSTANCE.isEmpty(accountInitializations)) {
-            PrintUtil.printInfo("未设置系统账户,无需初始化");
+            Printer.INSTANCE.prettyPrint("未设置系统账户,无需初始化");
             return;
         }
         accountInitializations.forEach(a -> {
@@ -173,16 +164,16 @@ public class InitializationManagerImpl implements IInitializationManager {
             accountParameterDomain.setLogin_password(a.getPassword());
             try {
                 accountManager.insert(accountParameterDomain);
-                PrintUtil.printInfo("{}({})初始化完成", nickName, loginName);
+                Printer.INSTANCE.prettyPrint("{}({})初始化完成", nickName, loginName);
             } catch (DuplicateAccountException e) {
-                PrintUtil.printInfo("{}({})已存在", nickName, loginName);
+                Printer.INSTANCE.prettyPrint("{}({})已存在", nickName, loginName);
             }
         });
-        PrintUtil.printInfo("初始化系统账户完成");
+        Printer.INSTANCE.prettyPrint("初始化系统账户完成");
     }
 
     private void initGroupAccount(List<GroupAccountsInitialization> groupAccounts) {
-        PrintUtil.printInfo("初始化系统群组账户关系开始");
+        Printer.INSTANCE.prettyPrint("初始化系统群组账户关系开始");
         // 构造groupAccountsMap
         Map<String, Set<String>> groupAccountsMap = new HashMap<>();
         groupAccounts.forEach(ga -> {
@@ -195,7 +186,7 @@ public class InitializationManagerImpl implements IInitializationManager {
             });
         });
         if (CollectionUtil.INSTANCE.isEmpty(groupAccountsMap)) {
-            PrintUtil.printInfo("未设置系统群组账户关系,无需初始化");
+            Printer.INSTANCE.prettyPrint("未设置系统群组账户关系,无需初始化");
             return;
         }
         groupAccountsMap.forEach((groupKey, loginNames) -> {
@@ -207,17 +198,17 @@ public class InitializationManagerImpl implements IInitializationManager {
                 groupAccountParameterDomain.setGroup_id(groupId);
                 try {
                     groupAccountManager.insert(groupAccountParameterDomain);
-                    PrintUtil.printInfo("{}-{}初始化完成", groupKey, loginName);
+                    Printer.INSTANCE.prettyPrint("{}-{}初始化完成", groupKey, loginName);
                 } catch (DuplicateKeyException e) {
-                    PrintUtil.printInfo("{}-{}已存在", groupKey, loginName);
+                    Printer.INSTANCE.prettyPrint("{}-{}已存在", groupKey, loginName);
                 }
             });
         });
-        PrintUtil.printInfo("初始化系统群组账户关系完成");
+        Printer.INSTANCE.prettyPrint("初始化系统群组账户关系完成");
     }
 
     private void initRoleAccounts(List<RoleAccountsInitialization> roleAccounts) {
-        PrintUtil.printInfo("初始化系统角色账户关系开始");
+        Printer.INSTANCE.prettyPrint("初始化系统角色账户关系开始");
         // 构造roleAccountsMap
         Map<String, Set<String>> roleAccountsMap = new HashMap<>();
         roleAccounts.forEach(ra -> {
@@ -230,7 +221,7 @@ public class InitializationManagerImpl implements IInitializationManager {
             });
         });
         if (CollectionUtil.INSTANCE.isEmpty(roleAccountsMap)) {
-            PrintUtil.printInfo("未设置系统角色账户关系,无需初始化");
+            Printer.INSTANCE.prettyPrint("未设置系统角色账户关系,无需初始化");
             return;
         }
         roleAccountsMap.forEach((roleKey, loginNames) -> {
@@ -242,17 +233,17 @@ public class InitializationManagerImpl implements IInitializationManager {
                 roleAccountParameterDomain.setRole_id(roleId);
                 try {
                     roleAccountManager.insert(roleAccountParameterDomain);
-                    PrintUtil.printInfo("{}-{}初始化完成", roleKey, loginName);
+                    Printer.INSTANCE.prettyPrint("{}-{}初始化完成", roleKey, loginName);
                 } catch (DuplicateKeyException e) {
-                    PrintUtil.printInfo("{}-{}已存在", roleKey, loginName);
+                    Printer.INSTANCE.prettyPrint("{}-{}已存在", roleKey, loginName);
                 }
             });
         });
-        PrintUtil.printInfo("初始化系统角色账户关系完成");
+        Printer.INSTANCE.prettyPrint("初始化系统角色账户关系完成");
     }
 
     private void initUrlRoles(List<UrlRolesInitialization> urlRoles) {
-        PrintUtil.printInfo("初始化系统Url角色关系开始");
+        Printer.INSTANCE.prettyPrint("初始化系统Url角色关系开始");
         // 构造groupAccountsMap
         Map<String, Set<String>> urlRolesMap = new HashMap<>();
         urlRoles.forEach(ur -> {
@@ -278,13 +269,13 @@ public class InitializationManagerImpl implements IInitializationManager {
         urlRolesMap.forEach((urlPath, roleKeys) -> {
             if (CollectionUtil.INSTANCE.isEmpty(roleKeys)) {
                 ShiroFilterChainUtil.addLoginToChain(urlPath);
-                PrintUtil.printInfo("初始化登录即可访问url:{}", urlPath);
+                Printer.INSTANCE.prettyPrint("初始化登录即可访问url:{}", urlPath);
             } else {
                 String roleKeysSplit = String.join(",", roleKeys);
                 ShiroFilterChainUtil.addRolesToChain(urlPath, roleKeysSplit);
-                PrintUtil.printInfo("初始化角色可访问url:{},role:{}", urlPath, roleKeysSplit);
+                Printer.INSTANCE.prettyPrint("初始化角色可访问url:{},role:{}", urlPath, roleKeysSplit);
             }
         });
-        PrintUtil.printInfo("初始化系统Url角色关系完成");
+        Printer.INSTANCE.prettyPrint("初始化系统Url角色关系完成");
     }
 }

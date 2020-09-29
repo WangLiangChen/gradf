@@ -10,12 +10,12 @@ import javax.persistence.Table;
 /**
  * @author LiangChen.Wang 2020-04-12 00:45:06
  */
-@Table(name = "crdf_resource")
+@Table(name = "gradf_resource")
 public class ResourceQuery extends RootQuery {
     private static final ResourceQuery self = new ResourceQuery();
 
     public static ResourceQuery newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     public static ResourceQuery newInstance(Long resource_id) {

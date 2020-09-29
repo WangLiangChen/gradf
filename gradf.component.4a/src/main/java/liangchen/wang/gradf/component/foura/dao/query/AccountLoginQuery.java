@@ -10,12 +10,12 @@ import javax.persistence.Table;
 /**
  * @author LiangChen.Wang 2020-07-21 22:30:15
 */
-@Table(name = "crdf_account_login")
+@Table(name = "gradf_account_login")
 public class AccountLoginQuery extends RootQuery {
     private static final AccountLoginQuery self = new AccountLoginQuery();
 
     public static AccountLoginQuery newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     public static AccountLoginQuery newInstance(String login_name) {

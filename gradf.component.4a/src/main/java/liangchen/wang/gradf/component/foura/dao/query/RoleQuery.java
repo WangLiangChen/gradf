@@ -11,12 +11,12 @@ import java.util.Set;
 /**
  * @author LiangChen.Wang 2020-04-12 00:45:06
  */
-@Table(name = "crdf_role")
+@Table(name = "gradf_role")
 public class RoleQuery extends RootQuery {
     private static final RoleQuery self = new RoleQuery();
 
     public static RoleQuery newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     public static RoleQuery newInstance(Long role_id) {

@@ -1,6 +1,6 @@
 package liangchen.wang.gradf.component.foura.manager.domain.parameter;
 
-import liangchen.wang.gradf.component.business.base.ParameterDomain;
+import liangchen.wang.gradf.component.web.base.ParameterDomain;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
 import liangchen.wang.gradf.component.foura.dao.entity.Resource;
 
@@ -13,7 +13,7 @@ public class ResourceParameterDomain extends ParameterDomain<Resource> {
     private static final ResourceParameterDomain self = new ResourceParameterDomain();
 
     public static ResourceParameterDomain newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     private Long resource_id;

@@ -2,7 +2,7 @@ package liangchen.wang.gradf.component.foura.controller;
 
 
 import liangchen.wang.gradf.component.foura.manager.IAccountManager;
-import liangchen.wang.gradf.framework.webmvc.result.ResponseUtil;
+import liangchen.wang.gradf.framework.web.result.ResponseUtil;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,13 +13,13 @@ import javax.inject.Named;
 /**
  * @author LiangChen.Wang 2019/7/5 15:42
  */
-@RestController("Crdf_Foura_DefaultAccountController")
-@RequestMapping("/crdf/4a/account")
+@RestController("Gradf_Foura_DefaultAccountController")
+@RequestMapping("/gradf/4a/account")
 public class AccountController {
     private final IAccountManager manager;
 
     @Inject
-    public AccountController(@Named("Crdf_Foura_DefaultAccountManager") IAccountManager manager) {
+    public AccountController(@Named("Gradf_Foura_DefaultAccountManager") IAccountManager manager) {
         this.manager = manager;
     }
 

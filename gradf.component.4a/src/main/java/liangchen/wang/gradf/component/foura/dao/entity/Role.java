@@ -9,12 +9,12 @@ import javax.persistence.Id;
 /**
  * @author LiangChen.Wang 2020-04-12 00:45:06
 */
-@Entity(name = "crdf_role")
+@Entity(name = "gradf_role")
 public class Role extends BaseEntity {
     private static final Role self = new Role();
 
     public static Role newInstance() {
-        return ClassBeanUtil.INSTANCE.classCast(self.clone());
+        return ClassBeanUtil.INSTANCE.cast(self.clone());
     }
 
     @Id

@@ -1,7 +1,9 @@
 package liangchen.wang.gradf.framework.commons.validator;
 
 import liangchen.wang.gradf.framework.commons.enumeration.Symbol;
+import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import liangchen.wang.gradf.framework.commons.exception.InfoException;
+import liangchen.wang.gradf.framework.commons.exception.PromptException;
 import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 
@@ -25,19 +27,7 @@ public enum Assert {
     INSTANCE;
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
-    private static Class<?>[] resolveGroups(Class<?>... groupsClass) {
-        Class[] groups;
-        if (CollectionUtil.INSTANCE.isEmpty(groupsClass)) {
-            groups = new Class[]{Default.class};
-        } else {
-            groups = new Class[groupsClass.length + 1];
-            System.arraycopy(groupsClass, 0, groups, 0, groupsClass.length);
-            groups[groups.length - 1] = Default.class;
-        }
-        return groups;
-    }
-
-    public void notNull(Object object, Runnable runnable) {
+    public void notNullElseRun(Object object, Runnable runnable) {
         if (object != null) {
             return;
         }
@@ -48,10 +38,10 @@ public enum Assert {
         if (object != null) {
             return;
         }
-        assertException(message, args);
+        assertException(AssertLevel.INFO, message, args);
     }
 
-    public void isNull(Object object, Runnable runnable) {
+    public void isNullElseRun(Object object, Runnable runnable) {
         if (object == null) {
             return;
         }
@@ -62,7 +52,7 @@ public enum Assert {
         if (object == null) {
             return;
         }
-        assertException(message, args);
+        assertException(AssertLevel.INFO, message, args);
     }
 
     public void notBlank(String string, Runnable runnable) {
@@ -76,24 +66,28 @@ public enum Assert {
         if (StringUtil.INSTANCE.isNotBlank(string)) {
             return;
         }
-        assertException(message, args);
+        assertException(AssertLevel.INFO, message, args);
     }
 
     public void isBlank(String string, String message, Object... args) {
         if (StringUtil.INSTANCE.isBlank(string)) {
             return;
         }
-        assertException(message, args);
+        assertException(AssertLevel.INFO, message, args);
     }
 
     public <T> void isEquals(T parama, T paramb, String message, Object... args) {
+        isEquals(parama, paramb, message, args);
+    }
+
+    public <T> void isEquals(T parama, T paramb, AssertLevel assertLevel, String message, Object... args) {
         if (null == parama && null == paramb) {
             return;
         }
         if (null != parama && null != paramb && parama.equals(paramb)) {
             return;
         }
-        assertException(message, args);
+        assertException(assertLevel, message, args);
     }
 
     public <T> void notEquals(T parama, T paramb, String message, Object... args) {
@@ -106,21 +100,29 @@ public enum Assert {
         if (null != parama && null != paramb && !parama.equals(paramb)) {
             return;
         }
-        assertException(message, args);
+        assertException(AssertLevel.INFO, message, args);
     }
 
     public void isTrue(boolean condition, String message, Object... args) {
+        isTrue(condition, AssertLevel.INFO, message, args);
+    }
+
+    public void isTrue(boolean condition, AssertLevel assertLevel, String message, Object... args) {
         if (condition) {
             return;
         }
-        assertException(message, args);
+        assertException(assertLevel, message, args);
     }
 
     public void isFalse(boolean condition, String message, Object... args) {
+        isFalse(condition, AssertLevel.INFO, message, args);
+    }
+
+    public void isFalse(boolean condition, AssertLevel assertLevel, String message, Object... args) {
         if (!condition) {
             return;
         }
-        assertException(message, args);
+        assertException(assertLevel, message, args);
     }
 
     public void matchRegex(String string, String patternStr, String message, Object... args) {
@@ -128,7 +130,7 @@ public enum Assert {
         if (match) {
             return;
         }
-        assertException(message, args);
+        assertException(AssertLevel.INFO, message, args);
     }
 
     public void notMatchRegex(String string, String patternStr, String message, Object... args) {
@@ -136,7 +138,7 @@ public enum Assert {
         if (!match) {
             return;
         }
-        assertException(message, args);
+        assertException(AssertLevel.INFO, message, args);
     }
 
     private boolean matchRegex(String string, String patternStr) {
@@ -146,6 +148,10 @@ public enum Assert {
     }
 
     public void validate(Object object, Class... groupsClass) {
+        validate(object, AssertLevel.INFO, groupsClass);
+    }
+
+    public void validate(Object object, AssertLevel assertLevel, Class... groupsClass) {
         if (null == object) {
             return;
         }
@@ -156,32 +162,54 @@ public enum Assert {
         }
         StringBuilder messages = new StringBuilder();
         violations.forEach(e -> messages.append(e.getMessage()).append(Symbol.SEMICOLON.getSymbol()));
-        assertException(messages.toString());
+        assertException(assertLevel, messages.toString());
     }
 
     public void notEmpty(byte[] bytes, String message, Object... args) {
         if (CollectionUtil.INSTANCE.isNotEmpty(bytes)) {
             return;
         }
-        assertException(message, args);
+        assertException(AssertLevel.INFO, message, args);
     }
 
     public void notEmpty(Collection<?> collection, String message, Object... args) {
         if (CollectionUtil.INSTANCE.isNotEmpty(collection)) {
             return;
         }
-        assertException(message, args);
+        assertException(AssertLevel.INFO, message, args);
     }
 
     public <T> void notEmpty(Map<?, ?> map, String message, Object... args) {
         if (CollectionUtil.INSTANCE.isNotEmpty(map)) {
             return;
         }
-        assertException(message, args);
+        assertException(AssertLevel.INFO, message, args);
     }
 
-    private void assertException(String message, Object... args) {
-        throw new InfoException(message, args);
+    private static Class<?>[] resolveGroups(Class<?>... groupsClass) {
+        Class[] groups;
+        if (CollectionUtil.INSTANCE.isEmpty(groupsClass)) {
+            groups = new Class[]{Default.class};
+        } else {
+            groups = new Class[groupsClass.length + 1];
+            System.arraycopy(groupsClass, 0, groups, 0, groupsClass.length);
+            groups[groups.length - 1] = Default.class;
+        }
+        return groups;
+    }
+
+
+    private void assertException(AssertLevel assertLevel, String message, Object... args) {
+        switch (assertLevel) {
+            case INFO:
+                throw new InfoException(message, args);
+            case PROMPT:
+                throw new PromptException(message, args);
+            case ERROR:
+                throw new ErrorException(message, args);
+            default:
+                ;
+        }
     }
 
     private void assertRunnable(Runnable runnable) {
