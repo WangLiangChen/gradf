@@ -24,6 +24,7 @@ public class DataOwner extends RootEntity {
     private String data_type;
     private Long owner_id;
     private String owner_type;
+    private Byte owner_permission;
 
     public Long getRecord_id() {
         return record_id;
@@ -65,5 +66,11 @@ public class DataOwner extends RootEntity {
         this.owner_type = owner_type;
     }
 
+    public Byte getOwner_permission() {
+        return owner_permission;
+    }
 
+    public void setOwner_permission(Byte owner_permission) {
+        this.owner_permission = owner_permission;
+    }
 }

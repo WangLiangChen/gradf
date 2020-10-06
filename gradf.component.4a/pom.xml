@@ -18,7 +18,7 @@
         </dependency>
         <dependency>
             <groupId>liangchen.wang</groupId>
-            <artifactId>gradf.component.web</artifactId>
+            <artifactId>gradf.component.commons</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.shiro</groupId>

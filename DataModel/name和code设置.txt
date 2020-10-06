@@ -1,0 +1,22 @@
+具体操作方法是:
+1、打开powerDesigner菜单的Tools->Model Options....->Naming Convention
+2、选中Name,并勾选Enable name/code conversions.
+3、选择Name To Code,把上面任意一个例子的代码（红色部分）贴到conversion script内容框中即可。
+
+.set_value(_First, true, new) 
+.foreach_part(%Name%, "','") 
+.if (%_First%) 
+.delete(%CurrentPart%) 
+%CurrentPart%
+.enddelete
+.set_value(_First, false, update) 
+.else 
+%CurrentPart% 
+.endif 
+.next
+这个例子是把Name内容的#号后边的内容当作Code.
+如:在Name列输入    用户名,user_name  则在Code列自动会变成   user_name
+
+
+
+[%PROLE%=%PARENT%?%COLUMN%:%PROLE%]

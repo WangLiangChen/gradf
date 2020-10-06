@@ -1,4 +1,4 @@
-package liangchen.wang.gradf.framework.data.test;
+package liangchen.wang.gradf.component.web.test;
 
 import liangchen.wang.gradf.framework.data.annotation.EnableJdbc;
 import org.junit.Test;
@@ -12,9 +12,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @EnableJdbc
-public class DataSourceTest {
+public class CommonsTest {
     @Test
-    public void testDataSourceProperties() {
+    public void testInitSql() {
         System.out.println();
     }
 }

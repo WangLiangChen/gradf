@@ -1,5 +1,6 @@
 package liangchen.wang.gradf.framework.data.configuration;
 
+import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
 import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
 import liangchen.wang.gradf.framework.commons.utils.Printer;
@@ -17,9 +18,12 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.lang.Nullable;
 
+import javax.inject.Inject;
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
 
@@ -29,31 +33,59 @@ import java.util.Properties;
 public class JdbcAutoConfiguration {
     private final static String SYSTEM_MAPPER_SCAN_PACKAGE = "liangchen.wang.gradf.framework.springboot.data";
 
+    @Inject
+    public void initSQL(DataSource dataSource) {
+        ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
+        ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+        try {
+            Resource[] ddls = resourcePatternResolver.getResources("classpath*:ddl.sql");
+            for (Resource ddl : ddls) {
+                databasePopulator.addScript(ddl);
+                Printer.INSTANCE.prettyPrint("init ddl sql script:{}", ddl.toString());
+            }
+            Resource[] dmls = resourcePatternResolver.getResources("classpath*:dml.sql");
+            for (Resource dml : dmls) {
+                databasePopulator.addScript(dml);
+                Printer.INSTANCE.prettyPrint("init dml sql script:{}", dml.toString());
+            }
+        } catch (IOException e) {
+            throw new ErrorException(e);
+        }
+        databasePopulator.setSqlScriptEncoding("UTF-8");
+        databasePopulator.execute(dataSource);
+    }
+
     @Bean
-    public SqlSessionFactoryBean sqlSessionFactory(DataSource dataSource, @Nullable Interceptor[] interceptors) throws Exception {
+    public SqlSessionFactoryBean sqlSessionFactory(DataSource dataSource, @Nullable Interceptor[] interceptors) {
         SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
         sqlSessionFactoryBean.setDataSource(dataSource);
         URL url = ConfigurationUtil.INSTANCE.getFullUrl("mybatis-config.xml");
-        try {
-            Resource configLocation = new UrlResource(url);
+        Resource configLocation = new UrlResource(url);
+        if (configLocation.exists()) {
             sqlSessionFactoryBean.setConfigLocation(configLocation);
-        } catch (Exception e) {
+        } else {
             Printer.INSTANCE.prettyPrint("can't find mybatis-config.xml,use default configuration");
         }
+
         Properties mybatisConfiguration = new Properties();
         mybatisConfiguration.put("cacheEnabled", false);
         mybatisConfiguration.put("localCacheScope", LocalCacheScope.STATEMENT.name());
         sqlSessionFactoryBean.setConfigurationProperties(mybatisConfiguration);
 
         ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
-        Resource[] mapperLocations = resourcePatternResolver.getResources("classpath*:**/*.mapper.xml");
+        Resource[] mapperLocations = new Resource[0];
+        try {
+            mapperLocations = resourcePatternResolver.getResources("classpath*:**/*.mapper.xml");
+        } catch (IOException e) {
+            throw new ErrorException(e);
+        }
         if (CollectionUtil.INSTANCE.isEmpty(mapperLocations)) {
             Printer.INSTANCE.prettyPrint("can't find mybatis mapper file,pattern is:**/*.mapper.xml");
             return sqlSessionFactoryBean;
         }
         Printer.INSTANCE.prettyPrint("find mybatis mapper file:");
         for (Resource resource : mapperLocations) {
-            System.out.println(String.format("    %s", resource.getURL()));
+            System.out.println(String.format("    %s", resource.toString()));
         }
         sqlSessionFactoryBean.setMapperLocations(mapperLocations);
         //添加plugins interceptors

@@ -17,7 +17,11 @@
         </dependency>
         <dependency>
             <groupId>liangchen.wang</groupId>
-            <artifactId>gradf.component.4a</artifactId>
+            <artifactId>gradf.framework.cluster</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>liangchen.wang</groupId>
+            <artifactId>gradf.framework.web</artifactId>
         </dependency>
     </dependencies>
 
