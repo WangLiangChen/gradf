@@ -455,7 +455,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("package " + parameterDomainPackage + ";");
         lines.add("");
         lines.add("import " + entityClass + ";");
-        lines.add("import liangchen.wang.gradf.component.foura.base.ParameterDomain;");
+        lines.add("import liangchen.wang.gradf.component.commons.base.ParameterDomain;");
         lines.add("import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;");
         lines.add("");
         lines.add("/**");
@@ -521,7 +521,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         Collection<String> lines = new ArrayList<String>();
         lines.add("package " + resultDomainPackage + ";");
         lines.add("");
-        lines.add("import liangchen.wang.gradf.component.foura.base.ResultDomain;");
+        lines.add("import liangchen.wang.gradf.component.commons.base.ResultDomain;");
         lines.add("import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;");
         lines.add("");
         lines.add("/**");
@@ -579,11 +579,10 @@ public class DesignerManagerImpl implements IDesignerManager {
         Collection<String> lines = new ArrayList<>();
         lines.add("package " + iManagerPackage + ";");
         lines.add("");
-        lines.add("import liangchen.wang.gradf.component.foura.base.IAbstractManager;");
         lines.add("import " + queryClass + ";");
         lines.add("import " + parameterDomainClass + ";");
         lines.add("import " + resultDomainClass + ";");
-        lines.add("import liangchen.wang.gradf.framework.commons.pagination.PaginationResult;");
+        lines.add("import liangchen.wang.gradf.framework.data.pagination.PaginationResult;");
         lines.add("");
         lines.add("import java.util.List;");
         lines.add("");
@@ -655,17 +654,10 @@ public class DesignerManagerImpl implements IDesignerManager {
         Collection<String> lines = new ArrayList<>();
         lines.add("package " + managerPackage + ";");
         lines.add("");
-        lines.add("import liangchen.wang.gradf.component.foura.base.AbstractManager;");
-        lines.add("import liangchen.wang.gradf.framework.cache.annotation.GradfAutoCacheable;");
-        lines.add("import liangchen.wang.gradf.framework.commons.exception.InfoException;");
-        lines.add("import liangchen.wang.gradf.framework.commons.pagination.PaginationResult;");
+        lines.add("import liangchen.wang.gradf.component.commons.base.AbstractManager;");
+        lines.add("import liangchen.wang.gradf.framework.data.pagination.PaginationResult;");
         lines.add("import liangchen.wang.gradf.framework.data.enumeration.Status;");
-        lines.add("import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;");
         lines.add("import liangchen.wang.gradf.framework.commons.validator.Assert;");
-        lines.add("import liangchen.wang.gradf.framework.commons.validator.AssertLevel;");
-        lines.add("import liangchen.wang.gradf.framework.data.enumeration.Status;");
-        lines.add("import liangchen.wang.gradf.framework.data.utils.UidDb;");
-        lines.add("import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;");
         lines.add("import liangchen.wang.gradf.framework.commons.utils.ContextUtil;");
         lines.add("import " + iDaoClass + ";");
         lines.add("import " + entityClass + ";");
@@ -679,14 +671,12 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("import javax.inject.Named;");
         lines.add("import java.util.List;");
         lines.add("import java.time.LocalDateTime;");
-        lines.add("import java.util.Optional;");
-        lines.add("import java.util.concurrent.TimeUnit;");
         lines.add("");
         lines.add("/**");
         lines.add(" * @author " + author + " " + DateTimeUtil.INSTANCE.getYYYY_MM_DD_HH_MM_SS());
         lines.add("*/");
         lines.add("@Component(\"" + managerBeanName + "\")");
-        lines.add("public class " + managerName + " extends AbstractManager<" + entityName + ", " + resultDomainName + "> implements " + iManagerName + " {");
+        lines.add("public class " + managerName + " extends AbstractManager<" + entityName + ", " + queryName + ", " + resultDomainName + "> implements " + iManagerName + " {");
         lines.add("    @Inject");
         lines.add("    public " + managerName + "(@Named(\"" + daoBeanName + "\") " + iDaoName + " dao) {");
         lines.add("        super(\"" + designerDomain.getBusinessName() + "\", \"" + designerDomain.getBusinessType() + "\", dao);");
@@ -694,7 +684,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("");
         lines.add("    @Override");
         lines.add("    public boolean insert(" + parameterDomainName + " parameter) {");
-        lines.add("        Assert.INSTANCE.notNull(parameter, AssertLevel.INFO, \"参数不能为空\");");
+        lines.add("        Assert.INSTANCE.notNull(parameter, \"参数不能为空\");");
         String entityNameVar = StringUtil.INSTANCE.firstLetterConvertCase(entityName);
         lines.add("        parameter.populateEntity((" + entityNameVar + ") -> {");
         lines.add("            //TODO 这里可以调整Entity，比如设置主键/状态等");
@@ -723,7 +713,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("");
         lines.add("    @Override");
         lines.add("    public boolean updateByPrimaryKey(" + parameterDomainName + " parameter) {");
-        lines.add("         Assert.INSTANCE.notNull(parameter, AssertLevel.INFO, \"参数不能为空\");");
+        lines.add("         Assert.INSTANCE.notNull(parameter, \"参数不能为空\");");
         lines.add("        " + queryName + " query = " + queryName + ".newInstance();");
         primaryKeys.forEach(pk -> lines.add("        query.set" + StringUtils.capitalize(pk.getColumnName()) + "(parameter.get" + StringUtils.capitalize(pk.getColumnName()) + "());"));
         lines.add("        int rows =  updateByQuery(parameter, query);");
@@ -732,8 +722,8 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("");
         lines.add("    @Override");
         lines.add("    public int updateByQuery(" + parameterDomainName + " parameter, " + queryName + " query) {");
-        lines.add("        Assert.INSTANCE.notNull(parameter, AssertLevel.INFO, \"参数不能为空\");");
-        lines.add("        Assert.INSTANCE.notNull(query, AssertLevel.INFO, \"查询参数不能为空\");");
+        lines.add("        Assert.INSTANCE.notNull(parameter, \"参数不能为空\");");
+        lines.add("        Assert.INSTANCE.notNull(query, \"查询参数不能为空\");");
         lines.add("        parameter.populateEntity((" + entityNameVar + ") -> {");
         lines.add("            // TODO 这里添加不更新或者不论是否空值总更新的字段");
         lines.add("            " + entityNameVar + ".setModify_datetime(LocalDateTime.now());");
@@ -746,7 +736,7 @@ public class DesignerManagerImpl implements IDesignerManager {
             lines.add("    @Override");
             lines.add("    public " + resultDomainName + " byPrimaryKey(" + primaryKeyParameter + ") {");
             for (String p : primaryKeyVar.split(",")) {
-                lines.add("        Assert.INSTANCE.notBlank(" + p + ", AssertLevel.INFO, \"参数不能为空\");");
+                lines.add("        Assert.INSTANCE.notBlank(" + p + ", \"参数不能为空\");");
             }
             lines.add("        " + queryName + " query = " + queryName + ".newInstance();");
             primaryKeys.forEach(pk -> lines.add("        query.set" + StringUtils.capitalize(pk.getColumnName()) + "(" + pk.getColumnName() + ");"));
@@ -756,12 +746,12 @@ public class DesignerManagerImpl implements IDesignerManager {
             lines.add("    @Override");
             lines.add("    public " + resultDomainName + " byPrimaryKeyOrThrow(" + primaryKeyParameter + ") {");
             for (String p : primaryKeyVar.split(",")) {
-                lines.add("        Assert.INSTANCE.notBlank(" + p + ", AssertLevel.INFO, \"参数不能为空\");");
+                lines.add("        Assert.INSTANCE.notBlank(" + p + ", \"参数不能为空\");");
             }
             lines.add("        " + queryName + " query = " + queryName + ".newInstance();");
             primaryKeys.forEach(pk -> lines.add("        query.set" + StringUtils.capitalize(pk.getColumnName()) + "(" + pk.getColumnName() + ");"));
             lines.add("        " + resultDomainName + " result = byPrimaryKey(" + primaryKeyVar + ");");
-            lines.add("        Assert.INSTANCE.notNull(result, AssertLevel.INFO, \"数据不存在\");");
+            lines.add("        Assert.INSTANCE.notNull(result, \"数据不存在\");");
             lines.add("        return result;");
             lines.add("    }");
             lines.add("");
@@ -774,9 +764,9 @@ public class DesignerManagerImpl implements IDesignerManager {
             lines.add("    @Override");
             lines.add("    public boolean updateStatusByPrimaryKey(" + primaryKeyParameter + ", " + statusFieldClassName + " statusTo, " + statusFieldClassName + "[] statusIn, " + statusFieldClassName + "[] statusNotIn) {");
             for (String p : primaryKeyVar.split(",")) {
-                lines.add("        Assert.INSTANCE.notBlank(" + p + ", AssertLevel.INFO, \"参数不能为空\");");
+                lines.add("        Assert.INSTANCE.notNull(" + p + ", \"参数不能为空\");");
             }
-            lines.add("        Assert.INSTANCE.notBlank(statusTo, AssertLevel.INFO, \"状态不能为空\");");
+            lines.add("        Assert.INSTANCE.notBlank(statusTo, \"状态不能为空\");");
             lines.add("        " + parameterDomainName + " parameter = " + parameterDomainName + ".newInstance();");
             lines.add("        parameter.setStatus(statusTo);");
             lines.add("        " + queryName + " query = " + queryName + ".newInstance();");
@@ -800,14 +790,14 @@ public class DesignerManagerImpl implements IDesignerManager {
             lines.add("    @Override");
             lines.add("    public " + resultDomainName + " byPrimaryKeyOrThrow(" + primaryKeyParameter + ", " + statusFieldClassName + "[] statusIn, " + statusFieldClassName + "[] statusNotIn, String... returnFields) {");
             lines.add("        " + resultDomainName + " resultDomain = byPrimaryKey(" + primaryKeyVar + ", statusIn, statusNotIn, returnFields);");
-            lines.add("        Assert.INSTANCE.notNull(resultDomain, AssertLevel.INFO, \"数据不存在或者状态错误\");");
+            lines.add("        Assert.INSTANCE.notNull(resultDomain, \"数据不存在或者状态错误\");");
             lines.add("        return resultDomain;");
             lines.add("    }");
             lines.add("");
             lines.add("    @Override");
             lines.add("    public " + resultDomainName + " byPrimaryKey(" + primaryKeyParameter + ", " + statusFieldClassName + "[] statusIn, " + statusFieldClassName + "[] statusNotIn, String... returnFields) {");
             for (String p : primaryKeyVar.split(",")) {
-                lines.add("        Assert.INSTANCE.notBlank(" + p + ", AssertLevel.INFO, \"参数不能为空\");");
+                lines.add("        Assert.INSTANCE.notNull(" + p + ", \"参数不能为空\");");
             }
             lines.add("        " + queryName + " query = " + queryName + ".newInstance();");
             primaryKeys.forEach(pk -> lines.add("        query.set" + StringUtils.capitalize(pk.getColumnName()) + "(" + pk.getColumnName() + ");"));

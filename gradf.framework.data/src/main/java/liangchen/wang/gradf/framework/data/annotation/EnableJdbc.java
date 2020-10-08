@@ -72,7 +72,7 @@ public @interface EnableJdbc {
             });
             // 验证基本网络是否通
             datasourceMap.forEach((k, v) -> {
-                Assert.INSTANCE.isTrue(NetUtil.INSTANCE.isConnectable(v.get("host"), Integer.valueOf(v.get("port")), TIMEOUT), "{} 连接测试失败", k);
+                Assert.INSTANCE.isTrue(NetUtil.INSTANCE.isConnectable(v.get("host"), Integer.valueOf(v.get("port")), TIMEOUT), "数据源 {} 连接测试失败", k);
             });
             Printer.INSTANCE.prettyPrint("DB连接测试成功......");
         }

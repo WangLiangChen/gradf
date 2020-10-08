@@ -4,6 +4,7 @@ package liangchen.wang.gradf.framework.commons.digest;
 import liangchen.wang.gradf.framework.commons.bytes.ByteUtil;
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -20,6 +21,12 @@ public enum HashUtil {
      * INSTANCE
      */
     INSTANCE;
+
+    public int hashCode(Object... objects) {
+        HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
+        hashCodeBuilder.append(objects);
+        return hashCodeBuilder.hashCode();
+    }
 
     public int hash(Object object) {
         Assert.INSTANCE.notNull(object, "参数object不能为null");

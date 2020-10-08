@@ -16,6 +16,7 @@ public class BaseEntity extends RootEntity {
     private Long creator;
     private Long modifier;
     private String summary;
+    private Byte data_mode;
     private String status;
 
     public Long getSort() {
@@ -64,6 +65,14 @@ public class BaseEntity extends RootEntity {
 
     public void setSummary(String summary) {
         this.summary = summary;
+    }
+
+    public Byte getData_mode() {
+        return data_mode;
+    }
+
+    public void setData_mode(Byte data_mode) {
+        this.data_mode = data_mode;
     }
 
     public String getStatus() {
