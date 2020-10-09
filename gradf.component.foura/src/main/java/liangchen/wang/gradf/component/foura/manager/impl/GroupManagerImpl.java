@@ -37,7 +37,7 @@ public class GroupManagerImpl extends AbstractManager<Group, GroupQuery, GroupRe
         Assert.INSTANCE.notNull(parameter, "参数不能为空");
         parameter.populateEntity((group) -> {
             Assert.INSTANCE.notNullElseRun(group.getGroup_id(), () -> group.setGroup_id(UidDb.INSTANCE.uid()));
-            Assert.INSTANCE.notBlank(group.getStatus(), () -> group.setStatus(Status.NORMAL.name()));
+            Assert.INSTANCE.notBlankElseRun(group.getStatus(), () -> group.setStatus(Status.NORMAL.name()));
             group.initOperator();
             group.initFields();
         });

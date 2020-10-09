@@ -55,7 +55,7 @@ public enum Assert {
         assertException(AssertLevel.INFO, message, args);
     }
 
-    public void notBlank(String string, Runnable runnable) {
+    public void notBlankElseRun(String string, Runnable runnable) {
         if (StringUtil.INSTANCE.isNotBlank(string)) {
             return;
         }

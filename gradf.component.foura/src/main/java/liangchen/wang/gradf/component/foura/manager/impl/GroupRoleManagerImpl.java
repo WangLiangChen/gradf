@@ -33,7 +33,7 @@ public class GroupRoleManagerImpl extends AbstractManager<GroupRole, GroupRoleQu
         Assert.INSTANCE.notNull(parameter, "参数不能为空");
         parameter.populateEntity((groupRole) -> {
             //TODO 这里可以调整Entity，比如设置主键/状态等
-            Assert.INSTANCE.notBlank(groupRole.getStatus(), () -> groupRole.setStatus(Status.NORMAL.name()));
+            Assert.INSTANCE.notBlankElseRun(groupRole.getStatus(), () -> groupRole.setStatus(Status.NORMAL.name()));
             groupRole.initOperator();
             groupRole.initFields();
         });

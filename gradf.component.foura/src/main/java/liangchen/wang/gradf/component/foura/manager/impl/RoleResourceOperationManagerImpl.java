@@ -37,7 +37,7 @@ public class RoleResourceOperationManagerImpl extends AbstractManager<RoleResour
         parameter.populateEntity((entity) -> {
             RoleResourceOperation roleResourceOperation = ClassBeanUtil.INSTANCE.cast(entity);
             //TODO 这里可以调整Entity，比如设置主键/状态等
-            Assert.INSTANCE.notBlank(roleResourceOperation.getStatus(), () -> roleResourceOperation.setStatus(Status.NORMAL.name()));
+            Assert.INSTANCE.notBlankElseRun(roleResourceOperation.getStatus(), () -> roleResourceOperation.setStatus(Status.NORMAL.name()));
             Assert.INSTANCE.notNullElseRun(roleResourceOperation.getData_mode(), () -> roleResourceOperation.setData_mode(DataMode.A.getValue()));
             roleResourceOperation.setCreator(operator);
             roleResourceOperation.setModifier(operator);

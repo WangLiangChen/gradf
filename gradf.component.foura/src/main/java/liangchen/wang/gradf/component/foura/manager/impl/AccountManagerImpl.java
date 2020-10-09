@@ -94,8 +94,8 @@ public class AccountManagerImpl extends AbstractManager<Account, AccountQuery, A
         // 插入账户
         parameter.setAccount_id(account_id);
         parameter.populateEntity((account) -> {
-            Assert.INSTANCE.notBlank(account.getStatus(), () -> account.setStatus(Status.NORMAL.name()));
-            Assert.INSTANCE.notBlank(account.getNick_name(), () -> account.setNick_name("NickName"));
+            Assert.INSTANCE.notBlankElseRun(account.getStatus(), () -> account.setStatus(Status.NORMAL.name()));
+            Assert.INSTANCE.notBlankElseRun(account.getNick_name(), () -> account.setNick_name("NickName"));
             LocalDateTime datetime = LocalDateTime.now();
             account.setExpire_datetime(datetime.plusYears(1));
             if (requireChangePassword) {

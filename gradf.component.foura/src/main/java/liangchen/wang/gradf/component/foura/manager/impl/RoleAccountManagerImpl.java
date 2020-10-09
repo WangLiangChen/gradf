@@ -34,7 +34,7 @@ public class RoleAccountManagerImpl extends AbstractManager<RoleAccount, RoleAcc
     public boolean insert(RoleAccountParameterDomain parameter) {
         parameter.populateEntity((entity) -> {
             RoleAccount roleAccount = (RoleAccount) entity;
-            Assert.INSTANCE.notBlank(roleAccount.getStatus(), () -> roleAccount.setStatus(Status.NORMAL.name()));
+            Assert.INSTANCE.notBlankElseRun(roleAccount.getStatus(), () -> roleAccount.setStatus(Status.NORMAL.name()));
             roleAccount.initOperator();
             ;
             roleAccount.initFields();

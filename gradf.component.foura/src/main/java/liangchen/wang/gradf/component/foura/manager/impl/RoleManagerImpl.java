@@ -38,7 +38,7 @@ public class RoleManagerImpl extends AbstractManager<Role, RoleQuery, RoleResult
         Assert.INSTANCE.validate(parameter, AssertLevel.INFO);
         parameter.populateEntity((role) -> {
             Assert.INSTANCE.notNullElseRun(role.getRole_id(), () -> role.setRole_id(UidDb.INSTANCE.uid()));
-            Assert.INSTANCE.notBlank(role.getStatus(), () -> role.setStatus(Status.NORMAL.name()));
+            Assert.INSTANCE.notBlankElseRun(role.getStatus(), () -> role.setStatus(Status.NORMAL.name()));
             role.initOperator();
             role.initFields();
         });

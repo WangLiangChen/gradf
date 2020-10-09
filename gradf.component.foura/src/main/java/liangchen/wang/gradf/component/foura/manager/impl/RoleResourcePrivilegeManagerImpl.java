@@ -37,7 +37,7 @@ public class RoleResourcePrivilegeManagerImpl extends AbstractManager<RoleResour
         parameter.populateEntity((entity) -> {
             RoleResourcePrivilege roleResourcePrivilege = ClassBeanUtil.INSTANCE.cast(entity);
             //TODO 这里可以调整Entity，比如设置主键/状态等
-            Assert.INSTANCE.notBlank(roleResourcePrivilege.getStatus(), () -> roleResourcePrivilege.setStatus(Status.NORMAL.name()));
+            Assert.INSTANCE.notBlankElseRun(roleResourcePrivilege.getStatus(), () -> roleResourcePrivilege.setStatus(Status.NORMAL.name()));
             Assert.INSTANCE.notNullElseRun(roleResourcePrivilege.getData_mode(), () -> roleResourcePrivilege.setData_mode(DataMode.A.getValue()));
             roleResourcePrivilege.setCreator(operator);
             roleResourcePrivilege.setModifier(operator);
