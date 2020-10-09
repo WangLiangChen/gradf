@@ -1,6 +1,7 @@
 package liangchen.wang.gradf.framework.web.controller;
 
 import liangchen.wang.gradf.framework.commons.utils.DateTimeUtil;
+import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import liangchen.wang.gradf.framework.web.result.ResponseUtil;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,8 +22,20 @@ public class GlobalController {
 
     @GetMapping("/basePath")
     public void basePath(HttpServletRequest request) {
-        String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/";
-        ResponseUtil.createResponse().flushString(basePath);
+        StringBuilder basePath = new StringBuilder();
+        basePath.append(request.getScheme())
+                .append("://")
+                .append(request.getServerName())
+                .append(":")
+                .append(request.getServerPort());
+        String contextPath = request.getContextPath();
+        if (StringUtil.INSTANCE.isNotBlank(contextPath)) {
+            basePath.append(contextPath)
+                    .append("/");
+        }
+        basePath.append(request.getServletPath())
+                .append("/");
+        ResponseUtil.createResponse().flushString(basePath.toString());
     }
 
     @GetMapping("/datetime")
