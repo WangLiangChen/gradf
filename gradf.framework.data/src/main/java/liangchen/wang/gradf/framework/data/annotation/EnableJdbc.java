@@ -6,6 +6,7 @@ import liangchen.wang.gradf.framework.commons.utils.Printer;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.data.configuration.JdbcAutoConfiguration;
 import liangchen.wang.gradf.framework.data.datasource.DynamicDataSourceRegister;
+import liangchen.wang.gradf.framework.data.datasource.aspect.DynamicDataSourceAspect;
 import liangchen.wang.gradf.framework.data.enumeration.DataStatus;
 import org.apache.commons.configuration2.Configuration;
 import org.springframework.context.annotation.Import;
@@ -40,7 +41,7 @@ public @interface EnableJdbc {
             Printer.INSTANCE.prettyPrint("@EnableJdbc 开启了Jdbc......");
             Printer.INSTANCE.prettyPrint("@EnableJdbc 匹配的类: {}", annotationMetadata.getClassName());
             validateConnectionalbe();
-            String[] imports = new String[]{DynamicDataSourceRegister.class.getName(), JdbcAutoConfiguration.class.getName()};
+            String[] imports = new String[]{DynamicDataSourceRegister.class.getName(), JdbcAutoConfiguration.class.getName(), DynamicDataSourceAspect.class.getName()};
             loaded = true;
             // 设置全局jdbc状态
             DataStatus.INSTANCE.setJdbcEnable(true);

@@ -18,7 +18,7 @@ import javax.inject.Inject;
  * @author LiangChen.Wang
  */
 @RestController
-@RequestMapping(value = "/gradf/captcha")
+@RequestMapping(value = "/captcha")
 public class CaptchaController {
     private final ICaptchaManager manager;
 

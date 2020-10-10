@@ -74,18 +74,21 @@ public class AccountManagerImpl extends AbstractManager<Account, AccountQuery, A
             if (StringUtil.INSTANCE.isNotBlank(login_name)) {
                 accountLogin.setLogin_name(login_name);
                 accountLogin.setLogin_mode(LoginModeEnum.LOGIN_NAME.name());
+                accountLogin.setLogin_config("");
                 accountLoginDao.insert(accountLogin);
             }
             // email
             if (StringUtil.INSTANCE.isNotBlank(email)) {
                 accountLogin.setLogin_name(email);
                 accountLogin.setLogin_mode(LoginModeEnum.EMAIL.name());
+                accountLogin.setLogin_config("");
                 accountLoginDao.insert(accountLogin);
             }
             // mobile
             if (StringUtil.INSTANCE.isNotBlank(mobile)) {
                 accountLogin.setLogin_name(mobile);
                 accountLogin.setLogin_mode(LoginModeEnum.MOBILE.name());
+                accountLogin.setLogin_config("");
                 accountLoginDao.insert(accountLogin);
             }
         } catch (DuplicateKeyException e) {

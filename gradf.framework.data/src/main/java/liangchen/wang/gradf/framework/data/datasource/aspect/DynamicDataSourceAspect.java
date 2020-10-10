@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
  */
 @Aspect
 @Order(-999999999)
-@Component
 public class DynamicDataSourceAspect {
     // 很奇怪的实现方式
     // 使用如下切入点，可以拦截类和方法，但无法完全绑定方法的变量
