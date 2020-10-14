@@ -63,4 +63,15 @@ public abstract class GradfRealm extends AuthorizingRealm {
         return authorizationInfo;
     }
 
+    @Override
+    public boolean isPermitted(PrincipalCollection principals, String permission) {
+        // TODO 可以在这里扩展permission，以支持and or等条件
+        return super.isPermitted(principals, permission);
+    }
+
+    @Override
+    public boolean hasRole(PrincipalCollection principal, String role) {
+        // TODO 可以在这里扩展role，以支持and or等条件
+        return super.hasRole(principal, role);
+    }
 }
