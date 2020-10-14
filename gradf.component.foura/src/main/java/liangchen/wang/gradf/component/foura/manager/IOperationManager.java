@@ -30,4 +30,5 @@ public interface IOperationManager {
 
     PaginationResult<OperationResultDomain> pagination(OperationQuery query, String... returnFields);
 
+    String keyById(Long operation_id);
 }

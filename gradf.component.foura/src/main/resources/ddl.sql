@@ -240,8 +240,8 @@ create table if not exists gradf_operation_log
 (
     log_id               bigint not null  comment '',
     business_id          bigint not null  comment '',
-    business_type        varchar(20) not null  comment '',
-    business_name        varchar(30) not null  comment '业务名称',
+    business_type        varchar(60) not null  comment '',
+    business_name        varchar(60) not null  comment '业务标识,格式开发时自定义,如System-SubSystem-Module-Business-Function等',
     operator_id          bigint not null  comment '操作人员id',
     operator_name        varchar(30) not null  comment '操作人员名称',
     operation_flag       varchar(20) not null  comment '操作标识',

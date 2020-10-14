@@ -29,4 +29,6 @@ public interface IResourceManager {
     PaginationResult<ResourceResultDomain> pagination(ResourceQuery query, String... returnFields);
 
     Long idByKey(String resource_key);
+
+    String keyById(Long resource_id);
 }

@@ -6,6 +6,7 @@ import liangchen.wang.gradf.framework.data.base.RootQuery;
 import liangchen.wang.gradf.framework.data.enumeration.Operator;
 
 import javax.persistence.Table;
+import java.util.Set;
 
 /**
  * @author LiangChen.Wang 2020-04-12 23:55:49
@@ -25,6 +26,8 @@ public class RoleResourceOperationQuery extends RootQuery {
     private String[] statusIn;
     @Query(operator = Operator.NOTIN, column = "status")
     private String[] statusNotIn;
+    @Query(operator = Operator.IN, column = "role_id")
+    private Set<Long> roleIdIn;
 
     public static RoleResourceOperationQuery newInstance() {
         return ClassBeanUtil.INSTANCE.cast(self.clone());
@@ -84,5 +87,13 @@ public class RoleResourceOperationQuery extends RootQuery {
 
     public void setStatusNotIn(String[] statusNotIn) {
         this.statusNotIn = statusNotIn;
+    }
+
+    public void setRoleIdIn(Set<Long> roleIdIn) {
+        this.roleIdIn = roleIdIn;
+    }
+
+    public Set<Long> getRoleIdIn() {
+        return roleIdIn;
     }
 }

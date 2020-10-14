@@ -45,14 +45,15 @@ public abstract class GradfRealm extends AuthorizingRealm {
         }
 
         Long account_id = (Long) primaryPrincipal;
-        Set<String> roleIds = FouraUtil.INSTANCE.roleIdsByAccountId(account_id);
-        logger.debug("account_id is:{},roleIdsByAccountId is:{}", account_id, roleIds.toString());
-        if (CollectionUtil.INSTANCE.isNotEmpty(roleIds)) {
-            authorizationInfo.setRoles(roleIds);
+        Set<String> roles = FouraUtil.INSTANCE.rolesByAccountId(account_id);
+        if (CollectionUtil.INSTANCE.isNotEmpty(roles)) {
+            authorizationInfo.setRoles(roles);
+            logger.debug("accountId:{},roles:{}", account_id, roles.toString());
         }
         Set<String> permissions = FouraUtil.INSTANCE.permissionsByAccountId(account_id);
         if (CollectionUtil.INSTANCE.isNotEmpty(permissions)) {
             authorizationInfo.setStringPermissions(permissions);
+            logger.debug("accountId:{},permissions:{}", account_id, permissions.toString());
         }
         /*用户Premissions来源构成,以下三个的合集
          * 1、authorizationInfo.setObjectPermissions

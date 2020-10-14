@@ -9,6 +9,7 @@ import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
 import liangchen.wang.gradf.framework.springboot.context.BeanLoader;
 import liangchen.wang.gradf.framework.web.jwts.AccessTokenUtil;
 
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -49,11 +50,11 @@ public enum FouraUtil {
         return accountPassword;
     }
 
-    public Set<String> roleIdsByAccountId(Long account_id) {
-        return authorizationManager.roleIdsByAccountId(account_id);
-    }
-
     public Set<String> permissionsByAccountId(Long account_id) {
         return authorizationManager.permissionsByAccountId(account_id);
+    }
+
+    public Set<String> rolesByAccountId(Long account_id) {
+        return authorizationManager.roleKeysByAccountId(account_id);
     }
 }

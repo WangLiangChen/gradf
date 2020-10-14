@@ -21,6 +21,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.lang.reflect.Method;
 
+/**
+ * @author LiangChen.Wang
+ */
 @Component
 @Aspect
 public class OperationLogAspect {

@@ -163,7 +163,9 @@ public class RoleManagerImpl extends AbstractManager<Role, RoleQuery, RoleResult
 
     @Override
     public String keyById(Long role_id) {
+        Assert.INSTANCE.notNull(role_id, "角色ID不能为空");
         RoleResultDomain resultDomain = byPrimaryKeyOrThrow(role_id, "role_key");
+        Assert.INSTANCE.notNull(resultDomain, "数据不存在");
         return resultDomain.getRole_key();
     }
 }

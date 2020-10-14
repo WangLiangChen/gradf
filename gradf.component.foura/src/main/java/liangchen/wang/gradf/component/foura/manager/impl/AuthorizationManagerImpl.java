@@ -1,12 +1,13 @@
 package liangchen.wang.gradf.component.foura.manager.impl;
 
 import liangchen.wang.gradf.component.foura.dao.query.RoleQuery;
-import liangchen.wang.gradf.component.foura.manager.IAccountManager;
-import liangchen.wang.gradf.component.foura.manager.IAuthorizationManager;
-import liangchen.wang.gradf.component.foura.manager.IRoleAccountManager;
-import liangchen.wang.gradf.component.foura.manager.IRoleManager;
+import liangchen.wang.gradf.component.foura.dao.query.RoleResourceOperationQuery;
+import liangchen.wang.gradf.component.foura.dao.query.RoleResourcePrivilegeQuery;
+import liangchen.wang.gradf.component.foura.manager.*;
 import liangchen.wang.gradf.component.foura.manager.domain.parameter.AuthUrlParameterDomain;
 import liangchen.wang.gradf.component.foura.manager.domain.parameter.RoleAccountParameterDomain;
+import liangchen.wang.gradf.component.foura.manager.domain.result.RoleResourceOperationResultDomain;
+import liangchen.wang.gradf.component.foura.manager.domain.result.RoleResourcePrivilegeResultDomain;
 import liangchen.wang.gradf.component.foura.manager.domain.result.RoleResultDomain;
 import liangchen.wang.gradf.component.foura.shiro.filter.GradfFilter;
 import liangchen.wang.gradf.component.foura.shiro.utils.ShiroFilterChainUtil;
@@ -33,14 +34,26 @@ public class AuthorizationManagerImpl implements IAuthorizationManager {
     private final IRoleAccountManager roleAccountManager;
     private final IRoleManager roleManager;
     private final IAccountManager accountManager;
+    private final IResourceManager resourceManager;
+    private final IOperationManager operationManager;
+    private final IRoleResourceOperationManager roleResourceOperationManager;
+    private final IRoleResourcePrivilegeManager roleResourcePrivilegeManager;
 
     @Inject
     public AuthorizationManagerImpl(@Named("Gradf_Foura_DefaultRoleAccountManager") IRoleAccountManager roleAccountManager,
                                     @Named("Gradf_Foura_DefaultRoleManager") IRoleManager roleManager,
-                                    @Named("Gradf_Foura_DefaultAccountManager") IAccountManager accountManager) {
+                                    @Named("Gradf_Foura_DefaultAccountManager") IAccountManager accountManager,
+                                    @Named("Gradf_Foura_DefaultResourceManager") IResourceManager resourceManager,
+                                    @Named("Gradf_Foura_DefaultOperationManager") IOperationManager operationManager,
+                                    @Named("Gradf_Foura_DefaultRoleResourceOperationManager") IRoleResourceOperationManager roleResourceOperationManager,
+                                    @Named("Gradf_Foura_DefaultRoleResourcePrivilegeManager") IRoleResourcePrivilegeManager roleResourcePrivilegeManager) {
         this.roleAccountManager = roleAccountManager;
         this.roleManager = roleManager;
         this.accountManager = accountManager;
+        this.resourceManager = resourceManager;
+        this.operationManager = operationManager;
+        this.roleResourceOperationManager = roleResourceOperationManager;
+        this.roleResourcePrivilegeManager = roleResourcePrivilegeManager;
     }
 
     @Override
@@ -54,16 +67,38 @@ public class AuthorizationManagerImpl implements IAuthorizationManager {
     }
 
     @Override
-    public Set<String> roleIdsByAccountId(Long account_id) {
+    public Set<String> roleKeysByAccountId(Long account_id) {
         Assert.INSTANCE.notNull(account_id, "账户ID不能为空");
         // 根据account_id查询角色
         Set<Long> roleIds = roleAccountManager.roleIdsByAccountId(account_id);
-        return roleIds.stream().map(String::valueOf).collect(Collectors.toSet());
+        return roleIds.stream().map(e -> roleManager.keyById(e)).collect(Collectors.toSet());
     }
 
     @Override
     public Set<String> permissionsByAccountId(Long account_id) {
-        return Collections.emptySet();
+        Set<String> permissions = new HashSet<>();
+        // 获取角色
+        Set<Long> roleIds = roleAccountManager.roleIdsByAccountId(account_id);
+        // 获取角色/资源/操作
+        RoleResourceOperationQuery roleResourceOperationQuery = RoleResourceOperationQuery.newInstance();
+        roleResourceOperationQuery.setRoleIdIn(roleIds);
+        List<RoleResourceOperationResultDomain> roleResourceOperations = roleResourceOperationManager.list(roleResourceOperationQuery, "resource_id,operation_id");
+        // 获取 资源Key/操作Key
+        roleResourceOperations.forEach(e -> {
+            String resourceKey = resourceManager.keyById(e.getResource_id());
+            String operationKey = operationManager.keyById(e.getOperation_id());
+            permissions.add(String.format("%s:%s", resourceKey, operationKey));
+        });
+        /****************************BitPermission************************************/
+        RoleResourcePrivilegeQuery roleResourcePrivilegeQuery = RoleResourcePrivilegeQuery.newInstance();
+        roleResourcePrivilegeQuery.setRoleIdIn(roleIds);
+        List<RoleResourcePrivilegeResultDomain> roleResourcePrivileges = roleResourcePrivilegeManager.list(roleResourcePrivilegeQuery, "resource_id,privilege");
+        //+资源字符串+权限位+实例ID
+        roleResourcePrivileges.forEach(e -> {
+            String resourceKey = resourceManager.keyById(e.getResource_id());
+            permissions.add(String.format("+%s+%d", resourceKey, e.getPrivilege()));
+        });
+        return permissions;
     }
 
     @Override

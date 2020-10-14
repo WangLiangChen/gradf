@@ -1,6 +1,8 @@
 package liangchen.wang.gradf.component.foura.manager.impl;
 
 import liangchen.wang.gradf.component.commons.base.AbstractManager;
+import liangchen.wang.gradf.component.foura.annotation.EnableOperationLog;
+import liangchen.wang.gradf.component.foura.annotation.OperationLog;
 import liangchen.wang.gradf.component.foura.dao.IGroupDao;
 import liangchen.wang.gradf.component.foura.dao.entity.Group;
 import liangchen.wang.gradf.component.foura.dao.query.GroupQuery;
@@ -12,6 +14,7 @@ import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.commons.validator.AssertLevel;
+import liangchen.wang.gradf.framework.data.enumeration.OperationEnum;
 import liangchen.wang.gradf.framework.data.enumeration.Status;
 import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
 import liangchen.wang.gradf.framework.data.utils.UidDb;
@@ -26,12 +29,14 @@ import java.util.List;
  * @author LiangChen.Wang 2020-04-12 01:44:04
  */
 @Component("Gradf_Foura_DefaultGroupManager")
+@EnableOperationLog(businessType = "Gradf-Foura-Group", businessName = "4A-群组")
 public class GroupManagerImpl extends AbstractManager<Group, GroupQuery, GroupResultDomain> implements IGroupManager {
     @Inject
     public GroupManagerImpl(@Named("Gradf_Foura_DefaultGroupDao") IGroupDao dao) {
         super("群组", "Group", dao);
     }
 
+    @OperationLog(OperationEnum.CREATE)
     @Override
     public boolean insert(GroupParameterDomain parameter) {
         Assert.INSTANCE.notNull(parameter, "参数不能为空");

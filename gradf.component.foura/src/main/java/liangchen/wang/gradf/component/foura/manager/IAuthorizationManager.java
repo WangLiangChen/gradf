@@ -20,7 +20,7 @@ public interface IAuthorizationManager {
 
     void assign2Role(Long accountId, String roleKey);
 
-    Set<String> roleIdsByAccountId(Long account_id);
-
     Set<String> permissionsByAccountId(Long account_id);
+
+    Set<String> roleKeysByAccountId(Long account_id);
 }
