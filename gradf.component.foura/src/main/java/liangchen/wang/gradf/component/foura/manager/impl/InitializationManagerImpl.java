@@ -280,7 +280,7 @@ public class InitializationManagerImpl implements IInitializationManager {
                 Printer.INSTANCE.prettyPrint("初始化登录即可访问url:{}", urlPath);
             } else {
                 String roleKeysSplit = String.join(",", roleKeys);
-                ShiroFilterChainUtil.addRolesToChain(urlPath, roleKeysSplit);
+                ShiroFilterChainUtil.addRolesAndPermissionsToChain(urlPath, roleKeysSplit);
                 Printer.INSTANCE.prettyPrint("初始化角色可访问url:{},role:{}", urlPath, roleKeysSplit);
             }
         });

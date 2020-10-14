@@ -3,8 +3,7 @@ package liangchen.wang.gradf.component.foura.configuration;
 import liangchen.wang.gradf.component.foura.shiro.authc.GradfModularRealmAuthenticator;
 import liangchen.wang.gradf.component.foura.shiro.filter.GradfShiroFilterFactoryBean;
 import liangchen.wang.gradf.component.foura.shiro.filter.LoginAuthorizationFilter;
-import liangchen.wang.gradf.component.foura.shiro.filter.PermissionsAuthorizationFilter;
-import liangchen.wang.gradf.component.foura.shiro.filter.RolesAuthorizationFilter;
+import liangchen.wang.gradf.component.foura.shiro.filter.RolesAndPermissionsAuthorizationFilter;
 import liangchen.wang.gradf.component.foura.shiro.filterchain.GradfDefaultFilterChainManager;
 import liangchen.wang.gradf.component.foura.shiro.filterchain.GradfPathMatchingFilterChainResolver;
 import liangchen.wang.gradf.component.foura.shiro.permission.BitAndWildPermissionResolver;
@@ -121,8 +120,7 @@ public class ShiroAutoConfiguration {
     public FilterChainManager filterChainManager() {
         GradfDefaultFilterChainManager defaultFilterChainManager = new GradfDefaultFilterChainManager();
         defaultFilterChainManager.addFilter("login", new LoginAuthorizationFilter());
-        defaultFilterChainManager.addFilter("roles", new RolesAuthorizationFilter());
-        defaultFilterChainManager.addFilter("perms", new PermissionsAuthorizationFilter());
+        defaultFilterChainManager.addFilter("roles&permissions", new RolesAndPermissionsAuthorizationFilter());
         return defaultFilterChainManager;
     }
 

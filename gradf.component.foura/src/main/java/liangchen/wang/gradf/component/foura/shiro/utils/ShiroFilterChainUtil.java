@@ -31,15 +31,11 @@ public class ShiroFilterChainUtil {
         shiroFilterChainUtil.filterChainManager.addToChain(path, "login");
     }
 
-    public static void addRolesToChain(String path, String role) {
-        logger.debug("append roles filter chains,path:{},role:{}", path, role);
-        shiroFilterChainUtil.filterChainManager.addToChain(path, "roles", role);
+    public static void addRolesAndPermissionsToChain(String path, String roleOrPermissions) {
+        logger.debug("append roles&permissions filter chains,path:{},roleOrPermissions:{}", path, roleOrPermissions);
+        shiroFilterChainUtil.filterChainManager.addToChain(path, "roles&permissions", roleOrPermissions);
     }
 
-    public static void addPermsToChain(String path, String perm) {
-        logger.debug("append perm filter chains,path:{},perm:{}", path, perm);
-        shiroFilterChainUtil.filterChainManager.addToChain(path, "perms", perm);
-    }
 
     public static Map<String, Filter> getFilters() {
         return shiroFilterChainUtil.filterChainManager.getFilters();
