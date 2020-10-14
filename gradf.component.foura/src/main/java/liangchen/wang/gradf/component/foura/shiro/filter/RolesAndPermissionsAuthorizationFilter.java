@@ -27,10 +27,12 @@ public class RolesAndPermissionsAuthorizationFilter extends GradfFilter {
         }
         for (String value : mappedArray) {
             if (value.contains(Symbol.COLON.getSymbol()) || value.contains(Symbol.PLUS.getSymbol())) {
+                // 其实是委托执行realm的isPermitted
                 if (subject.isPermitted(value)) {
                     return true;
                 }
             } else {
+                // 其实是委托执行realm的hasRole
                 if (subject.hasRole(value)) {
                     return true;
                 }
