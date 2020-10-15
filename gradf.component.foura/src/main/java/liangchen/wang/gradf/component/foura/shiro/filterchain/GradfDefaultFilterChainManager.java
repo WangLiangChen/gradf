@@ -1,7 +1,7 @@
 package liangchen.wang.gradf.component.foura.shiro.filterchain;
 
 import liangchen.wang.gradf.component.foura.shiro.filter.LoginAuthorizationFilter;
-import liangchen.wang.gradf.component.foura.shiro.filter.RolesAuthorizationFilter;
+import liangchen.wang.gradf.component.foura.shiro.filter.RolesAndPermissionsAuthorizationFilter;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
 import org.apache.shiro.web.filter.mgt.DefaultFilterChainManager;
 import org.apache.shiro.web.filter.mgt.NamedFilterList;
@@ -32,21 +32,21 @@ public class GradfDefaultFilterChainManager extends DefaultFilterChainManager {
         logger.debug("execute proxy,chainNames:{}", JsonUtil.INSTANCE.toJsonString(chainNames));
         NamedFilterList configured = new SimpleNamedFilterList("chainNames");
         //遍历判断是否既包含login又包含roles
-        boolean containLogin = false, containRoles = false;
+        boolean containLoginFilter = false, containRolesAndPermissionsFilter = false;
         for (String chainName : chainNames) {
             NamedFilterList chain = getChain(chainName);
             for (Filter filter : chain) {
                 configured.add(filter);
                 if (filter instanceof LoginAuthorizationFilter) {
-                    containLogin = true;
-                } else if (filter instanceof RolesAuthorizationFilter) {
-                    containRoles = true;
+                    containLoginFilter = true;
+                } else if (filter instanceof RolesAndPermissionsAuthorizationFilter) {
+                    containRolesAndPermissionsFilter = true;
                 }
             }
         }
         //如果都包含则移除Roles
-        if (containLogin && containRoles) {
-            configured.removeIf(e -> e instanceof RolesAuthorizationFilter);
+        if (containLoginFilter && containRolesAndPermissionsFilter) {
+            configured.removeIf(e -> e instanceof RolesAndPermissionsAuthorizationFilter);
         }
         return configured.proxy(original);
     }

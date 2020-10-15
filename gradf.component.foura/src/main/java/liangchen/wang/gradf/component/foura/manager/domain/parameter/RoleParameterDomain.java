@@ -20,6 +20,7 @@ public class RoleParameterDomain extends ParameterDomain<Role> {
     private Long sort;
     private String summary;
     private String status;
+    private Byte data_mode;
 
     public static RoleParameterDomain newInstance() {
         return ClassBeanUtil.INSTANCE.cast(self.clone());
@@ -79,5 +80,13 @@ public class RoleParameterDomain extends ParameterDomain<Role> {
 
     public void setRole_id(Long role_id) {
         this.role_id = role_id;
+    }
+
+    public void setData_mode(Byte data_mode) {
+        this.data_mode = data_mode;
+    }
+
+    public Byte getData_mode() {
+        return data_mode;
     }
 }

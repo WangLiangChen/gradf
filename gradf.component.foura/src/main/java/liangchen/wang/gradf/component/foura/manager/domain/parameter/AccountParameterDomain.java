@@ -22,6 +22,7 @@ public class AccountParameterDomain extends ParameterDomain<Account> {
     private Long sort;
     private String summary;
     private String status;
+    private Byte data_mode;
 
     public static AccountParameterDomain newInstance() {
         return ClassBeanUtil.INSTANCE.cast(self.clone());
@@ -99,4 +100,11 @@ public class AccountParameterDomain extends ParameterDomain<Account> {
         this.status = status;
     }
 
+    public void setData_mode(Byte data_mode) {
+        this.data_mode = data_mode;
+    }
+
+    public Byte getData_mode() {
+        return data_mode;
+    }
 }

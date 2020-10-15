@@ -12,6 +12,7 @@ import liangchen.wang.gradf.component.foura.shiro.utils.ShiroFilterChainUtil;
 import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
 import liangchen.wang.gradf.framework.commons.utils.Printer;
 import liangchen.wang.gradf.framework.data.annotation.EnableJdbcShedLock;
+import liangchen.wang.gradf.framework.data.enumeration.DataMode;
 import net.javacrumbs.shedlock.core.DefaultLockingTaskExecutor;
 import net.javacrumbs.shedlock.core.LockConfiguration;
 import net.javacrumbs.shedlock.core.LockProvider;
@@ -104,7 +105,7 @@ public class InitializationManagerImpl implements IInitializationManager {
     public void initAuth() {
         List<UrlRolesInitialization> urlRoles = new ArrayList<>();
         customizedDatas.forEach(e -> urlRoles.add(e.urlRoles()));
-        initUrlRoles(urlRoles);
+        initUrlRolesAndPermissions(urlRoles);
     }
 
     private void initGroups(Set<GroupInitialization> groupInitializations) {
@@ -119,7 +120,7 @@ public class InitializationManagerImpl implements IInitializationManager {
             String groupText = g.getGroupText();
             groupParameterDomain.setGroup_key(g.getGroupKey());
             groupParameterDomain.setGroup_text(g.getGroupText());
-            groupParameterDomain.setStatus(FouraStatus.PRESET.name());
+            groupParameterDomain.setData_mode(DataMode.N.getValue());
             try {
                 groupManager.insert(groupParameterDomain);
                 Printer.INSTANCE.prettyPrint("{}({})初始化完成", groupText, groupKey);
@@ -142,7 +143,7 @@ public class InitializationManagerImpl implements IInitializationManager {
             String roleText = r.getRoleText();
             roleParameterDomain.setRole_key(roleKey);
             roleParameterDomain.setRole_text(roleText);
-            roleParameterDomain.setStatus(FouraStatus.PRESET.name());
+            roleParameterDomain.setData_mode(DataMode.N.getValue());
             try {
                 roleManager.insert(roleParameterDomain);
                 Printer.INSTANCE.prettyPrint("{}({})初始化完成", roleText, roleKey);
@@ -166,7 +167,7 @@ public class InitializationManagerImpl implements IInitializationManager {
             accountParameterDomain.setLogin_name(loginName);
             accountParameterDomain.setNick_name(nickName);
             accountParameterDomain.setLogin_password(a.getPassword());
-            accountParameterDomain.setStatus(FouraStatus.PRESET.name());
+            accountParameterDomain.setData_mode(DataMode.N.getValue());
             try {
                 accountManager.insert(accountParameterDomain);
                 Printer.INSTANCE.prettyPrint("{}({})初始化完成", nickName, loginName);
@@ -250,7 +251,7 @@ public class InitializationManagerImpl implements IInitializationManager {
         Printer.INSTANCE.prettyPrint("初始化系统角色账户关系完成");
     }
 
-    private void initUrlRoles(List<UrlRolesInitialization> urlRoles) {
+    private void initUrlRolesAndPermissions(List<UrlRolesInitialization> urlRoles) {
         Printer.INSTANCE.prettyPrint("初始化系统Url角色关系开始");
         // 构造groupAccountsMap
         Map<String, Set<String>> urlRolesMap = new HashMap<>();

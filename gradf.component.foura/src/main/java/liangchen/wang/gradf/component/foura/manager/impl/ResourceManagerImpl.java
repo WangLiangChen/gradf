@@ -106,4 +106,11 @@ public class ResourceManagerImpl extends AbstractManager<Resource, ResourceQuery
         return resourceResultDomain.getResource_id();
     }
 
+    @Override
+    public String keyById(Long resource_id) {
+        Assert.INSTANCE.notNull(resource_id, "参数resource_id不能为空");
+        ResourceResultDomain resultDomain = byPrimaryKeyOrThrow(resource_id, "resource_key");
+        return resultDomain.getResource_key();
+    }
+
 }

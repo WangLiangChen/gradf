@@ -93,4 +93,11 @@ public class OperationManagerImpl extends AbstractManager<Operation, OperationQu
         return super.pagination(query, returnFields);
     }
 
+    @Override
+    public String keyById(Long operation_id) {
+        Assert.INSTANCE.notNull(operation_id, "参数operation_id不能为空");
+        OperationResultDomain resultDomain = byPrimaryKeyOrThrow(operation_id, "operation_key");
+        return resultDomain.getOperation_key();
+    }
+
 }

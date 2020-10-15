@@ -14,6 +14,7 @@ import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.commons.validator.AssertLevel;
+import liangchen.wang.gradf.framework.data.enumeration.DataMode;
 import liangchen.wang.gradf.framework.data.enumeration.OperationEnum;
 import liangchen.wang.gradf.framework.data.enumeration.Status;
 import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -37,12 +39,14 @@ public class GroupManagerImpl extends AbstractManager<Group, GroupQuery, GroupRe
     }
 
     @OperationLog(OperationEnum.CREATE)
+    @Transactional
     @Override
     public boolean insert(GroupParameterDomain parameter) {
         Assert.INSTANCE.notNull(parameter, "参数不能为空");
         parameter.populateEntity((group) -> {
             Assert.INSTANCE.notNullElseRun(group.getGroup_id(), () -> group.setGroup_id(UidDb.INSTANCE.uid()));
             Assert.INSTANCE.notBlankElseRun(group.getStatus(), () -> group.setStatus(Status.NORMAL.name()));
+            Assert.INSTANCE.notNullElseRun(group.getData_mode(), () -> group.setData_mode(DataMode.A.getValue()));
             group.initOperator();
             group.initFields();
         });

@@ -22,6 +22,7 @@ public class GroupParameterDomain extends ParameterDomain<Group> {
     private Integer sort;
     private String summary;
     private String status;
+    private Byte data_mode;
 
     public static GroupParameterDomain newInstance() {
         return ClassBeanUtil.INSTANCE.cast(self.clone());
@@ -83,4 +84,11 @@ public class GroupParameterDomain extends ParameterDomain<Group> {
         this.status = status;
     }
 
+    public void setData_mode(Byte data_mode) {
+        this.data_mode = data_mode;
+    }
+
+    public Byte getData_mode() {
+        return data_mode;
+    }
 }
