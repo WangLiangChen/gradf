@@ -33,7 +33,7 @@ public class AccessTokenHandlerInterceptor extends HandlerInterceptorAdapter {
             }
             FouraUtil.INSTANCE.putOperator(account_id);
             PrincipalCollection principals = subject.getPrincipals();
-            FouraUtil.INSTANCE.putOperatorName(String.valueOf(principals.asList().get(1)));
+            FouraUtil.INSTANCE.setOperatorName(String.valueOf(principals.asList().get(1)));
         } catch (Exception e) {
             logger.error(e.getMessage());
         }

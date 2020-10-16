@@ -8,7 +8,6 @@ import liangchen.wang.gradf.component.business.manager.domain.parameter.Attachme
 import liangchen.wang.gradf.component.business.manager.domain.result.AttachmentResultDomain;
 import liangchen.wang.gradf.component.commons.base.AbstractManager;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
-import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.data.enumeration.Status;
 import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
@@ -33,7 +32,7 @@ public class AttachmentManagerImpl extends AbstractManager<Attachment, Attachmen
     @Override
     public boolean insert(AttachmentParameterDomain parameter) {
         Assert.INSTANCE.notNull(parameter, "附件参数不能为空");
-        final Long operator = ContextUtil.INSTANCE.getOperator();
+        final Long operator = FouraUtil.INSTANCE.getOperator();
         parameter.populateEntity((entity) -> {
             Attachment attachment = ClassBeanUtil.INSTANCE.cast(entity);
             Assert.INSTANCE.notNullElseRun(attachment.getAttachment_id(), () -> attachment.setAttachment_id(UidDb.INSTANCE.uid()));
@@ -65,7 +64,7 @@ public class AttachmentManagerImpl extends AbstractManager<Attachment, Attachmen
         parameter.populateEntity((entity) -> {
             Attachment attachment = ClassBeanUtil.INSTANCE.cast(entity);
             attachment.setModify_datetime(LocalDateTime.now());
-            attachment.setModifier(ContextUtil.INSTANCE.getOperator());
+            attachment.setModifier(FouraUtil.INSTANCE.getOperator());
         });
         return super.updateByQuery(parameter, query);
     }

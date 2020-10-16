@@ -9,7 +9,6 @@ import liangchen.wang.gradf.component.business.manager.domain.result.RegionResul
 import liangchen.wang.gradf.component.commons.base.AbstractManager;
 import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
-import liangchen.wang.gradf.framework.commons.validator.AssertLevel;
 import liangchen.wang.gradf.framework.data.enumeration.Status;
 import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
 import org.springframework.stereotype.Component;

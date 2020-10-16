@@ -3,6 +3,7 @@ package liangchen.wang.gradf.component.foura.manager.domain.parameter;
 import liangchen.wang.gradf.component.commons.base.ParameterDomain;
 import liangchen.wang.gradf.component.foura.dao.entity.Group;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
+import liangchen.wang.gradf.framework.commons.validator.InsertGroup;
 import liangchen.wang.gradf.framework.commons.validator.UpdateGroup;
 
 import javax.validation.constraints.NotBlank;
@@ -16,6 +17,7 @@ public class GroupParameterDomain extends ParameterDomain<Group> {
     @NotNull(message = "群组ID不能为空", groups = {UpdateGroup.class})
     private Long group_id;
     private Long parent_id;
+    @NotBlank(message = "群组Key不能为空", groups = {InsertGroup.class})
     private String group_key;
     @NotBlank(message = "群组名称不能为空")
     private String group_text;

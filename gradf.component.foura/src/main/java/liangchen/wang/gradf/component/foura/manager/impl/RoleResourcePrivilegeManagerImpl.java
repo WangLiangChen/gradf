@@ -7,8 +7,8 @@ import liangchen.wang.gradf.component.foura.dao.query.RoleResourcePrivilegeQuery
 import liangchen.wang.gradf.component.foura.manager.IRoleResourcePrivilegeManager;
 import liangchen.wang.gradf.component.foura.manager.domain.parameter.RoleResourcePrivilegeParameterDomain;
 import liangchen.wang.gradf.component.foura.manager.domain.result.RoleResourcePrivilegeResultDomain;
+import liangchen.wang.gradf.component.foura.utils.FouraUtil;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
-import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.data.enumeration.DataMode;
 import liangchen.wang.gradf.framework.data.enumeration.Status;
@@ -33,7 +33,7 @@ public class RoleResourcePrivilegeManagerImpl extends AbstractManager<RoleResour
     @Override
     public boolean insert(RoleResourcePrivilegeParameterDomain parameter) {
         Assert.INSTANCE.notNull(parameter, "参数不能为空");
-        final Long operator = ContextUtil.INSTANCE.getOperator();
+        final Long operator = FouraUtil.INSTANCE.getOperator();
         parameter.populateEntity((entity) -> {
             RoleResourcePrivilege roleResourcePrivilege = ClassBeanUtil.INSTANCE.cast(entity);
             //TODO 这里可以调整Entity，比如设置主键/状态等
@@ -69,7 +69,7 @@ public class RoleResourcePrivilegeManagerImpl extends AbstractManager<RoleResour
             RoleResourcePrivilege roleResourcePrivilege = ClassBeanUtil.INSTANCE.cast(entity);
             // TODO 这里添加不更新或者不论是否空值总更新的字段
             roleResourcePrivilege.setModify_datetime(LocalDateTime.now());
-            roleResourcePrivilege.setModifier(ContextUtil.INSTANCE.getOperator());
+            roleResourcePrivilege.setModifier(FouraUtil.INSTANCE.getOperator());
         });
         return super.updateByQuery(parameter, query);
     }

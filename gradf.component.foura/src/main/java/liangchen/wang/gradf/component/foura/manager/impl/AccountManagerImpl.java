@@ -16,7 +16,6 @@ import liangchen.wang.gradf.component.foura.utils.FouraUtil;
 import liangchen.wang.gradf.component.foura.utils.PasswordUtil;
 import liangchen.wang.gradf.framework.commons.exception.InfoException;
 import liangchen.wang.gradf.framework.commons.exception.PromptException;
-import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.commons.validator.AssertLevel;
@@ -133,7 +132,7 @@ public class AccountManagerImpl extends AbstractManager<Account, AccountQuery, A
         parameter.setNick_name(nick_name);
         parameter.populateEntity((account) -> {
             account.setModify_datetime(LocalDateTime.now());
-            account.setModifier(ContextUtil.INSTANCE.getOperator());
+            account.setModifier(FouraUtil.INSTANCE.getOperator());
         });
         int rows = super.updateByQuery(parameter, query);
         return rows == 1;

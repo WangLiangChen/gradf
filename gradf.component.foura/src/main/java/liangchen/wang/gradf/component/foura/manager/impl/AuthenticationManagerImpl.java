@@ -106,7 +106,7 @@ public class AuthenticationManagerImpl implements IAuthenticationManager {
         // 派发登录事件
         EventPublisher.INSTANCE.publishEvent(new AccountLoginEvent(this, accountLoginResultDomain));
         // 设置日志数据
-        OperationLogUtil.INSTANCE.putBusinessId(account_id);
+        OperationLogUtil.INSTANCE.setBusinessId(account_id);
         return accountLoginResultDomain;
     }
 }

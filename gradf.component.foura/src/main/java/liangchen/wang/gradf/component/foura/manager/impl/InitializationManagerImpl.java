@@ -1,7 +1,6 @@
 package liangchen.wang.gradf.component.foura.manager.impl;
 
 import liangchen.wang.gradf.component.foura.dao.query.UrlRelationQuery;
-import liangchen.wang.gradf.component.foura.enumeration.FouraStatus;
 import liangchen.wang.gradf.component.foura.exception.DuplicateAccountException;
 import liangchen.wang.gradf.component.foura.initialization.IFouraInitialization;
 import liangchen.wang.gradf.component.foura.initialization.domain.*;

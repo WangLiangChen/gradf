@@ -9,7 +9,6 @@ import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
 import liangchen.wang.gradf.framework.springboot.context.BeanLoader;
 import liangchen.wang.gradf.framework.web.jwts.AccessTokenUtil;
 
-import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -20,21 +19,23 @@ public enum FouraUtil {
      * INSTANCE;
      */
     INSTANCE;
-    private final String OPERATOR = "OPERATOR";
-    private final String OPERATOR_NAME = "OPERATOR_NAME";
     private IAuthorizationManager authorizationManager = BeanLoader.getBean("Gradf_Foura_DefaultAuthorizationManager");
     private IAuthenticationManager authenticationManager = BeanLoader.getBean("Gradf_Foura_DefaultAuthenticationManager");
 
     public void putOperator(Long operator) {
-        ContextUtil.INSTANCE.put(OPERATOR, operator);
+        ContextUtil.INSTANCE.setOperator(operator);
     }
 
-    public void putOperatorName(String operatorName) {
-        ContextUtil.INSTANCE.put(OPERATOR_NAME, operatorName);
+    public void setOperatorName(String operatorName) {
+        ContextUtil.INSTANCE.setOperatorName(operatorName);
     }
 
     public Long getOperator() {
-        return ContextUtil.INSTANCE.get(OPERATOR);
+        return ContextUtil.INSTANCE.getOperator();
+    }
+
+    public String getOperatorName() {
+        return ContextUtil.INSTANCE.getOperatorName();
     }
 
     public AccountPasswordResultDomain authenticationInfoByKey(String accountKey) {

@@ -7,7 +7,7 @@ import liangchen.wang.gradf.component.foura.dao.query.GroupRoleQuery;
 import liangchen.wang.gradf.component.foura.manager.IGroupRoleManager;
 import liangchen.wang.gradf.component.foura.manager.domain.parameter.GroupRoleParameterDomain;
 import liangchen.wang.gradf.component.foura.manager.domain.result.GroupRoleResultDomain;
-import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
+import liangchen.wang.gradf.component.foura.utils.FouraUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.data.enumeration.Status;
 import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
@@ -62,7 +62,7 @@ public class GroupRoleManagerImpl extends AbstractManager<GroupRole, GroupRoleQu
         parameter.populateEntity((groupRole) -> {
             // TODO 这里添加不更新或者不论是否空值总更新的字段
             groupRole.setModify_datetime(LocalDateTime.now());
-            groupRole.setModifier(ContextUtil.INSTANCE.getOperator());
+            groupRole.setModifier(FouraUtil.INSTANCE.getOperator());
         });
         return super.updateByQuery(parameter, query);
     }

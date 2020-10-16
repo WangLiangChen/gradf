@@ -7,8 +7,8 @@ import liangchen.wang.gradf.component.foura.dao.query.RoleQuery;
 import liangchen.wang.gradf.component.foura.manager.IRoleManager;
 import liangchen.wang.gradf.component.foura.manager.domain.parameter.RoleParameterDomain;
 import liangchen.wang.gradf.component.foura.manager.domain.result.RoleResultDomain;
+import liangchen.wang.gradf.component.foura.utils.FouraUtil;
 import liangchen.wang.gradf.framework.cluster.utils.LockUtil;
-import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.commons.validator.AssertLevel;
@@ -76,7 +76,7 @@ public class RoleManagerImpl extends AbstractManager<Role, RoleQuery, RoleResult
         Assert.INSTANCE.notNull(query, "查询参数不能为空");
         parameter.populateEntity((role) -> {
             role.setModify_datetime(LocalDateTime.now());
-            role.setModifier(ContextUtil.INSTANCE.getOperator());
+            role.setModifier(FouraUtil.INSTANCE.getOperator());
             // role_key不更新
             role.setRole_key(null);
             // summary强制更新

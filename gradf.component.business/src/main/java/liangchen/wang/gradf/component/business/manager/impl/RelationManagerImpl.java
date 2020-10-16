@@ -8,7 +8,6 @@ import liangchen.wang.gradf.component.business.manager.domain.parameter.Relation
 import liangchen.wang.gradf.component.business.manager.domain.result.RelationResultDomain;
 import liangchen.wang.gradf.component.commons.base.AbstractManager;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
-import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.data.enumeration.DataMode;
 import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
@@ -33,7 +32,7 @@ public class RelationManagerImpl extends AbstractManager<Relation, RelationQuery
     @Override
     public boolean insert(RelationParameterDomain parameter) {
         Assert.INSTANCE.notNull(parameter, "参数不能为空");
-        final Long operator = ContextUtil.INSTANCE.getOperator();
+        final Long operator = FouraUtil.INSTANCE.getOperator();
         parameter.populateEntity((entity) -> {
             Relation relation = ClassBeanUtil.INSTANCE.cast(entity);
             //TODO 这里可以调整Entity，比如设置主键/状态等
@@ -70,7 +69,7 @@ public class RelationManagerImpl extends AbstractManager<Relation, RelationQuery
             Relation relation = ClassBeanUtil.INSTANCE.cast(entity);
             // TODO 这里添加不更新或者不论是否空值总更新的字段
             relation.setModify_datetime(LocalDateTime.now());
-            relation.setModifier(ContextUtil.INSTANCE.getOperator());
+            relation.setModifier(FouraUtil.INSTANCE.getOperator());
         });
         return super.updateByQuery(parameter, query);
     }

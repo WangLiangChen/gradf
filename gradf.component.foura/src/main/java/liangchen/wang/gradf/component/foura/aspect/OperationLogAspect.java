@@ -88,6 +88,12 @@ public class OperationLogAspect {
         parameterDomain.setOriginal_data(OperationLogUtil.INSTANCE.getOriginalData());
         parameterDomain.setSource_class(clazz.getName());
         parameterDomain.setSource_method(method.getName());
+        if (null == throwable) {
+            parameterDomain.setOperation_success((byte) 1);
+        } else {
+            parameterDomain.setOperation_success((byte) 0);
+            parameterDomain.setOperation_return(throwable.getMessage());
+        }
         operationLogManager.insert(parameterDomain);
     }
 }

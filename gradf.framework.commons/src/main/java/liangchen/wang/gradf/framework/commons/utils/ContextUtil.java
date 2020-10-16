@@ -13,6 +13,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public enum ContextUtil {
     /*
      * ThreadLocal必须new一个对象自己使用，它并不是为了解决线程安全而设计的，使用它只是为了在同一线程中传递变量
+     * TransmittableThreadLocal 只适用父线程到子线程的值传递，不适用线程池子线程之间的值传递
      */
     INSTANCE;
     private final TransmittableThreadLocal<Map<String, Object>> threadLocal = new TransmittableThreadLocal<>();
@@ -23,15 +24,23 @@ public enum ContextUtil {
     private final String OPERATOR_NAME = "OPERATOR_NAME";
     private final String IP = "IP";
 
+    public void setOperator(Long operator) {
+        put(OPERATOR, operator);
+    }
+
     public Long getOperator() {
         return get(OPERATOR);
+    }
+
+    public void setOperatorName(String operatorName) {
+        put(OPERATOR_NAME, operatorName);
     }
 
     public String getOperatorName() {
         return get(OPERATOR_NAME);
     }
 
-    public void putIp(String ip) {
+    public void setIp(String ip) {
         put(IP, ip);
     }
 

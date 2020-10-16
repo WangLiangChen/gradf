@@ -5,7 +5,6 @@ import liangchen.wang.gradf.component.business.dao.entity.Infinite;
 import liangchen.wang.gradf.component.business.dao.query.InfiniteQuery;
 import liangchen.wang.gradf.framework.cache.annotation.GradfAutoCacheable;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
-import liangchen.wang.gradf.framework.commons.validator.AssertLevel;
 import liangchen.wang.gradf.framework.data.base.AbstractBaseDao;
 import liangchen.wang.gradf.framework.data.enumeration.Status;
 import org.springframework.stereotype.Repository;

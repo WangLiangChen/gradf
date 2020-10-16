@@ -1,7 +1,6 @@
 package liangchen.wang.gradf.framework.data.base;
 
 import org.mybatis.spring.SqlSessionTemplate;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;

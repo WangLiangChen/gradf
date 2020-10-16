@@ -42,6 +42,12 @@ public class ThreadPoolAutoConfiguration implements AsyncConfigurer {
                 executor.shutdown();
             }
         });
+        /*使用TransmittableThreadLocal 必须用Ttl**包装一下
+          TtlRunnable和TtlCallable来包装Runnable和Callable。
+          getTtlExecutor包装Executor
+          getTtlExecutorService包装ExecutorService
+          getTtlScheduledExecutorService包装ScheduledExecutorService
+        */
         return TtlExecutors.getTtlExecutor(executor);
     }
 

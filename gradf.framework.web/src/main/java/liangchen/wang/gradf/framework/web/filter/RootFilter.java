@@ -28,7 +28,7 @@ public class RootFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         // 全局按线程保存IP
         String ip = NetUtil.INSTANCE.getIpFromRequest(request);
-        ContextUtil.INSTANCE.putIp(ip);
+        ContextUtil.INSTANCE.setIp(ip);
 
         String requestURI = request.getRequestURI();
         if (requestURI.endsWith("favicon.ico")) {

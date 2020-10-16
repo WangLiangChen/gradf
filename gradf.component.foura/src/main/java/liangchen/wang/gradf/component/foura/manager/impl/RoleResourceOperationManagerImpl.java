@@ -7,8 +7,8 @@ import liangchen.wang.gradf.component.foura.dao.query.RoleResourceOperationQuery
 import liangchen.wang.gradf.component.foura.manager.IRoleResourceOperationManager;
 import liangchen.wang.gradf.component.foura.manager.domain.parameter.RoleResourceOperationParameterDomain;
 import liangchen.wang.gradf.component.foura.manager.domain.result.RoleResourceOperationResultDomain;
+import liangchen.wang.gradf.component.foura.utils.FouraUtil;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
-import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.data.enumeration.DataMode;
 import liangchen.wang.gradf.framework.data.enumeration.Status;
@@ -33,7 +33,7 @@ public class RoleResourceOperationManagerImpl extends AbstractManager<RoleResour
     @Override
     public boolean insert(RoleResourceOperationParameterDomain parameter) {
         Assert.INSTANCE.notNull(parameter, "参数不能为空");
-        final Long operator = ContextUtil.INSTANCE.getOperator();
+        final Long operator = FouraUtil.INSTANCE.getOperator();
         parameter.populateEntity((entity) -> {
             RoleResourceOperation roleResourceOperation = ClassBeanUtil.INSTANCE.cast(entity);
             //TODO 这里可以调整Entity，比如设置主键/状态等
@@ -70,7 +70,7 @@ public class RoleResourceOperationManagerImpl extends AbstractManager<RoleResour
             RoleResourceOperation roleResourceOperation = ClassBeanUtil.INSTANCE.cast(entity);
             // TODO 这里添加不更新或者不论是否空值总更新的字段
             roleResourceOperation.setModify_datetime(LocalDateTime.now());
-            roleResourceOperation.setModifier(ContextUtil.INSTANCE.getOperator());
+            roleResourceOperation.setModifier(FouraUtil.INSTANCE.getOperator());
         });
         return super.updateByQuery(parameter, query);
     }

@@ -9,7 +9,6 @@ import liangchen.wang.gradf.component.business.manager.domain.result.InfiniteRes
 import liangchen.wang.gradf.component.commons.base.AbstractManager;
 import liangchen.wang.gradf.framework.cluster.utils.LockUtil;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
-import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.commons.validator.AssertLevel;
@@ -112,7 +111,7 @@ public class InfiniteManagerImpl extends AbstractManager<Infinite, InfiniteQuery
     }
 
     private void populateInsertParameter(Infinite infinite) {
-        final Long operator = ContextUtil.INSTANCE.getOperator();
+        final Long operator = FouraUtil.INSTANCE.getOperator();
         Assert.INSTANCE.notNullElseRun(infinite.getInfinite_id(), () -> infinite.setInfinite_id(UidDb.INSTANCE.uid()));
         Assert.INSTANCE.notBlankElseRun(infinite.getStatus(), () -> infinite.setStatus(Status.NORMAL.name()));
         infinite.setCreator(operator);

@@ -7,8 +7,8 @@ import liangchen.wang.gradf.component.foura.dao.query.OperationQuery;
 import liangchen.wang.gradf.component.foura.manager.IOperationManager;
 import liangchen.wang.gradf.component.foura.manager.domain.parameter.OperationParameterDomain;
 import liangchen.wang.gradf.component.foura.manager.domain.result.OperationResultDomain;
+import liangchen.wang.gradf.component.foura.utils.FouraUtil;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
-import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
 import liangchen.wang.gradf.framework.data.utils.UidDb;
@@ -31,7 +31,7 @@ public class OperationManagerImpl extends AbstractManager<Operation, OperationQu
     @Override
     public boolean insert(OperationParameterDomain parameter) {
         Assert.INSTANCE.notNull(parameter, "参数不能为空");
-        final Long operator = ContextUtil.INSTANCE.getOperator();
+        final Long operator = FouraUtil.INSTANCE.getOperator();
         parameter.populateEntity((entity) -> {
             Operation operation = ClassBeanUtil.INSTANCE.cast(entity);
             Assert.INSTANCE.notNullElseRun(operation.getOperation_id(), () -> operation.setOperation_id(UidDb.INSTANCE.uid()));

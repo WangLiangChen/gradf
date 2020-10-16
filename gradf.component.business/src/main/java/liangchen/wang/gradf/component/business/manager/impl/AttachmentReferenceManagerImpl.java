@@ -10,7 +10,6 @@ import liangchen.wang.gradf.component.commons.base.AbstractManager;
 import liangchen.wang.gradf.framework.commons.exception.InfoException;
 import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
-import liangchen.wang.gradf.framework.commons.validator.AssertLevel;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;

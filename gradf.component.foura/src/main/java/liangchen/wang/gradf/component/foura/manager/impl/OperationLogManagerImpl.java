@@ -7,9 +7,7 @@ import liangchen.wang.gradf.component.foura.dao.query.OperationLogQuery;
 import liangchen.wang.gradf.component.foura.manager.IOperationLogManager;
 import liangchen.wang.gradf.component.foura.manager.domain.parameter.OperationLogParameterDomain;
 import liangchen.wang.gradf.component.foura.manager.domain.result.OperationLogResultDomain;
-import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
 import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
-import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.data.enumeration.Status;
 import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
@@ -35,15 +33,9 @@ public class OperationLogManagerImpl extends AbstractManager<OperationLog, Opera
     @Async
     public void insert(OperationLogParameterDomain parameter) {
         Assert.INSTANCE.notNull(parameter, "参数不能为空");
-        final Long operator = ContextUtil.INSTANCE.getOperator();
-        final String operatorName = ContextUtil.INSTANCE.getOperatorName();
-        parameter.populateEntity((entity) -> {
-            OperationLog operationLog = ClassBeanUtil.INSTANCE.cast(entity);
-            Assert.INSTANCE.notNullElseRun(operationLog.getLog_id(), () -> operationLog.setLog_id(UidDb.INSTANCE.uid()));
-            Assert.INSTANCE.notBlankElseRun(operationLog.getStatus(), () -> operationLog.setStatus(Status.NORMAL.name()));
-            operationLog.setOperator_id(operator);
-            operationLog.setOperator_name(operatorName);
-            operationLog.initFields();
+        Assert.INSTANCE.notNullElseRun(parameter.getLog_id(), () -> parameter.setLog_id(UidDb.INSTANCE.uid()));
+        Assert.INSTANCE.notBlankElseRun(parameter.getStatus(), () -> parameter.setStatus(Status.NORMAL.name()));
+        parameter.populateEntity((operationLog) -> {
         });
         super.insert(parameter);
     }

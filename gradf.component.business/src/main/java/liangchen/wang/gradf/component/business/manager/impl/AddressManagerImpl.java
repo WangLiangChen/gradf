@@ -9,7 +9,6 @@ import liangchen.wang.gradf.component.business.manager.domain.parameter.AddressP
 import liangchen.wang.gradf.component.business.manager.domain.result.AddressResultDomain;
 import liangchen.wang.gradf.component.commons.base.AbstractManager;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
-import liangchen.wang.gradf.framework.commons.utils.ContextUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.data.enumeration.Status;
 import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
@@ -67,7 +66,7 @@ public class AddressManagerImpl extends AbstractManager<Address, AddressQuery, A
         parameter.populateEntity((entity) -> {
             Address address = ClassBeanUtil.INSTANCE.cast(entity);
             address.setModify_datetime(LocalDateTime.now());
-            address.setModifier(ContextUtil.INSTANCE.getOperator());
+            address.setModifier(FouraUtil.INSTANCE.getOperator());
         });
         return super.updateByQuery(parameter, query);
     }

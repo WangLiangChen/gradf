@@ -685,21 +685,19 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("    @Override");
         lines.add("    public boolean insert(" + parameterDomainName + " parameter) {");
         lines.add("        Assert.INSTANCE.notNull(parameter, \"参数不能为空\");");
-        String entityNameVar = StringUtil.INSTANCE.firstLetterConvertCase(entityName);
-        lines.add("        parameter.populateEntity((" + entityNameVar + ") -> {");
-        lines.add("            //TODO 这里可以调整Entity，比如设置主键/状态等");
         List<Column> primaryKeys = columns.getPrimaryKeys();
         if (primaryKeys.size() == 1) {
             String columnName = primaryKeys.get(0).getColumnName();
             String suffix = StringUtils.capitalize(columnName);
-            lines.add("            Assert.INSTANCE.notNull(" + entityNameVar + ".get" + suffix + "(), () -> " + entityNameVar + ".set" + suffix + "(UidDb.INSTANCE.uid()));");
+            lines.add("    Assert.INSTANCE.notNull(parameter.get" + suffix + "(), () -> parameter.set" + suffix + "(UidDb.INSTANCE.uid()));");
         }
         if (StringUtil.INSTANCE.isNotBlank(statusField) && "String".equals(statusFieldClassName)) {
             String suffix = StringUtils.capitalize(statusField);
-            lines.add("            Assert.INSTANCE.notBlank(" + entityNameVar + ".get" + suffix + "(), () -> " + entityNameVar + ".set" + suffix + "(Status.NORMAL.name()));");
+            lines.add("            Assert.INSTANCE.notBlank(parameter.get" + suffix + "(), () -> parameter.set" + suffix + "(Status.NORMAL.name()));");
         }
-        lines.add("            " + entityNameVar + ".initOperator();");
-        lines.add("            " + entityNameVar + ".initFields();");
+        String entityNameVar = StringUtil.INSTANCE.firstLetterConvertCase(entityName);
+        lines.add("        parameter.populateEntity((" + entityNameVar + ") -> {");
+        lines.add("            //TODO 这里可以对Entity补充数据");
         lines.add("        });");
         lines.add("        return super.insert(parameter);");
         lines.add("    }");
@@ -727,7 +725,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("        parameter.populateEntity((" + entityNameVar + ") -> {");
         lines.add("            // TODO 这里添加不更新或者不论是否空值总更新的字段");
         lines.add("            " + entityNameVar + ".setModify_datetime(LocalDateTime.now());");
-        lines.add("            " + entityNameVar + ".setModifier(ContextUtil.INSTANCE.getOperator());");
+        lines.add("            " + entityNameVar + ".setModifier(FouraUtil.INSTANCE.getOperator());");
         lines.add("        });");
         lines.add("        return super.updateByQuery(parameter, query);");
         lines.add("    }");

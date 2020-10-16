@@ -10,7 +10,7 @@ public enum OperationLogUtil {
     // 
     INSTANCE;
 
-    public OperationLogUtil putBusinessId(Long businessId) {
+    public OperationLogUtil setBusinessId(Long businessId) {
         this.putParameter("BusinessId", businessId);
         return OperationLogUtil.INSTANCE;
     }
@@ -29,7 +29,7 @@ public enum OperationLogUtil {
         return ContextUtil.INSTANCE.get(key);
     }
 
-    public OperationLogUtil putData(Object originalData, Object newData) {
+    public OperationLogUtil setPayload(Object originalData, Object newData) {
         this.putParameter("OriginalData", originalData);
         this.putParameter("NewData", newData);
         return OperationLogUtil.INSTANCE;
