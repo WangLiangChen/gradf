@@ -9,8 +9,8 @@ import java.io.OutputStream;
  * @author LiangChen.Wang
  */
 public final class ByteOutputStream extends OutputStream {
-    protected byte[] buf;
-    protected int count;
+    private byte[] buf;
+    private int count;
 
     public ByteOutputStream() {
         this(1024);
@@ -21,22 +21,22 @@ public final class ByteOutputStream extends OutputStream {
         this.buf = new byte[size];
     }
 
-    public void write(InputStream in) throws IOException {
-        int cap;
-        if (in instanceof ByteArrayInputStream) {
-            cap = in.available();
-            this.ensureCapacity(cap);
-            this.count += in.read(this.buf, this.count, cap);
+    public void write(InputStream inputStream) throws IOException {
+        int cappcity;
+        if (inputStream instanceof ByteArrayInputStream) {
+            cappcity = inputStream.available();
+            this.ensureCapacity(cappcity);
+            this.count += inputStream.read(this.buf, this.count, cappcity);
         } else {
             while (true) {
-                cap = this.buf.length - this.count;
-                int sz = in.read(this.buf, this.count, cap);
+                cappcity = this.buf.length - this.count;
+                int sz = inputStream.read(this.buf, this.count, cappcity);
                 if (sz < 0) {
                     return;
                 }
 
                 this.count += sz;
-                if (cap == sz) {
+                if (cappcity == sz) {
                     this.ensureCapacity(this.count);
                 }
             }
@@ -50,12 +50,12 @@ public final class ByteOutputStream extends OutputStream {
         ++this.count;
     }
 
-    private void ensureCapacity(int space) {
-        int newcount = space + this.count;
-        if (newcount > this.buf.length) {
-            byte[] newbuf = new byte[Math.max(this.buf.length << 1, newcount)];
-            System.arraycopy(this.buf, 0, newbuf, 0, this.count);
-            this.buf = newbuf;
+    private void ensureCapacity(int capacity) {
+        int newCount = capacity + this.count;
+        if (newCount > this.buf.length) {
+            byte[] newBuf = new byte[Math.max(this.buf.length << 1, newCount)];
+            System.arraycopy(this.buf, 0, newBuf, 0, this.count);
+            this.buf = newBuf;
         }
 
     }
@@ -96,16 +96,16 @@ public final class ByteOutputStream extends OutputStream {
      * @deprecated
      */
     public byte[] toByteArray() {
-        byte[] newbuf = new byte[this.count];
-        System.arraycopy(this.buf, 0, newbuf, 0, this.count);
-        return newbuf;
+        byte[] newBuf = new byte[this.count];
+        System.arraycopy(this.buf, 0, newBuf, 0, this.count);
+        return newBuf;
     }
 
     public int size() {
         return this.count;
     }
 
-    public ByteInputStream newInputStream() {
+    public ByteInputStream inputStream() {
         return new ByteInputStream(this.buf, this.count);
     }
 

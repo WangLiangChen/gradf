@@ -5,7 +5,7 @@ import java.io.ByteArrayInputStream;
 /**
  * @author LiangChen.Wang
  */
-public class ByteInputStream extends ByteArrayInputStream {
+public final class ByteInputStream extends ByteArrayInputStream {
     private static final byte[] EMPTY_ARRAY = new byte[0];
 
     public ByteInputStream() {
