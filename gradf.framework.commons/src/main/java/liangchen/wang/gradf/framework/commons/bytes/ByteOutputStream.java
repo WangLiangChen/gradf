@@ -114,6 +114,7 @@ public final class ByteOutputStream extends OutputStream {
         return new String(this.buf, 0, this.count);
     }
 
+
     @Override
     public void close() {
     }
