@@ -89,4 +89,12 @@ public enum DateTimeUtil {
         return nowMax.format(DateTimeFormatter.ofPattern(YYYY_MM_DD_HH_MM_SS));
     }
 
+    public LocalDateTime utcDateTime() {
+        return LocalDateTime.now(ZoneOffset.UTC);
+    }
+
+    public LocalDate utcDate() {
+        return LocalDate.now(ZoneOffset.UTC);
+    }
+
 }

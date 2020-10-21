@@ -18,6 +18,11 @@ public enum HttpUtil {
     private final OkHttpClient httpClient = new OkHttpClient();
     private final Request.Builder requestBuilder = new Request.Builder();
 
+    HttpUtil() {
+        httpClient.dispatcher().setMaxRequests(64);
+        httpClient.dispatcher().setMaxRequestsPerHost(10);
+    }
+
     public void download(String url, HttpResponse httpResponse) {
         Request request = requestBuilder.get().url(url).build();
         Call call = httpClient.newCall(request);

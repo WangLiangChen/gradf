@@ -20,6 +20,7 @@
         <module>gradf.component.job</module>
         <module>gradf.component.payment</module>
         <module>gradf.component.merchant</module>
+        <module>gradf.component.crawler</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -96,6 +97,11 @@
             <dependency>
                 <groupId>liangchen.wang</groupId>
                 <artifactId>gradf.component.business</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>liangchen.wang</groupId>
+                <artifactId>gradf.component.crawler</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>
