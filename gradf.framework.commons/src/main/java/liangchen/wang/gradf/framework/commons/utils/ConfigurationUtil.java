@@ -4,11 +4,13 @@ import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import org.apache.commons.configuration2.*;
 import org.apache.commons.configuration2.builder.ReloadingFileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.builder.fluent.FileBasedBuilderParameters;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.reloading.PeriodicReloadingTrigger;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
@@ -25,21 +27,22 @@ public enum ConfigurationUtil {
     private final static String YML = ".yml";
     private final static String YAML = ".yaml";
     private final static String JSON = ".json";
+    private final FileBasedBuilderParameters fileBasedBuilderParameters = new Parameters().fileBased().setListDelimiterHandler(new DefaultListDelimiterHandler(','));
 
-    private URL baseUrl;
+    private URI baseUri;
 
     public void setBasePath(String basePath, String... more) {
         Assert.INSTANCE.notBlank(basePath, "配置路径不能为空");
-        baseUrl = NetUtil.INSTANCE.toURL(basePath, more);
+        baseUri = NetUtil.INSTANCE.toURI(basePath, more);
     }
 
     public String getBasePath() {
-        return baseUrl.toString();
+        return baseUri.toString();
     }
 
     public URL getFullUrl(String fileName) {
         Assert.INSTANCE.notBlank(fileName, "文件路径/名称不能为空");
-        return NetUtil.INSTANCE.concatURL(baseUrl, fileName);
+        return NetUtil.INSTANCE.toURL(baseUri.resolve(fileName));
     }
 
     public String getFullPath(String fileName) {
@@ -114,7 +117,7 @@ public enum ConfigurationUtil {
 
     private Configuration buildConfiguration(ReloadingFileBasedConfigurationBuilder<?> builder, String configurationFileName, long reloadPeriod, TimeUnit timeUnit) {
         URL url = getFullUrl(configurationFileName);
-        builder.configure(new Parameters().properties().setListDelimiterHandler(new DefaultListDelimiterHandler(',')).setURL(url));
+        builder.configure(fileBasedBuilderParameters.setURL(url));
         if (reloadPeriod > 0L) {
             PeriodicReloadingTrigger trigger = new PeriodicReloadingTrigger(builder.getReloadingController(), null, reloadPeriod, timeUnit);
             trigger.start();

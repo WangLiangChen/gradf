@@ -41,7 +41,7 @@ public class DefaultApplicationContextInitializer implements ApplicationContextI
         springApplication.setBannerMode(Banner.Mode.OFF);
         String configPath = resolveConfigPath(environment);
         ConfigurationUtil.INSTANCE.setBasePath(configPath);
-        Printer.INSTANCE.prettyPrint("available configPath is :{}", ConfigurationUtil.INSTANCE.getBasePath());
+        Printer.INSTANCE.prettyPrint("available configPath is: {}", ConfigurationUtil.INSTANCE.getBasePath());
         // 设置日志
         Configuration configuration = ConfigurationUtil.INSTANCE.getConfiguration("logger.properties");
         String logging_config = configuration.getString("logging.config");
