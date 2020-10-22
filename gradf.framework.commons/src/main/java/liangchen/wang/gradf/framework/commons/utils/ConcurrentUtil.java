@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -45,6 +46,15 @@ public enum ConcurrentUtil {
     public <T> CompletableFuture<List<T>> completableFuture2List(CompletableFuture<T>[] futures) {
         ArrayList<CompletableFuture<T>> completableFutures = new ArrayList<>(Arrays.asList(futures));
         return CompletableFuture.allOf(futures).thenApply(e -> completableFutures.parallelStream().map(CompletableFuture::join).collect(Collectors.toList()));
+    }
+
+    public void block() {
+        try {
+            new CountDownLatch(1).await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ErrorException(e);
+        }
     }
 
     public void threadSleep(long timeout, TimeUnit timeUnit) {

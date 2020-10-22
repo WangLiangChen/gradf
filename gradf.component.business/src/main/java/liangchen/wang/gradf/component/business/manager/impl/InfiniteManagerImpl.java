@@ -7,6 +7,7 @@ import liangchen.wang.gradf.component.business.manager.IInfiniteManager;
 import liangchen.wang.gradf.component.business.manager.domain.parameter.InfiniteParameterDomain;
 import liangchen.wang.gradf.component.business.manager.domain.result.InfiniteResultDomain;
 import liangchen.wang.gradf.component.commons.base.AbstractManager;
+import liangchen.wang.gradf.component.foura.utils.FouraUtil;
 import liangchen.wang.gradf.framework.cluster.utils.LockUtil;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;

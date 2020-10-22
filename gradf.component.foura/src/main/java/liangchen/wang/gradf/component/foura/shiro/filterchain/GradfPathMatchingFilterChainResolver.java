@@ -44,6 +44,7 @@ public class GradfPathMatchingFilterChainResolver extends PathMatchingFilterChai
         logger.debug("已配置的ChainNames:{}", JsonUtil.INSTANCE.toJsonString(configedChainNames));
         Set<String> chainNames = new HashSet<>();
         for (String pathPattern : configedChainNames) {
+            // TODO 这里的匹配要使用缓存
             if (pathMatches(pathPattern, requestURI)) {
                 chainNames.add(pathPattern);
             }

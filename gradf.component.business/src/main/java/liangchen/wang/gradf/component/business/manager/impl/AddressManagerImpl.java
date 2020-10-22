@@ -8,6 +8,7 @@ import liangchen.wang.gradf.component.business.manager.IRelationManager;
 import liangchen.wang.gradf.component.business.manager.domain.parameter.AddressParameterDomain;
 import liangchen.wang.gradf.component.business.manager.domain.result.AddressResultDomain;
 import liangchen.wang.gradf.component.commons.base.AbstractManager;
+import liangchen.wang.gradf.component.foura.utils.FouraUtil;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.data.enumeration.Status;

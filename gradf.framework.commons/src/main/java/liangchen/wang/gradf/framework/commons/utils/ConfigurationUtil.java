@@ -5,6 +5,7 @@ import liangchen.wang.gradf.framework.commons.validator.Assert;
 import org.apache.commons.configuration2.*;
 import org.apache.commons.configuration2.builder.ReloadingFileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
+import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.reloading.PeriodicReloadingTrigger;
 
@@ -112,9 +113,8 @@ public enum ConfigurationUtil {
 
 
     private Configuration buildConfiguration(ReloadingFileBasedConfigurationBuilder<?> builder, String configurationFileName, long reloadPeriod, TimeUnit timeUnit) {
-        Parameters params = new Parameters();
         URL url = getFullUrl(configurationFileName);
-        builder.configure(params.fileBased().setURL(url));
+        builder.configure(new Parameters().properties().setListDelimiterHandler(new DefaultListDelimiterHandler(',')).setURL(url));
         if (reloadPeriod > 0L) {
             PeriodicReloadingTrigger trigger = new PeriodicReloadingTrigger(builder.getReloadingController(), null, reloadPeriod, timeUnit);
             trigger.start();

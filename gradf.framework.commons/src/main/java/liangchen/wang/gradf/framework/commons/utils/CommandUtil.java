@@ -21,6 +21,7 @@ public enum CommandUtil {
         CommandLine cmdLine = findCommanLine(command, args);
         DefaultExecutor executor = new DefaultExecutor();
         executor.setExitValue(1);
+        executor.setStreamHandler(new PumpStreamHandler(null, null, null));
         /*ExecuteWatchdog watchdog = new ExecuteWatchdog(60 * 1000);
         executor.setWatchdog(watchdog);*/
         DefaultExecuteResultHandler handler = new DefaultExecuteResultHandler();
