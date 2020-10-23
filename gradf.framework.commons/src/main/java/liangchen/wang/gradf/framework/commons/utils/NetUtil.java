@@ -70,16 +70,13 @@ public enum NetUtil {
             throw new ErrorException(e);
         }
     }
+
     public URL toURL(URI uri) {
         try {
             return uri.toURL();
         } catch (MalformedURLException e) {
             throw new ErrorException(e);
         }
-    }
-
-    public URL concatURL(URL url, String... more) {
-        return toURL(url.toString(), more);
     }
 
     public boolean isAvailableURL(URL url) {

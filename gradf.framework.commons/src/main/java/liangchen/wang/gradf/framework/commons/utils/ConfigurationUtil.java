@@ -28,6 +28,10 @@ public enum ConfigurationUtil {
     private final static String YAML = ".yaml";
     private final static String JSON = ".json";
     private final FileBasedBuilderParameters fileBasedBuilderParameters = new Parameters().fileBased().setListDelimiterHandler(new DefaultListDelimiterHandler(','));
+    private final ReloadingFileBasedConfigurationBuilder<PropertiesConfiguration> propertiesConfigurationBuilder = new ReloadingFileBasedConfigurationBuilder<>(PropertiesConfiguration.class);
+    private final ReloadingFileBasedConfigurationBuilder<YAMLConfiguration> yamlConfigurationBuilder = new ReloadingFileBasedConfigurationBuilder<>(YAMLConfiguration.class);
+    private final ReloadingFileBasedConfigurationBuilder<JSONConfiguration> jsonConfigurationBuilder = new ReloadingFileBasedConfigurationBuilder<>(JSONConfiguration.class);
+    private final ReloadingFileBasedConfigurationBuilder<XMLConfiguration> xmlConfigurationBuilder = new ReloadingFileBasedConfigurationBuilder<>(XMLConfiguration.class);
 
     private URI baseUri;
 
@@ -41,8 +45,12 @@ public enum ConfigurationUtil {
     }
 
     public URL getFullUrl(String fileName) {
+        return NetUtil.INSTANCE.toURL(getFullUri(fileName));
+    }
+
+    public URI getFullUri(String fileName) {
         Assert.INSTANCE.notBlank(fileName, "文件路径/名称不能为空");
-        return NetUtil.INSTANCE.toURL(baseUri.resolve(fileName));
+        return baseUri.resolve(fileName);
     }
 
     public String getFullPath(String fileName) {
@@ -77,8 +85,7 @@ public enum ConfigurationUtil {
     public Configuration getPropertiesConfiguration(String configurationFileName, long reloadPeriod, TimeUnit unit) {
         Assert.INSTANCE.notBlank(configurationFileName, "配置文件路径/名称不能为空");
         Assert.INSTANCE.isTrue(configurationFileName.endsWith(PROPERTIES), "要加载的配置文件不是properties格式,文件:{0}", configurationFileName);
-        ReloadingFileBasedConfigurationBuilder<PropertiesConfiguration> builder = new ReloadingFileBasedConfigurationBuilder<>(PropertiesConfiguration.class);
-        return buildConfiguration(builder, configurationFileName, reloadPeriod, unit);
+        return buildConfiguration(propertiesConfigurationBuilder, configurationFileName, reloadPeriod, unit);
     }
 
     public Configuration getYamlConfiguration(String configurationFileName) {
@@ -88,8 +95,7 @@ public enum ConfigurationUtil {
     public Configuration getYamlConfiguration(String configurationFileName, long reloadPeriod, TimeUnit unit) {
         Assert.INSTANCE.notBlank(configurationFileName, "配置文件路径/名称不能为空");
         Assert.INSTANCE.isTrue(configurationFileName.endsWith(YML), "要加载的配置文件不是yml格式,文件:{0}", configurationFileName);
-        ReloadingFileBasedConfigurationBuilder<YAMLConfiguration> builder = new ReloadingFileBasedConfigurationBuilder<>(YAMLConfiguration.class);
-        return buildConfiguration(builder, configurationFileName, reloadPeriod, unit);
+        return buildConfiguration(yamlConfigurationBuilder, configurationFileName, reloadPeriod, unit);
     }
 
     public Configuration getJsonConfiguration(String configurationFileName) {
@@ -99,8 +105,7 @@ public enum ConfigurationUtil {
     public Configuration getJsonConfiguration(String configurationFileName, long reloadPeriod, TimeUnit unit) {
         Assert.INSTANCE.notBlank(configurationFileName, "配置文件路径/名称不能为空");
         Assert.INSTANCE.isTrue(configurationFileName.endsWith(JSON), "要加载的配置文件不是yml格式,文件:{0}", configurationFileName);
-        ReloadingFileBasedConfigurationBuilder<JSONConfiguration> builder = new ReloadingFileBasedConfigurationBuilder<>(JSONConfiguration.class);
-        return buildConfiguration(builder, configurationFileName, reloadPeriod, unit);
+        return buildConfiguration(jsonConfigurationBuilder, configurationFileName, reloadPeriod, unit);
     }
 
     public Configuration getXmlConfiguration(String configurationFileName) {
@@ -110,8 +115,7 @@ public enum ConfigurationUtil {
     public Configuration getXmlConfiguration(String configurationFileName, long reloadPeriod, TimeUnit unit) {
         Assert.INSTANCE.notBlank(configurationFileName, "配置文件路径/名称不能为空");
         Assert.INSTANCE.isTrue(configurationFileName.endsWith(XML), "要加载的配置文件不是xml格式,文件:{0}", configurationFileName);
-        ReloadingFileBasedConfigurationBuilder<XMLConfiguration> builder = new ReloadingFileBasedConfigurationBuilder<>(XMLConfiguration.class);
-        return buildConfiguration(builder, configurationFileName, reloadPeriod, unit);
+        return buildConfiguration(xmlConfigurationBuilder, configurationFileName, reloadPeriod, unit);
     }
 
 
