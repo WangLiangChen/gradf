@@ -40,6 +40,7 @@ public enum CommandUtil {
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
         PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream, errorStream);
         DefaultExecutor executor = new DefaultExecutor();
+        executor.setExitValues(null);
         executor.setStreamHandler(streamHandler);
         try {
             executor.execute(cmdLine);

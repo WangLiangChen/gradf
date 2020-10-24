@@ -97,4 +97,7 @@ public enum DateTimeUtil {
         return LocalDate.now(ZoneOffset.UTC);
     }
 
+    public LocalDateTime ofTimestamp(long timestamp, ZoneOffset zoneOffset) {
+        return LocalDateTime.ofEpochSecond(timestamp, 0, zoneOffset);
+    }
 }
