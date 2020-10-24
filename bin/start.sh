@@ -16,7 +16,7 @@ if [ -n "$FOREGROUND_MODE" ] ;then
     "$JAVA_HOME"/bin/java -jar "$JAVA_OPTS" "$APP_JAR"
     echo "$JAVA_HOME/bin/java -jar $JAVA_OPTS  $APP_JAR"
 else
-    nohup "$JAVA_HOME"/bin/java -jar "$JAVA_OPTS" "$APP_JAR" > "$STDOUT_FILE" 2>&1 &
+    nohup "$JAVA_HOME"/bin/java -jar $JAVA_OPTS "$APP_JAR" > "$STDOUT_FILE" 2>&1 &
     echo "nohup $JAVA_HOME/bin/java -jar $JAVA_OPTS $APP_JAR > $STDOUT_FILE 2>&1 &"
 fi
 

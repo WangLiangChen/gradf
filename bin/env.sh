@@ -5,7 +5,7 @@ if [ ! -d "$JAVA_HOME" ] ;then
     echo "ERROR: cannot found Java running environment "
     exit 1
 fi
-MAX_JAVA_HEAP=6144m
+MAX_JAVA_HEAP=4096m
 PROFILE_ACTIVE=
 CONFIG_PATH=/JavaSoft/server/config/prod
 
@@ -22,7 +22,7 @@ if [[ -n "$CONFIG_PATH" ]] ;then
 CONFIG_PATH_OPTS="-DconfigPath=$CONFIG_PATH"
 fi
 
-JAVA_OPTS="$JAVA_HEAP_OPTS $CONFIG_PATH_OPTS $SPRINGBOOT_OPTS -server -Djava.security.egd=file:/dev/./urandom"
+JAVA_OPTS="$JAVA_HEAP_OPTS -server $CONFIG_PATH_OPTS $SPRINGBOOT_OPTS -Djava.security.egd=file:/dev/./urandom"
 STDOUT_FILE=stdout.log
 export JAVA_HOME
 export JAVA_OPTS
