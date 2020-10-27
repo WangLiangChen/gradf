@@ -93,8 +93,16 @@ public enum DateTimeUtil {
         return LocalDateTime.now(ZoneOffset.UTC);
     }
 
+    public LocalDateTime utcDateTime(LocalDateTime localDateTime) {
+        return localDateTime.atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();
+    }
+
     public LocalDate utcDate() {
         return LocalDate.now(ZoneOffset.UTC);
+    }
+
+    public LocalDate utcDate(LocalDate localDate) {
+        return localDate.atStartOfDay(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC).toLocalDate();
     }
 
     public LocalDateTime ofTimestamp(long timestamp, ZoneOffset zoneOffset) {

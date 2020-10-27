@@ -1,5 +1,8 @@
 package liangchen.wang.gradf.framework.commons.utils;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * @author liangchen.wang 2020/9/10
  */
@@ -10,6 +13,7 @@ public enum StringUtil {
     INSTANCE;
     private final String FORMAT_REGEX = "\\{(.*?)\\}";
     private final String FORMAT_REPLACEMENT = "\\%s";
+    private final Pattern nonNumberPattern = Pattern.compile("[^0-9]");
 
     public boolean isNull(String string) {
         return null == string;
@@ -85,5 +89,9 @@ public enum StringUtil {
             return null;
         }
         return source.replaceAll("\\s", "");
+    }
+    public String extractNumbers(String string) {
+        Matcher matcher = nonNumberPattern.matcher(string);
+        return matcher.replaceAll("");
     }
 }
