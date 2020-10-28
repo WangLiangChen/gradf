@@ -1,13 +1,11 @@
 package liangchen.wang.gradf.framework.commons.utils;
 
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecuteResultHandler;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.exec.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -16,6 +14,7 @@ import java.io.UnsupportedEncodingException;
 public enum CommandUtil {
     //
     INSTANCE;
+    private final int DEFAULT_BUFFER_SIZE = 8192;
 
     public void execute(String command, String... args) {
         CommandLine cmdLine = findCommanLine(command, args);
@@ -34,11 +33,14 @@ public enum CommandUtil {
         }
     }
 
-    public String executeWithResult(String command, String... args) {
+    public void executeOut2In(InputStream inputStream, String command, String... args) {
+        PumpStreamHandler streamHandler = new PumpStreamHandler();
+        streamHandler.setProcessOutputStream(inputStream);
+        executeWithStreamHandler(streamHandler, command, args);
+    }
+
+    public void executeWithStreamHandler(ExecuteStreamHandler streamHandler, String command, String... args) {
         CommandLine cmdLine = findCommanLine(command, args);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
-        PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream, errorStream);
         DefaultExecutor executor = new DefaultExecutor();
         executor.setExitValues(null);
         executor.setStreamHandler(streamHandler);
@@ -47,10 +49,17 @@ public enum CommandUtil {
         } catch (IOException e) {
             throw new ErrorException(e);
         }
+    }
+
+
+    public String executeWithResult(String command, String... args) {
+        CommandLine cmdLine = findCommanLine(command, args);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
+        executeWithStreamHandler(streamHandler, command, args);
         try {
             String out = outputStream.toString("gbk");
-            String error = errorStream.toString("gbk");
-            return out + error;
+            return out;
         } catch (UnsupportedEncodingException e) {
             throw new ErrorException(e);
         }

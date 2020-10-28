@@ -1,9 +1,11 @@
 package liangchen.wang.gradf.framework.commons.bytes;
 
 
+import com.Ostermiller.util.CircularByteBuffer;
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
+import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.nio.charset.Charset;
