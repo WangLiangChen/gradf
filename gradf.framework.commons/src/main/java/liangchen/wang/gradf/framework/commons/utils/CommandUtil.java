@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.function.Consumer;
 
 /**
  * @author LiangChen.Wang 2020/10/20
@@ -33,10 +34,14 @@ public enum CommandUtil {
         }
     }
 
-    public void executeOut2In(InputStream inputStream, String command, String... args) {
-        PumpStreamHandler streamHandler = new PumpStreamHandler();
-        streamHandler.setProcessOutputStream(inputStream);
-        executeWithStreamHandler(streamHandler, command, args);
+    public void execute(Consumer<String> consumer, String command, String... args) {
+        PumpStreamHandler streamHandler = new PumpStreamHandler(new LogOutputStream() {
+            @Override
+            protected void processLine(String line, int i) {
+                consumer.accept(line);
+            }
+        });
+        executeWithStreamHandler(streamHandler,command,args);
     }
 
     public void executeWithStreamHandler(ExecuteStreamHandler streamHandler, String command, String... args) {
