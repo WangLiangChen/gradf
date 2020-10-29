@@ -1,6 +1,7 @@
 package liangchen.wang.gradf.framework.commons.utils;
 
 
+import com.google.common.base.Splitter;
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * @author LiangChen.Wang
@@ -123,18 +125,20 @@ public enum NetUtil {
     }
 
     public String longToIpV4(long longIp) {
-        int octet3 = (int) ((longIp >> 24) % 256);
-        int octet2 = (int) ((longIp >> 16) % 256);
-        int octet1 = (int) ((longIp >> 8) % 256);
-        int octet0 = (int) ((longIp) % 256);
-
-        return octet3 + "" + octet2 + "" + octet1 + "" + octet0;
+        return String.format("%d.%d.%d.%d", (longIp >> 24) & 0xFF, (longIp >> 16) & 0xFF, (longIp >> 8) & 0xFF, longIp & 0xFF);
     }
 
     public long ipV4ToLong(String ip) {
-        String[] octets = ip.split("\\.");
-        return (Long.parseLong(octets[0]) << 24) + (Integer.parseInt(octets[1]) << 16) + (Integer.parseInt(octets[2]) << 8) + Integer.parseInt(octets[3]);
+        Iterator<String> iterator = Splitter.on('.').split(ip).iterator();
+        int index = 3;
+        long longIp = 0;
+        while (iterator.hasNext()) {
+            longIp |= Long.parseLong(iterator.next()) << (index * 8);
+            index--;
+        }
+        return longIp;
     }
+
 
     public boolean isIPv4Private(String ip) {
         long longIp = ipV4ToLong(ip);
