@@ -1,0 +1,14 @@
+文件逐行读取
+当文件较小时:
+ApacheCommonsIO>FileUtils, BufferedReader>BufferedInputStream, Files>InputStreamReader, Scanner, FileInputStream
+当文件较大
+Apache Commons IO 流, BufferedReader 依然出色, Files, FileUtils 速度开始变慢.、
+Java8的Stream，需要close
+If timely disposal of file system resources is required, the try-with-resources construct should be used to ensure that the stream’s close method is invoked after the stream operations are completed.
+try(Stream<String> stream = Files.lines(Paths.get(file))){
+    return stream.skip(start).limit(limit).collect(Collectors.toList());
+} catch (IOException e){
+    logger.error("get content from{} error,{}",file, e.getMessage());
+}
+三、字符串分隔
+使用guava的Splitter或者用charAt遍历字符串
