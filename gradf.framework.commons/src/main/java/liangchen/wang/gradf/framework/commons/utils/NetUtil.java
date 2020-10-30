@@ -125,17 +125,35 @@ public enum NetUtil {
     }
 
     public String longToIpV4(long longIp) {
+        // 4294967295=255.255.255.255
+        if (longIp > 4294967295L) {
+            return String.format("%d.%d.%d.%d/%d", (longIp >> 32) & 0xFF, (longIp >> 24) & 0xFF, (longIp >> 16) & 0xFF, (longIp >> 8) & 0xFF, longIp & 0xFF);
+        }
         return String.format("%d.%d.%d.%d", (longIp >> 24) & 0xFF, (longIp >> 16) & 0xFF, (longIp >> 8) & 0xFF, longIp & 0xFF);
     }
 
     public long ipV4ToLong(String ip) {
-        Iterator<String> iterator = Splitter.on('.').split(ip).iterator();
-        int index = 3;
+        int maskIndex = ip.lastIndexOf('/');
+        String prefix = null, mask = null;
+        int index;
+        if (maskIndex == -1) {
+            index = 3;
+            prefix = ip;
+        } else {
+            index = 4;
+            prefix = ip.substring(0, maskIndex);
+            mask = ip.substring(maskIndex + 1);
+        }
+        Iterator<String> iterator = Splitter.on('.').split(prefix).iterator();
         long longIp = 0;
         while (iterator.hasNext()) {
             longIp |= Long.parseLong(iterator.next()) << (index * 8);
             index--;
         }
+        if (maskIndex == -1) {
+            return longIp;
+        }
+        longIp |= Long.parseLong(mask);
         return longIp;
     }
 

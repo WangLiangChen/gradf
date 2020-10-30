@@ -30,21 +30,35 @@ public class CommonsTest {
         localDateTime = DateTimeUtil.INSTANCE.utcDateTime(localDateTime);
         System.out.println(localDateTime);
     }
+
     @Test
-    public void testIp2Int(){
-        String ip="1.0.0.0";
+    public void testIp2Int() {
+        String ip = "1.0.0.0";
         long longIp = NetUtil.INSTANCE.ipV4ToLong(ip);
         System.out.println(longIp);
-        ip=NetUtil.INSTANCE.longToIpV4(longIp);
+        ip = NetUtil.INSTANCE.longToIpV4(longIp);
         System.out.println(ip);
 
-        ip="255.255.255.255";
+        ip = "255.255.255.255";
         longIp = NetUtil.INSTANCE.ipV4ToLong(ip);
         System.out.println(longIp);
-        ip=NetUtil.INSTANCE.longToIpV4(longIp);
+        ip = NetUtil.INSTANCE.longToIpV4(longIp);
         System.out.println(ip);
-        System.out.println("integer max:"+Integer.MAX_VALUE);
-        System.out.println("long max:"+Long.MAX_VALUE);
+
+        ip = "1.0.0.0/24";
+        longIp = NetUtil.INSTANCE.ipV4ToLong(ip);
+        System.out.println(longIp);
+        ip = NetUtil.INSTANCE.longToIpV4(longIp);
+        System.out.println(ip);
+
+        ip = "255.255.255.255/23";
+        longIp = NetUtil.INSTANCE.ipV4ToLong(ip);
+        System.out.println(longIp);
+        ip = NetUtil.INSTANCE.longToIpV4(longIp);
+        System.out.println(ip);
+
+        System.out.println("integer max:" + Integer.MAX_VALUE);
+        System.out.println("long max:" + Long.MAX_VALUE);
         /*16777216
         1.0.0.0
         4294967295
