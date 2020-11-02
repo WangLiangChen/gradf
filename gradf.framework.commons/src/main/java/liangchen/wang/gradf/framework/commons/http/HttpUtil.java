@@ -36,6 +36,9 @@ public enum HttpUtil {
             public void onResponse(@NotNull Call call, @NotNull okhttp3.Response response) throws IOException {
                 InputStream inputStream = response.body().byteStream();
                 httpResponse.onResponse(inputStream);
+                if (null != inputStream) {
+                    inputStream.close();
+                }
             }
         });
     }
