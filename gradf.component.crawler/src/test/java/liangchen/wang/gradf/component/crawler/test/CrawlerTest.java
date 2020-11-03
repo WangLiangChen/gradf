@@ -1,8 +1,5 @@
 package liangchen.wang.gradf.component.crawler.test;
 
-import liangchen.wang.gradf.framework.commons.http.HttpResponse;
-import liangchen.wang.gradf.framework.commons.http.HttpUtil;
-import liangchen.wang.gradf.framework.commons.utils.ConcurrentUtil;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,12 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author LiangChen.Wang 2020/9/16

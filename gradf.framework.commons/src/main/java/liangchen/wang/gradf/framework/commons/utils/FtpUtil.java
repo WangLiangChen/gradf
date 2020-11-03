@@ -2,7 +2,6 @@ package liangchen.wang.gradf.framework.commons.utils;
 
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.IOException;

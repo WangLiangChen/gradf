@@ -12,9 +12,9 @@ import liangchen.wang.gradf.component.business.manager.domain.result.AttachmentR
 import liangchen.wang.gradf.component.business.manager.domain.result.AttachmentResultDomain;
 import liangchen.wang.gradf.component.business.service.IAttachmentService;
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
+import liangchen.wang.gradf.framework.commons.file.FileUtil;
 import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
 import liangchen.wang.gradf.framework.commons.utils.DateTimeUtil;
-import liangchen.wang.gradf.framework.commons.file.FileUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.commons.validator.AssertLevel;
 import liangchen.wang.gradf.framework.data.enumeration.Status;
