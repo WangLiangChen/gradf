@@ -61,7 +61,8 @@ public class ThreadPoolAutoConfiguration implements AsyncConfigurer {
     @Bean
     public TaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-        scheduler.setPoolSize(10);
+        int processors = Runtime.getRuntime().availableProcessors();
+        scheduler.setPoolSize(processors * 2);
         scheduler.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         scheduler.setThreadNamePrefix("scheduler-");
         return scheduler;

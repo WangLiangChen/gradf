@@ -6,8 +6,8 @@ import java.io.InputStream;
 /**
  * @author LiangChen.Wang 2020/10/20
  */
-public interface HttpResponse {
-    void onResponse(InputStream inputStream) throws IOException;
+public interface NetResponse {
+    void onResponse(InputStream inputStream);
 
     void onFailure(Exception e);
 }

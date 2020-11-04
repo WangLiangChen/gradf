@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author LiangChen.Wang 2020/10/20
@@ -15,7 +16,8 @@ import java.io.InputStream;
 public enum HttpUtil {
     //
     INSTANCE;
-    private final OkHttpClient httpClient = new OkHttpClient();
+    private final OkHttpClient httpClient = new OkHttpClient().newBuilder()
+            .connectTimeout(2, TimeUnit.MINUTES).readTimeout(10, TimeUnit.MINUTES).writeTimeout(10, TimeUnit.MINUTES).build();
     private final Request.Builder requestBuilder = new Request.Builder();
 
     HttpUtil() {
@@ -23,22 +25,20 @@ public enum HttpUtil {
         httpClient.dispatcher().setMaxRequestsPerHost(10);
     }
 
-    public void download(String url, HttpResponse httpResponse) {
+    public void download(String url, NetResponse netResponse) {
         Request request = requestBuilder.get().url(url).build();
         Call call = httpClient.newCall(request);
         call.enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                httpResponse.onFailure(e);
+                netResponse.onFailure(e);
             }
 
             @Override
-            public void onResponse(@NotNull Call call, @NotNull okhttp3.Response response) throws IOException {
+            public void onResponse(@NotNull Call call, @NotNull okhttp3.Response response) {
+                // 谁用谁关闭
                 InputStream inputStream = response.body().byteStream();
-                httpResponse.onResponse(inputStream);
-                if (null != inputStream) {
-                    inputStream.close();
-                }
+                netResponse.onResponse(inputStream);
             }
         });
     }

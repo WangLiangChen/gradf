@@ -138,24 +138,4 @@ public enum CollectionUtil {
         }
         return list;
     }
-
-    public <T> void slice(Stream<T> stream, int sliceSize, Consumer<List<T>> consumer) {
-        AtomicInteger atomicIndex = new AtomicInteger();
-        ArrayList<T>[] container = new ArrayList[1];
-        stream.forEach(e -> {
-            int index = atomicIndex.getAndIncrement();
-            if (0 == index) {
-                container[0] = new ArrayList<>();
-            }
-            container[0].add(e);
-            if (index + 2 > sliceSize) {
-                atomicIndex.set(0);
-                consumer.accept(container[0]);
-            }
-        });
-        //输出剩余数据
-        if (container[0].size() < sliceSize) {
-            consumer.accept(container[0]);
-        }
-    }
 }

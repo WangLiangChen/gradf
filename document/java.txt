@@ -3,7 +3,8 @@
 ApacheCommonsIO>FileUtils, BufferedReader>BufferedInputStream, Files>InputStreamReader, Scanner, FileInputStream
 当文件较大
 Apache Commons IO 流, BufferedReader 依然出色, Files, FileUtils 速度开始变慢.、
-Java8的Stream，需要close
+
+***Java8的Stream，需要close
 If timely disposal of file system resources is required, the try-with-resources construct should be used to ensure that the stream’s close method is invoked after the stream operations are completed.
 try(Stream<String> stream = Files.lines(Paths.get(file))){
     return stream.skip(start).limit(limit).collect(Collectors.toList());

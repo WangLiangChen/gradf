@@ -1,6 +1,6 @@
 package liangchen.wang.gradf.framework.commons.test;
 
-import liangchen.wang.gradf.framework.commons.http.HttpResponse;
+import liangchen.wang.gradf.framework.commons.http.NetResponse;
 import liangchen.wang.gradf.framework.commons.http.HttpUtil;
 import liangchen.wang.gradf.framework.commons.utils.ConcurrentUtil;
 import liangchen.wang.gradf.framework.commons.utils.DateTimeUtil;
@@ -31,10 +31,14 @@ public class HttpTest {
         urlList.add("http://data.ris.ripe.net/rrc00/2020.10/updates.20201021.0400.gz");
 
         urlList.forEach(e -> {
-            HttpUtil.INSTANCE.download(e, new HttpResponse() {
+            HttpUtil.INSTANCE.download(e, new NetResponse() {
                 @Override
-                public void onResponse(InputStream inputStream) throws IOException {
-                    Files.copy(inputStream, Paths.get("d:\\", UUID.randomUUID().toString() + ".gz"));
+                public void onResponse(InputStream inputStream)  {
+                    try {
+                        Files.copy(inputStream, Paths.get("d:\\", UUID.randomUUID().toString() + ".gz"));
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
                 }
 
                 @Override

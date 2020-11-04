@@ -2,7 +2,7 @@ package liangchen.wang.gradf.framework.commons.test;
 
 import liangchen.wang.gradf.framework.commons.utils.CompressUtil;
 import liangchen.wang.gradf.framework.commons.utils.ConcurrentUtil;
-import liangchen.wang.gradf.framework.commons.utils.FtpUtil;
+import liangchen.wang.gradf.framework.commons.http.FtpUtil;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
@@ -14,13 +14,6 @@ public class FtpTest {
 
     @Test
     public void testDownload() {
-
-//ftp://ftp.apnic.net/pub/apnic/whois/apnic.db.rtr-set.gz
-        FtpUtil.INSTANCE.download("ftp.apnic.net", 21, "/pub/apnic/whois/", "apnic.db.rtr-set.gz", inputStream -> {
-            String s = CompressUtil.INSTANCE.gzDecompress(inputStream);
-            System.out.println("-------------");
-            System.out.println(s);
-        });
 
         ConcurrentUtil.INSTANCE.threadSleep(10, TimeUnit.MINUTES);
     }

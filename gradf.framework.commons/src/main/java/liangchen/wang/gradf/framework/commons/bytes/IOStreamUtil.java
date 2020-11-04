@@ -8,6 +8,11 @@ import liangchen.wang.gradf.framework.commons.validator.Assert;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * @author LiangChen.Wang 2019/8/18 15:46
@@ -19,6 +24,26 @@ public enum IOStreamUtil {
     INSTANCE;
     private final int DEFAULT_BUFFER_SIZE = 8192;
     private final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
+
+    public <T> void slice(Stream<T> stream, int sliceSize, Consumer<List<T>> consumer) {
+        AtomicInteger atomicIndex = new AtomicInteger();
+        ArrayList<T>[] container = new ArrayList[1];
+        stream.forEach(e -> {
+            int index = atomicIndex.getAndIncrement();
+            if (0 == index) {
+                container[0] = new ArrayList<>();
+            }
+            container[0].add(e);
+            if (index + 2 > sliceSize) {
+                atomicIndex.set(0);
+                consumer.accept(container[0]);
+            }
+        });
+        //输出剩余数据
+        if (container[0].size() < sliceSize) {
+            consumer.accept(container[0]);
+        }
+    }
 
     public String readString(InputStream inputStream, String encoding, int bufferSize) {
         Assert.INSTANCE.notNull(inputStream, "参数inputStream不能为null");
