@@ -13,6 +13,8 @@ public interface IAbstractDao<E extends RootEntity, Q extends RootQuery> {
 
     boolean insert(E entity);
 
+    int insertBatch(List<E> entitys);
+
     int deleteByQuery(Q query);
 
     int updateByQuery(E entity, Q query);

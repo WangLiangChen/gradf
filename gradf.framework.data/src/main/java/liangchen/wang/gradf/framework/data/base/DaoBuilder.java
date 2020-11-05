@@ -79,6 +79,39 @@ public class DaoBuilder {
         return storer.getMappedStatementId();
     }
 
+    public <E extends RootEntity> String insertBatchId(Class<E> entityClass) {
+        String entityClassName = entityClass.getName();
+        String cacheKey = String.format("%s.%s", entityClassName, "insertBatch");
+        Storer storer = storerMap.get(cacheKey);
+        if (null == storer) {
+            storer = new Storer();
+            Storer previous = storerMap.putIfAbsent(cacheKey, storer);
+            if (null == previous) {
+                logger.debug("......create insertBatchId");
+                EntityStorer entityStorer = buildEntityStorer(entityClass);
+                Set<String> pks = entityStorer.getPks();
+                Set<String> fields = entityStorer.getFields();
+                StringBuilder sql = new StringBuilder();
+                sql.append("<script>insert into ").append(entityStorer.getTableName()).append("<trim prefix=\"(\" suffix=\")\" suffixOverrides=\",\">");
+                pks.forEach(pk -> sql.append(pk).append(","));
+                fields.forEach(field -> sql.append(field).append(","));
+                sql.append("</trim>values");
+                sql.append("<foreach collection=\"list\" item=\"item\" separator=\",\">");
+                sql.append("<trim prefix=\"(\" suffix=\")\" suffixOverrides=\",\">");
+                pks.forEach(pk -> sql.append("#{item.").append(pk).append("},"));
+                fields.forEach(field -> sql.append("#{item.").append(field).append("},"));
+                sql.append("</trim>");
+                sql.append("</foreach>");
+                sql.append("</script>");
+                buildMappedStatement(cacheKey, SqlCommandType.INSERT, sql.toString(), entityClass, Integer.class);
+                storer.setMappedStatementId(cacheKey);
+            } else {
+                storer = previous;
+            }
+        }
+        return storer.getMappedStatementId();
+    }
+
     protected String deleteByQueryId(Class<? extends RootQuery> queryClass) {
         String tableName = tableNameByQueryClass(queryClass);
         String queryClassName = queryClass.getName();
@@ -300,6 +333,7 @@ public class DaoBuilder {
         MappedStatement ms = new MappedStatement.Builder(configuration, mappedStatementId, sqlSource, sqlCommandType).resultMaps(resultMaps).build();
         configuration.addMappedStatement(ms);
     }
+
 
     private final class Storer {
         private String mappedStatementId;

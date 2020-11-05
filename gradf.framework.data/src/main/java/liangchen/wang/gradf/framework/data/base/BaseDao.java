@@ -18,6 +18,11 @@ public class BaseDao extends AbstractDao {
     }
 
     @Override
+    public int insertBatch(List entitys) {
+        return 0;
+    }
+
+    @Override
     public int deleteByQuery(RootQuery query) {
         return 0;
     }

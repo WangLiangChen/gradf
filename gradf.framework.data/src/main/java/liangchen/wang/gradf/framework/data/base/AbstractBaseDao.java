@@ -36,6 +36,9 @@ public abstract class AbstractBaseDao<E extends RootEntity, Q extends RootQuery>
 
     @Override
     public boolean insert(E entity) {
+        if (null == entity) {
+            return false;
+        }
         int rows = sqlSessionTemplate.insert(daoBuilder.insertId(entityClass), entity);
         if (rows == 1) {
             return true;
@@ -43,14 +46,29 @@ public abstract class AbstractBaseDao<E extends RootEntity, Q extends RootQuery>
         return false;
     }
 
+    @Override
+    public int insertBatch(List<E> entities) {
+        if (null == entities || entities.size() == 0) {
+            return 0;
+        }
+        int rows = sqlSessionTemplate.insert(daoBuilder.insertBatchId(entityClass), entities);
+        return rows;
+    }
+
 
     @Override
     public int deleteByQuery(Q query) {
+        if (null == query) {
+            return 0;
+        }
         return sqlSessionTemplate.delete(daoBuilder.deleteByQueryId(queryClass), query);
     }
 
     @Override
     public int updateByQuery(E entity, Q query) {
+        if (null == entity || null == query) {
+            return 0;
+        }
         query.setEntity(entity);
         return sqlSessionTemplate.update(daoBuilder.updateByQueryId(entityClass, queryClass), query);
     }
@@ -63,6 +81,9 @@ public abstract class AbstractBaseDao<E extends RootEntity, Q extends RootQuery>
 
     @Override
     public int count(Q query) {
+        if (null == query) {
+            return 0;
+        }
         return sqlSessionTemplate.selectOne(daoBuilder.countId(queryClass), query);
     }
 
@@ -96,6 +117,9 @@ public abstract class AbstractBaseDao<E extends RootEntity, Q extends RootQuery>
 
     @Override
     public List<E> list(Q query, String... returnFields) {
+        if (null == query) {
+            return Collections.EMPTY_LIST;
+        }
         if (CollectionUtil.INSTANCE.isEmpty(returnFields)) {
             query.setReturnFields(new String[]{"*"});
         } else {
