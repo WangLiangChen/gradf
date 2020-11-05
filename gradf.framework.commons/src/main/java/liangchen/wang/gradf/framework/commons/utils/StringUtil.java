@@ -1,5 +1,7 @@
 package liangchen.wang.gradf.framework.commons.utils;
 
+import liangchen.wang.gradf.framework.commons.enumeration.Symbol;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -90,7 +92,11 @@ public enum StringUtil {
         }
         return source.replaceAll("\\s", "");
     }
+
     public String extractNumbers(String string) {
+        if (null == string) {
+            return Symbol.BLANK.getSymbol();
+        }
         Matcher matcher = nonNumberPattern.matcher(string);
         return matcher.replaceAll("");
     }
