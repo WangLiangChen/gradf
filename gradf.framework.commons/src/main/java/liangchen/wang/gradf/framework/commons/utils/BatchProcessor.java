@@ -47,7 +47,7 @@ public class BatchProcessor<E> {
         }
     }
 
-    public void onDrain(Consumer<List<E>> consumer) {
+    public void onDrain() {
         try {
             while (true) {
                 buffer = new ArrayList<>(batchSize);
