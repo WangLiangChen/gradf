@@ -20,12 +20,12 @@ import java.util.concurrent.TimeUnit;
 public enum FtpUtil {
     //
     INSTANCE;
-    private ExecutorService executorService;
+    private final ExecutorService executorService;
 
     FtpUtil() {
         // 核心线程数0,最大线程数Integer.MAX_VALUE,空闲线程超时时间60 SECONDS , 线程等待队列SynchronousQueue(容量为0的队列)
         executorService = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60, TimeUnit.SECONDS,
-                new SynchronousQueue<>(), Util.threadFactory("Ftp Client", false));
+                new SynchronousQueue<>(), Util.threadFactory("FtpClientThread", false));
     }
 
     public void download(String url, NetResponse netResponse) {
@@ -35,7 +35,7 @@ public enum FtpUtil {
     }
 
     public void download(URIResolver uriResolver, NetResponse netResponse) {
-        executorService.submit(() -> {
+        executorService.execute(() -> {
             FTPClient ftpClient = new FTPClient();
             ftpClient.setConnectTimeout(60000);
             try {

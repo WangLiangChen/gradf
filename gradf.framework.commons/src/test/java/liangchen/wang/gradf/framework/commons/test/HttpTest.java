@@ -31,7 +31,7 @@ public class HttpTest {
         urlList.add("http://data.ris.ripe.net/rrc00/2020.10/updates.20201021.0400.gz");
 
         urlList.forEach(e -> {
-            HttpUtil.INSTANCE.download(e, new NetResponse() {
+            HttpUtil.INSTANCE.download(e, new NetResponse<InputStream>() {
                 @Override
                 public void onResponse(InputStream inputStream)  {
                     try {
