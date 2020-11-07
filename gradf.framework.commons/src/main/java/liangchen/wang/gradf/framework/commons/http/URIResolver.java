@@ -4,7 +4,7 @@ import java.net.URI;
 
 public class URIResolver {
     private String host;
-    private int port;
+    private int port = 21;
     private String username = "anonymous";
     private String password = "";
     private String path;

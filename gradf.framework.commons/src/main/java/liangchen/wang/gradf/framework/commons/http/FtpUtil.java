@@ -55,6 +55,7 @@ public enum FtpUtil {
             try {
                 //谁用谁关闭
                 inputStream = ftpClient.retrieveFileStream(uriResolver.getFileName());
+                netResponse.onResponse(inputStream);
             } catch (IOException e) {
                 netResponse.onFailure(e);
             } finally {
@@ -67,10 +68,6 @@ public enum FtpUtil {
                     netResponse.onFailure(e);
                     return;
                 }
-            }
-            // 提出来是为了不处理回调中的异常
-            if (null != inputStream) {
-                netResponse.onResponse(inputStream);
             }
         });
     }
