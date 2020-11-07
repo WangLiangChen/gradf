@@ -21,7 +21,7 @@ public enum DateTimeUtil {
     public static final String HH_MM_SS_SSS = "HH:mm:ss.SSS";
     public static final String YYYYMMDDHHMMSS = "yyyyMMddHHmmss";
     public static final String YYMMDDHHMMSS = "yyMMddHHmmss";
-    public static final String YYMMDDHH = "yyMMddHHm";
+    public static final String YYMMDDHH = "yyMMddHH";
     public static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(YYYY_MM_DD);
     public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(YYYY_MM_DD_HH_MM_SS);
     public static final DateTimeFormatter dateTimeMsFormatter = DateTimeFormatter.ofPattern(YYYY_MM_DD_HH_MM_SS_SSS);

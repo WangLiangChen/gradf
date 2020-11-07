@@ -2,6 +2,7 @@ package liangchen.wang.gradf.framework.commons.http;
 
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
+import liangchen.wang.gradf.framework.commons.utils.ThreadPoolUtil;
 import okhttp3.internal.Util;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
@@ -20,13 +21,6 @@ import java.util.concurrent.TimeUnit;
 public enum FtpUtil {
     //
     INSTANCE;
-    private final ExecutorService executorService;
-
-    FtpUtil() {
-        // 核心线程数0,最大线程数Integer.MAX_VALUE,空闲线程超时时间60 SECONDS , 线程等待队列SynchronousQueue(容量为0的队列)
-        executorService = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60, TimeUnit.SECONDS,
-                new SynchronousQueue<>(), Util.threadFactory("FtpClientThread", false));
-    }
 
     public void download(String url, NetResponse netResponse) {
         URIResolver uriResolver = new URIResolver();
@@ -35,7 +29,7 @@ public enum FtpUtil {
     }
 
     public void download(URIResolver uriResolver, NetResponse netResponse) {
-        executorService.execute(() -> {
+        ThreadPoolUtil.INSTANCE.getExecutorService().execute(() -> {
             FTPClient ftpClient = new FTPClient();
             ftpClient.setConnectTimeout(60000);
             try {
