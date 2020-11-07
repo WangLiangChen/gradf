@@ -1,5 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   liangchen.wang.gradf.framework.springboot.configuration.RootConfiguration,\
-  liangchen.wang.gradf.framework.springboot.configuration.ThreadPoolAutoConfiguration
+  liangchen.wang.gradf.framework.springboot.configuration.AsyncAutoConfiguration
 org.springframework.context.ApplicationContextInitializer=liangchen.wang.gradf.framework.springboot.initializer.DefaultApplicationContextInitializer
 org.springframework.boot.env.EnvironmentPostProcessor=liangchen.wang.gradf.framework.springboot.initializer.DefaultApplicationContextInitializer

@@ -21,8 +21,8 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 @EnableAsync
 @EnableScheduling
-public class ThreadPoolAutoConfiguration implements AsyncConfigurer {
-    private static final Logger logger = LoggerFactory.getLogger(ThreadPoolAutoConfiguration.class);
+public class AsyncAutoConfiguration implements AsyncConfigurer {
+    private static final Logger logger = LoggerFactory.getLogger(AsyncAutoConfiguration.class);
 
     @Primary
     @Bean
@@ -56,15 +56,5 @@ public class ThreadPoolAutoConfiguration implements AsyncConfigurer {
     @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
         return (ex, method, params) -> logger.error("异步线程执行异常", ex);
-    }
-
-    @Bean
-    public TaskScheduler taskScheduler() {
-        ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-        int processors = Runtime.getRuntime().availableProcessors();
-        scheduler.setPoolSize(processors * 2);
-        scheduler.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-        scheduler.setThreadNamePrefix("scheduler-");
-        return scheduler;
     }
 }
