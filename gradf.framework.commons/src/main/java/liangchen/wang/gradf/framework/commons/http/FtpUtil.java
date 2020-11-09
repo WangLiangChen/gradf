@@ -98,7 +98,7 @@ public enum FtpUtil {
             FTPFile[] ftpFiles = ftpClient.listFiles();
             return ftpFiles;
         } catch (IOException e) {
-            return new FTPFile[0];
+            throw new ErrorException(e);
         } finally {
             try {
                 ftpClient.logout();
