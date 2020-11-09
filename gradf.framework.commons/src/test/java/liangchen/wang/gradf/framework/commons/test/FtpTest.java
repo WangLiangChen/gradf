@@ -1,8 +1,7 @@
 package liangchen.wang.gradf.framework.commons.test;
 
-import liangchen.wang.gradf.framework.commons.utils.CompressUtil;
-import liangchen.wang.gradf.framework.commons.utils.ConcurrentUtil;
 import liangchen.wang.gradf.framework.commons.http.FtpUtil;
+import liangchen.wang.gradf.framework.commons.utils.ConcurrentUtil;
 import org.apache.commons.net.ftp.FTPFile;
 import org.junit.jupiter.api.Test;
 
