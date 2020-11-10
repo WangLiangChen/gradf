@@ -111,8 +111,16 @@ public class DefaultApplicationContextInitializer implements ApplicationContextI
                 return false;
             });
         }
-        scanner.scan(DEFAULT_PACKAGES);
-        Printer.INSTANCE.prettyPrint("Spring Scan Packages is :{}", DEFAULT_PACKAGES);
+        Configuration config = ConfigurationUtil.INSTANCE.getConfiguration("autoscan.properties");
+        String scanPackages = config.getString("spring");
+        if (StringUtil.INSTANCE.isBlank(scanPackages)) {
+            Printer.INSTANCE.prettyPrint("Spring Scan Packages Configuration is Blank");
+            scanPackages = DEFAULT_PACKAGES;
+        } else {
+            scanPackages = String.format("%s,%s", DEFAULT_PACKAGES, scanPackages);
+        }
+        scanner.scan(scanPackages.split(","));
+        Printer.INSTANCE.prettyPrint("Spring Scan Packages is :{}", scanPackages);
     }
 
     private String resolveConfigPath(Environment environment) {
