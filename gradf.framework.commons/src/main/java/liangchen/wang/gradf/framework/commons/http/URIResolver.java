@@ -79,4 +79,14 @@ public class URIResolver {
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
+
+    @Override
+    public String toString() {
+        return "URIResolver{" +
+                "host='" + host + '\'' +
+                ", port=" + port +
+                ", path='" + path + '\'' +
+                ", fileName='" + fileName + '\'' +
+                '}';
+    }
 }
