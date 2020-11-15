@@ -17,13 +17,13 @@ public enum FtpUtil {
     //
     INSTANCE;
 
-    public void download(String url, NetResponse netResponse) {
+    public void download(String url, NetResponse<InputStream> netResponse) {
         URIResolver uriResolver = new URIResolver();
         uriResolver.resolve(url);
         download(uriResolver, netResponse);
     }
 
-    public void download(URIResolver uriResolver, NetResponse netResponse) {
+    public void download(URIResolver uriResolver, NetResponse<InputStream> netResponse) {
         ThreadPoolUtil.INSTANCE.getExecutorService().execute(() -> {
             FTPClient ftpClient = new FTPClient();
             ftpClient.setConnectTimeout(60000);

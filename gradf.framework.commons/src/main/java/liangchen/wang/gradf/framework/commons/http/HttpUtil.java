@@ -25,8 +25,8 @@ public enum HttpUtil {
         httpClient.dispatcher().setMaxRequestsPerHost(10);
     }
 
-    public void download(String url, NetResponse netResponse) {
-        Request request = requestBuilder.get().url(url).addHeader("Connection","close").build();
+    public void download(String url, NetResponse<InputStream> netResponse) {
+        Request request = requestBuilder.get().url(url).addHeader("Connection", "close").build();
         Call call = httpClient.newCall(request);
         call.enqueue(new Callback() {
             @Override

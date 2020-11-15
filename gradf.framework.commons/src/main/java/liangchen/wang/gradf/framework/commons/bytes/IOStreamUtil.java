@@ -27,6 +27,7 @@ public enum IOStreamUtil {
 
     public <T> void slice(Stream<T> stream, int sliceSize, Consumer<List<T>> consumer) {
         AtomicInteger atomicIndex = new AtomicInteger();
+        @SuppressWarnings("unchecked")
         ArrayList<T>[] container = new ArrayList[1];
         stream.forEach(e -> {
             int index = atomicIndex.getAndIncrement();

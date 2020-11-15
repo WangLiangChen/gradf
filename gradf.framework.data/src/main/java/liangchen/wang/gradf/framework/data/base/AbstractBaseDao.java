@@ -118,7 +118,7 @@ public abstract class AbstractBaseDao<E extends RootEntity, Q extends RootQuery>
     @Override
     public List<E> list(Q query, String... returnFields) {
         if (null == query) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         if (CollectionUtil.INSTANCE.isEmpty(returnFields)) {
             query.setReturnFields(new String[]{"*"});
