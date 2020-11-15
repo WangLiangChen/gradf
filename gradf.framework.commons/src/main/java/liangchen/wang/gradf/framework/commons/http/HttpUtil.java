@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 public enum HttpUtil {
     //
     INSTANCE;
-    private final OkHttpClient httpClient = new OkHttpClient().newBuilder()
+    private final OkHttpClient httpClient = new OkHttpClient().newBuilder().retryOnConnectionFailure(true)
             .connectTimeout(2, TimeUnit.MINUTES).readTimeout(10, TimeUnit.MINUTES).writeTimeout(10, TimeUnit.MINUTES).build();
     private final Request.Builder requestBuilder = new Request.Builder();
 
@@ -26,7 +26,7 @@ public enum HttpUtil {
     }
 
     public void download(String url, NetResponse netResponse) {
-        Request request = requestBuilder.get().url(url).build();
+        Request request = requestBuilder.get().url(url).addHeader("Connection","close").build();
         Call call = httpClient.newCall(request);
         call.enqueue(new Callback() {
             @Override
