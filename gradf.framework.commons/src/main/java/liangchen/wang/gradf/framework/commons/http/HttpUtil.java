@@ -1,9 +1,6 @@
 package liangchen.wang.gradf.framework.commons.http;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
+import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -41,5 +38,21 @@ public enum HttpUtil {
                 netResponse.onResponse(inputStream);
             }
         });
+    }
+
+    public long contendLength(String url) {
+        Request request = requestBuilder.get().url(url).build();
+        Response response = null;
+        try {
+            response = httpClient.newCall(request).execute();
+        } catch (IOException e) {
+
+        }
+        if (response != null && response.isSuccessful()) {
+            long contentLength = response.body().contentLength();
+            response.body().close();
+            return contentLength;
+        }
+        return 0;
     }
 }
