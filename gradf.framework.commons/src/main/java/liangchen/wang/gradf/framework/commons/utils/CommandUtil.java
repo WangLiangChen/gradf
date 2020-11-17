@@ -3,9 +3,8 @@ package liangchen.wang.gradf.framework.commons.utils;
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import org.apache.commons.exec.*;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
@@ -14,57 +13,47 @@ import java.util.function.Consumer;
 public enum CommandUtil {
     //
     INSTANCE;
-    private final int DEFAULT_BUFFER_SIZE = 8192;
 
     public void execute(String command, String... args) {
-        CommandLine cmdLine = findCommanLine(command, args);
-        DefaultExecutor executor = new DefaultExecutor();
-        executor.setExitValue(1);
-        executor.setStreamHandler(new PumpStreamHandler(null, null, null));
-        /*ExecuteWatchdog watchdog = new ExecuteWatchdog(60 * 1000);
-        executor.setWatchdog(watchdog);*/
-        DefaultExecuteResultHandler handler = new DefaultExecuteResultHandler();
-        try {
-            executor.execute(cmdLine, handler);
-            //命令执行返回前一直阻塞
-            handler.waitFor();
-        } catch (Exception e) {
-            throw new ErrorException(e);
-        }
+        execute(null, 0, null, command, args);
     }
 
-    public void execute(Consumer<String> consumer, String command, String... args) {
+    public void execute(long timeout, TimeUnit timeUnit, String command, String... args) {
+        execute(null, timeout, timeUnit, command, args);
+    }
+
+    public void executeWithConsumer(Consumer<String> consumer, String command, String... args) {
+        executeWithConsumer(consumer, 0, null, command, args);
+    }
+
+    public void executeWithConsumer(Consumer<String> consumer, long timeout, TimeUnit timeUnit, String command, String... args) {
         PumpStreamHandler streamHandler = new PumpStreamHandler(new LogOutputStream() {
             @Override
             protected void processLine(String line, int i) {
                 consumer.accept(line);
             }
         });
-        executeWithStreamHandler(streamHandler,command,args);
+        execute(streamHandler, timeout, timeUnit, command, args);
     }
 
-    public void executeWithStreamHandler(ExecuteStreamHandler streamHandler, String command, String... args) {
+    private void execute(ExecuteStreamHandler streamHandler, long timeout, TimeUnit timeUnit, String command, String... args) {
         CommandLine cmdLine = findCommanLine(command, args);
         DefaultExecutor executor = new DefaultExecutor();
         executor.setExitValues(null);
-        executor.setStreamHandler(streamHandler);
-        try {
-            executor.execute(cmdLine);
-        } catch (IOException e) {
-            throw new ErrorException(e);
+        if (null == streamHandler) {
+            executor.setStreamHandler(new PumpStreamHandler(null, null, null));
+        } else {
+            executor.setStreamHandler(streamHandler);
         }
-    }
-
-
-    public String executeWithResult(String command, String... args) {
-        CommandLine cmdLine = findCommanLine(command, args);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
-        executeWithStreamHandler(streamHandler, command, args);
+        if (timeout > 0 && null != timeUnit) {
+            ExecuteWatchdog watchdog = new ExecuteWatchdog(timeUnit.toMillis(timeout));
+            executor.setWatchdog(watchdog);
+        }
+        ResultHandler resultHandler = new ResultHandler();
         try {
-            String out = outputStream.toString("gbk");
-            return out;
-        } catch (UnsupportedEncodingException e) {
+            executor.execute(cmdLine, resultHandler);
+            resultHandler.waitFor();
+        } catch (Exception e) {
             throw new ErrorException(e);
         }
     }
@@ -75,4 +64,9 @@ public enum CommandUtil {
         cmdLine.addArguments(args);
         return cmdLine;
     }
+
+    class ResultHandler extends DefaultExecuteResultHandler {
+
+    }
+
 }
