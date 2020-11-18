@@ -4,10 +4,8 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -16,7 +14,6 @@ import java.util.Optional;
 /**
  * @author LiangChen.Wang 2020/9/16
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest
 public class CrawlerTest {
 
