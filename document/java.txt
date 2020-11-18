@@ -13,3 +13,4 @@ try(Stream<String> stream = Files.lines(Paths.get(file))){
 }
 三、字符串分隔
 使用guava的Splitter或者用charAt遍历字符串
+四、spring 泛型处理类 ResolvableType

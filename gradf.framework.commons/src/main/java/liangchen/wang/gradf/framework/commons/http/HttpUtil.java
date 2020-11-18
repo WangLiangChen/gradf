@@ -1,10 +1,13 @@
 package liangchen.wang.gradf.framework.commons.http;
 
+import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -23,7 +26,8 @@ public enum HttpUtil {
     }
 
     public void download(String url, NetResponse<InputStream> netResponse) {
-        Request request = requestBuilder.get().url(url).addHeader("Connection", "close").build();
+        Request request = requestBuilder.get().url(url).addHeader("Connection", "close")
+                .removeHeader("User-Agent").addHeader("User-Agent", UserAgent.byOsRandom(UserAgent.Os.Windows, UserAgent.Os.Linux, UserAgent.Os.Mac)).build();
         Call call = httpClient.newCall(request);
         call.enqueue(new Callback() {
             @Override
@@ -40,19 +44,14 @@ public enum HttpUtil {
         });
     }
 
-    public long contendLength(String url) {
-        Request request = requestBuilder.get().url(url).build();
-        Response response = null;
+    public long contentLength(String url) {
+        Request request = requestBuilder.head().url(url).build();
         try {
-            response = httpClient.newCall(request).execute();
+            Response response = httpClient.newCall(request).execute();
+            return response.headers().byteCount();
         } catch (IOException e) {
-
+            throw new ErrorException(e);
         }
-        if (response != null && response.isSuccessful()) {
-            long contentLength = response.body().contentLength();
-            response.body().close();
-            return contentLength;
-        }
-        return 0;
     }
+
 }
