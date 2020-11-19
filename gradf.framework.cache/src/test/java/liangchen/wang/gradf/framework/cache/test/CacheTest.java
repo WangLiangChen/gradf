@@ -4,10 +4,8 @@ import liangchen.wang.gradf.framework.cache.annotation.EnableGradfCaching;
 import liangchen.wang.gradf.framework.cache.primary.GradfCache;
 import liangchen.wang.gradf.framework.cache.primary.GradfCacheManager;
 import liangchen.wang.gradf.framework.commons.utils.ConcurrentUtil;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.inject.Inject;
 import java.util.concurrent.Executor;
@@ -16,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author LiangChen.Wang 2020/9/16
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @EnableGradfCaching
 public class CacheTest {

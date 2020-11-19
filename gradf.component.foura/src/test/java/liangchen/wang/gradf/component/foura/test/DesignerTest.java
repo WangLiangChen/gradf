@@ -3,17 +3,14 @@ package liangchen.wang.gradf.component.foura.test;
 import liangchen.wang.gradf.framework.data.annotation.EnableJdbc;
 import liangchen.wang.gradf.framework.data.domain.DesignerParameterDomain;
 import liangchen.wang.gradf.framework.data.manager.IDesignerManager;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.inject.Inject;
 
 /**
  * @author LiangChen.Wang 2019/11/12 14:41
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @EnableJdbc
 public class DesignerTest {

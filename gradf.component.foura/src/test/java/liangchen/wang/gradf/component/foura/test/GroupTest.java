@@ -5,10 +5,8 @@ import liangchen.wang.gradf.component.foura.manager.domain.parameter.GroupParame
 import liangchen.wang.gradf.framework.commons.utils.ConcurrentUtil;
 import liangchen.wang.gradf.framework.data.annotation.EnableJdbc;
 import liangchen.wang.gradf.framework.data.enumeration.DataMode;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.inject.Inject;
 import java.util.concurrent.Executor;
@@ -17,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author LiangChen.Wang 2020/9/16
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @EnableJdbc
 public class GroupTest {
