@@ -7,6 +7,7 @@ import liangchen.wang.gradf.framework.commons.utils.Printer;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import liangchen.wang.gradf.framework.data.base.IAbstractDao;
 import liangchen.wang.gradf.framework.data.mybatis.interceptor.PaginationInterceptor;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.LocalCacheScope;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -112,8 +113,9 @@ public class JdbcAutoConfiguration {
         MapperScannerConfigurer mapperScannerConfigurer = new MapperScannerConfigurer();
         //mapperScannerConfigurer.setSqlSessionFactoryBeanName("sqlSessionFactory");
         mapperScannerConfigurer.setSqlSessionTemplateBeanName("sqlSessionTemplate");
-        //指定扫描的类型
-        mapperScannerConfigurer.setMarkerInterface(IAbstractDao.class);
+        // 指定扫描的类型,只扫描有注解的接口
+        // mapperScannerConfigurer.setMarkerInterface(IAbstractDao.class);
+        mapperScannerConfigurer.setAnnotationClass(Mapper.class);
 
         org.apache.commons.configuration2.Configuration config = ConfigurationUtil.INSTANCE.getConfiguration("autoscan.properties");
         String scanPackages = config.getString("mybatis");
