@@ -76,7 +76,7 @@ public class JdbcAutoConfiguration {
         ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
         Resource[] mapperLocations = new Resource[0];
         try {
-            mapperLocations = resourcePatternResolver.getResources("classpath*:**/*.mapper.xml");
+            mapperLocations = resourcePatternResolver.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX.concat("/**/*.mapper.xml"));
         } catch (IOException e) {
             throw new ErrorException(e);
         }
