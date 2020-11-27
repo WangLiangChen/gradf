@@ -20,6 +20,7 @@ public enum DateTimeUtil {
     public static final String HH_MM_SS = "HH:mm:ss";
     public static final String HH_MM_SS_SSS = "HH:mm:ss.SSS";
     public static final String YYYYMMDDHHMMSS = "yyyyMMddHHmmss";
+    public static final String YYYYMMDDHHMM = "yyyyMMddHHmm";
     public static final String YYMMDDHHMMSS = "yyMMddHHmmss";
     public static final String YYMMDDHH = "yyMMddHH";
     public static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(YYYY_MM_DD);
