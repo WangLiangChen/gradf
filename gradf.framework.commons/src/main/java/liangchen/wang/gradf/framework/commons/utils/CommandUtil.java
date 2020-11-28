@@ -23,7 +23,7 @@ public enum CommandUtil {
     }
 
     public void executeWithConsumer(Consumer<String> consumer, String command, String... args) {
-        executeWithConsumer(consumer, 0, null, command, args);
+        executeWithConsumer(consumer, null, command, args);
     }
 
     public void executeWithConsumer(Consumer<String> consumer, long timeout, TimeUnit timeUnit, String command, String... args) {
@@ -36,7 +36,27 @@ public enum CommandUtil {
         execute(streamHandler, timeout, timeUnit, command, args);
     }
 
+    public void executeWithConsumer(Consumer<String> consumer, ExecuteWatchdog watchdog, String command, String... args) {
+        PumpStreamHandler streamHandler = new PumpStreamHandler(new LogOutputStream() {
+            @Override
+            protected void processLine(String line, int i) {
+                consumer.accept(line);
+            }
+        });
+        execute(streamHandler, watchdog, command, args);
+    }
+
     private void execute(ExecuteStreamHandler streamHandler, long timeout, TimeUnit timeUnit, String command, String... args) {
+        ExecuteWatchdog watchdog;
+        if (timeout > 0 && null != timeUnit) {
+            watchdog = new ExecuteWatchdog(timeUnit.toMillis(timeout));
+        } else {
+            watchdog = new ExecuteWatchdog(0);
+        }
+        execute(streamHandler, watchdog, command, args);
+    }
+
+    private void execute(ExecuteStreamHandler streamHandler, ExecuteWatchdog watchdog, String command, String... args) {
         CommandLine cmdLine = findCommanLine(command, args);
         DefaultExecutor executor = new DefaultExecutor();
         executor.setExitValues(null);
@@ -45,8 +65,7 @@ public enum CommandUtil {
         } else {
             executor.setStreamHandler(streamHandler);
         }
-        if (timeout > 0 && null != timeUnit) {
-            ExecuteWatchdog watchdog = new ExecuteWatchdog(timeUnit.toMillis(timeout));
+        if (null != watchdog) {
             executor.setWatchdog(watchdog);
         }
         ResultHandler resultHandler = new ResultHandler();
