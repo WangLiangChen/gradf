@@ -15,7 +15,7 @@ public enum CommandUtil {
     INSTANCE;
 
     public void execute(String command, String... args) {
-        execute(null, 0, null, command, args);
+        execute(null, null, command, args);
     }
 
     public void execute(long timeout, TimeUnit timeUnit, String command, String... args) {
