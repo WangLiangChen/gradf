@@ -39,9 +39,9 @@ import java.util.stream.Collectors;
  * @author LiangChen.Wang
  */
 @DataConditionAnnotation
-@Repository("Gradf_Data_DaoBuilder")
-public class DaoBuilder {
-    protected final Logger logger = LoggerFactory.getLogger(DaoBuilder.class);
+@Repository("Gradf_Data_MysqlDaoBuilder")
+public class MysqlDaoBuilder {
+    protected final Logger logger = LoggerFactory.getLogger(MysqlDaoBuilder.class);
     private final static Map<String, Storer> storerMap = new ConcurrentHashMap<>(100);
     @Resource(name = "jdbcTemplate")
     private JdbcTemplate jdbcTemplate;

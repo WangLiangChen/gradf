@@ -4,6 +4,9 @@ package liangchen.wang.gradf.framework.data.base;
 import liangchen.wang.gradf.framework.commons.exception.InfoException;
 import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
+import liangchen.wang.gradf.framework.data.datasource.DynamicDataSource;
+import liangchen.wang.gradf.framework.data.datasource.DynamicDataSourceContext;
+import liangchen.wang.gradf.framework.data.datasource.dialect.AbstractDialect;
 import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
 
 import javax.inject.Inject;
@@ -21,8 +24,8 @@ public abstract class AbstractBaseDao<E extends RootEntity, Q extends RootQuery>
     private final Class<E> entityClass;
     private final Class<Q> queryClass;
     @Inject
-    @Named("Gradf_Data_DaoBuilder")
-    private DaoBuilder daoBuilder;
+    @Named("Gradf_Data_MysqlDaoBuilder")
+    private MysqlDaoBuilder mysqlDaoBuilder;
 
     @SuppressWarnings({"unchecked"})
     public AbstractBaseDao() {
@@ -39,7 +42,7 @@ public abstract class AbstractBaseDao<E extends RootEntity, Q extends RootQuery>
         if (null == entity) {
             return false;
         }
-        int rows = sqlSessionTemplate.insert(daoBuilder.insertId(entityClass), entity);
+        int rows = sqlSessionTemplate.insert(mysqlDaoBuilder.insertId(entityClass), entity);
         if (rows == 1) {
             return true;
         }
@@ -51,7 +54,7 @@ public abstract class AbstractBaseDao<E extends RootEntity, Q extends RootQuery>
         if (null == entities || entities.size() == 0) {
             return 0;
         }
-        int rows = sqlSessionTemplate.insert(daoBuilder.insertBatchId(entityClass), entities);
+        int rows = sqlSessionTemplate.insert(mysqlDaoBuilder.insertBatchId(entityClass), entities);
         return rows;
     }
 
@@ -61,7 +64,7 @@ public abstract class AbstractBaseDao<E extends RootEntity, Q extends RootQuery>
         if (null == query) {
             return 0;
         }
-        return sqlSessionTemplate.delete(daoBuilder.deleteByQueryId(queryClass), query);
+        return sqlSessionTemplate.delete(mysqlDaoBuilder.deleteByQueryId(queryClass), query);
     }
 
     @Override
@@ -70,7 +73,7 @@ public abstract class AbstractBaseDao<E extends RootEntity, Q extends RootQuery>
             return 0;
         }
         query.setEntity(entity);
-        return sqlSessionTemplate.update(daoBuilder.updateByQueryId(entityClass, queryClass), query);
+        return sqlSessionTemplate.update(mysqlDaoBuilder.updateByQueryId(entityClass, queryClass), query);
     }
 
     @Override
@@ -84,7 +87,7 @@ public abstract class AbstractBaseDao<E extends RootEntity, Q extends RootQuery>
         if (null == query) {
             return 0;
         }
-        return sqlSessionTemplate.selectOne(daoBuilder.countId(queryClass), query);
+        return sqlSessionTemplate.selectOne(mysqlDaoBuilder.countId(queryClass), query);
     }
 
     @Override
@@ -125,7 +128,7 @@ public abstract class AbstractBaseDao<E extends RootEntity, Q extends RootQuery>
         } else {
             query.setReturnFields(returnFields);
         }
-        List<E> list = sqlSessionTemplate.selectList(daoBuilder.listId(queryClass, entityClass), query);
+        List<E> list = sqlSessionTemplate.selectList(mysqlDaoBuilder.listId(queryClass, entityClass), query);
         // 清除query的returnFields字段，以免影响缓存Key
         query.setReturnFields(null);
         return list;
@@ -147,4 +150,11 @@ public abstract class AbstractBaseDao<E extends RootEntity, Q extends RootQuery>
         return paginationResult;
     }
 
+    public Class<E> getEntityClass() {
+        return entityClass;
+    }
+
+    public Class<Q> getQueryClass() {
+        return queryClass;
+    }
 }

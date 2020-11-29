@@ -7,6 +7,7 @@ import liangchen.wang.gradf.framework.cache.annotation.GradfAutoCacheable;
 import liangchen.wang.gradf.framework.data.base.AbstractBaseDao;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
