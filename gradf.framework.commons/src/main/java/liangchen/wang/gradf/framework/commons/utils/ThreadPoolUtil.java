@@ -24,13 +24,12 @@ public enum ThreadPoolUtil {
     public ThreadFactory getThreadFactory(String threadName, boolean daemon) {
         ThreadFactory threadFactory = new ThreadFactory() {
             private AtomicInteger counter = new AtomicInteger();
-            private boolean daemon;
 
             @Override
             public Thread newThread(Runnable runnable) {
                 Thread thread = new Thread(runnable);
                 thread.setDaemon(daemon);
-                thread.setName(String.format("%s,%d", threadName, counter.incrementAndGet()));
+                thread.setName(String.format("%s%d", threadName, counter.incrementAndGet()));
                 return thread;
             }
         };
