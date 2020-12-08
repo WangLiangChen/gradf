@@ -73,7 +73,7 @@ public class BatchProcessor<E> {
             while (true) {
                 buffer = new ArrayList<>(batchSize);
                 try {
-                    Queues.drain(blockingQueue, buffer, batchSize, 5, TimeUnit.SECONDS);
+                    Queues.drain(blockingQueue, buffer, batchSize, 2, TimeUnit.SECONDS);
                 } catch (InterruptedException e) {
                     throw new ErrorException(e);
                 }

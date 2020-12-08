@@ -37,11 +37,11 @@ public enum CommandUtil {
     public Stream<String> stream(ExecuteWatchdog watchdog, String command, String... args) {
         BlockingQueue<String> queue = new LinkedBlockingQueue<>();
         ThreadPoolUtil.INSTANCE.getExecutorService().execute(() -> {
-            execute(e -> {
-                queue.offer(e);
+            execute(line -> {
+                queue.offer(line);
             }, watchdog, command, args);
         });
-        return new QueueSpliterator<>(queue, 5, TimeUnit.SECONDS).stream(true);
+        return new QueueSpliterator<>(queue, 2, TimeUnit.SECONDS).stream(true);
     }
 
     public void execute(Consumer<String> consumer, String command, String... args) {
