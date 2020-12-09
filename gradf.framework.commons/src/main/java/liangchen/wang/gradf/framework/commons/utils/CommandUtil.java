@@ -23,23 +23,32 @@ public enum CommandUtil {
     INSTANCE;
 
     public Stream<String> stream(String command, String... args) {
-        return stream(null, command, args);
+        return stream(null, null, command, args);
+    }
+
+    public Stream<String> stream(Runnable commandCompletedRunnable, String command, String... args) {
+        return stream(commandCompletedRunnable, null, command, args);
     }
 
     public Stream<String> stream(long timeout, TimeUnit timeUnit, String command, String... args) {
+        return stream(null, timeout, timeUnit, command, args);
+    }
+
+    public Stream<String> stream(Runnable commandCompletedRunnable, long timeout, TimeUnit timeUnit, String command, String... args) {
         ExecuteWatchdog watchdog = null;
         if (timeout > 0 && null != timeUnit) {
             watchdog = new ExecuteWatchdog(timeUnit.toMillis(timeout));
         }
-        return stream(watchdog, command, args);
+        return stream(commandCompletedRunnable, watchdog, command, args);
     }
 
-    public Stream<String> stream(ExecuteWatchdog watchdog, String command, String... args) {
+    public Stream<String> stream(Runnable commandCompletedRunnable, ExecuteWatchdog watchdog, String command, String... args) {
         BlockingQueue<String> queue = new LinkedBlockingQueue<>();
         ThreadPoolUtil.INSTANCE.getExecutorService().execute(() -> {
-            execute(line -> {
-                queue.offer(line);
-            }, watchdog, command, args);
+            execute(line -> queue.offer(line), watchdog, command, args);
+            if (null != commandCompletedRunnable) {
+                commandCompletedRunnable.run();
+            }
         });
         return new QueueSpliterator<>(queue, 2, TimeUnit.SECONDS).stream(true);
     }
