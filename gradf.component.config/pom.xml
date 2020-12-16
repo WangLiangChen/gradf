@@ -11,5 +11,11 @@
 
     <artifactId>gradf.component.config</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>liangchen.wang</groupId>
+            <artifactId>gradf.framework.cache</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

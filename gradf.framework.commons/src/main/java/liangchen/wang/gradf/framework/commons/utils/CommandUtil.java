@@ -1,19 +1,14 @@
 package liangchen.wang.gradf.framework.commons.utils;
 
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
-import liangchen.wang.gradf.framework.commons.queue.QueueSpliterator;
+import liangchen.wang.gradf.framework.commons.stream.QueueSpliterator;
 import org.apache.commons.exec.*;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
  * @author LiangChen.Wang 2020/10/20

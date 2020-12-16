@@ -1,6 +1,4 @@
-package liangchen.wang.gradf.framework.commons.queue;
-
-import liangchen.wang.gradf.framework.commons.exception.ErrorException;
+package liangchen.wang.gradf.framework.commons.stream;
 
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -10,6 +8,10 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+/**
+ * @param <T>
+ * @author LiangChen.Wang
+ */
 public class QueueSpliterator<T> extends Spliterators.AbstractSpliterator<T> {
     private final BlockingQueue<T> queue;
     private final long timeout;
@@ -33,6 +35,7 @@ public class QueueSpliterator<T> extends Spliterators.AbstractSpliterator<T> {
             return true;
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
+            return false;
         }
     }
 

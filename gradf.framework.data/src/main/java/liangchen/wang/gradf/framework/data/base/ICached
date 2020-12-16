@@ -1,3 +1,0 @@
-public interfact ICached {
-    Serializable cachedKey();
-}

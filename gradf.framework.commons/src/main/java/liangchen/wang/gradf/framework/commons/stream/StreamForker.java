@@ -1,3 +1,16 @@
+package liangchen.wang.gradf.framework.commons.stream;
+
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+/**
+ * @author LiangChen.Wang
+ */
 public class StreamForker<T> {
     private final Stream<T> stream;
     //记录对流的操作列表
@@ -37,7 +50,8 @@ public class StreamForker<T> {
                 });
         return new ForkerConsumer<>(queues, futureMap);
     }
-	//异步获取子流的结果
+
+    //异步获取子流的结果
     private Future<?> getResult0(List<BlockingQueue<T>> queues, Function<Stream<T>, ?> function) {
         BlockingQueue<T> queue = new LinkedBlockingQueue<>();
         queues.add(queue);
@@ -102,12 +116,14 @@ public class StreamForker<T> {
             this.results = results;
         }
 
+        @SuppressWarnings("unchecked")
         void finish() {
-            //放入结束标识
+            /* 放入结束标识 */
             accept((T) END_OF_STREAM);
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public <R> R get(Object key) {
             try {
                 return ((Future<R>) results.get(key)).get();

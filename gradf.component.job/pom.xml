@@ -10,6 +10,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>gradf.component.job</artifactId>
-
+    <dependencies>
+        <dependency>
+            <groupId>liangchen.wang</groupId>
+            <artifactId>gradf.framework.cache</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>
