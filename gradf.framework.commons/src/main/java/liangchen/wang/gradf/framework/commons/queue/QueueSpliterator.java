@@ -32,7 +32,7 @@ public class QueueSpliterator<T> extends Spliterators.AbstractSpliterator<T> {
             action.accept(next);
             return true;
         } catch (final InterruptedException e) {
-            throw new ErrorException(e);
+            Thread.currentThread().interrupt();
         }
     }
 
