@@ -89,6 +89,7 @@ public enum CommandUtil {
     public void execute(ExecuteStreamHandler streamHandler, ExecuteWatchdog watchdog, String command, String... args) {
         CommandLine cmdLine = findCommanLine(command, args);
         DefaultExecutor executor = new DefaultExecutor();
+        executor.setProcessDestroyer(new ShutdownHookProcessDestroyer());
         executor.setExitValues(null);
         if (null == streamHandler) {
             executor.setStreamHandler(new PumpStreamHandler(null, null, null));
