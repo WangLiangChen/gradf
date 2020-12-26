@@ -48,46 +48,46 @@ public enum CommandUtil {
         return new QueueSpliterator<>(queue, 2, TimeUnit.SECONDS).stream(true);
     }
 
-    public void execute(Consumer<String> consumer, String command, String... args) {
-        execute(consumer, null, command, args);
+    public int execute(Consumer<String> consumer, String command, String... args) {
+        return execute(consumer, null, command, args);
     }
 
-    public void execute(Consumer<String> consumer, ExecuteWatchdog watchdog, String command, String... args) {
+    public int execute(Consumer<String> consumer, ExecuteWatchdog watchdog, String command, String... args) {
         PumpStreamHandler streamHandler = new PumpStreamHandler(new LogOutputStream() {
             @Override
             protected void processLine(String line, int i) {
                 consumer.accept(line);
             }
         });
-        execute(streamHandler, watchdog, command, args);
+        return execute(streamHandler, watchdog, command, args);
     }
 
-    public void execute(String command, String... args) {
-        execute(new PumpStreamHandler(null, null, null), null, command, args);
+    public int execute(String command, String... args) {
+        return execute(new PumpStreamHandler(null, null, null), null, command, args);
     }
 
-    public void execute(long timeout, TimeUnit timeUnit, String command, String... args) {
-        execute(null, timeout, timeUnit, command, args);
+    public int execute(long timeout, TimeUnit timeUnit, String command, String... args) {
+        return execute(null, timeout, timeUnit, command, args);
     }
 
-    public void execute(ExecuteStreamHandler streamHandler, long timeout, TimeUnit timeUnit, String command, String... args) {
+    public int execute(ExecuteStreamHandler streamHandler, long timeout, TimeUnit timeUnit, String command, String... args) {
         ExecuteWatchdog watchdog = null;
         if (timeout > 0 && null != timeUnit) {
             watchdog = new ExecuteWatchdog(timeUnit.toMillis(timeout));
         }
-        execute(streamHandler, watchdog, command, args);
+        return execute(streamHandler, watchdog, command, args);
     }
 
-    public void execute(ExecuteStreamHandler streamHandler, String command, String... args) {
-        execute(streamHandler, null, command, args);
+    public int execute(ExecuteStreamHandler streamHandler, String command, String... args) {
+        return execute(streamHandler, null, command, args);
     }
 
-    public void execute(ExecuteWatchdog watchdog, String command, String... args) {
-        execute(new PumpStreamHandler(null, null, null), watchdog, command, args);
+    public int execute(ExecuteWatchdog watchdog, String command, String... args) {
+        return execute(new PumpStreamHandler(null, null, null), watchdog, command, args);
     }
 
-    public void execute(ExecuteStreamHandler streamHandler, ExecuteWatchdog watchdog, String command, String... args) {
-        CommandLine cmdLine = findCommanLine(command, args);
+    public int execute(ExecuteStreamHandler streamHandler, ExecuteWatchdog watchdog, String command, String... args) {
+        CommandLine cmdLine = buildCommanLine(command, args);
         DefaultExecutor executor = new DefaultExecutor();
         executor.setProcessDestroyer(new ShutdownHookProcessDestroyer());
         executor.setExitValues(null);
@@ -103,12 +103,17 @@ public enum CommandUtil {
         try {
             executor.execute(cmdLine, resultHandler);
             resultHandler.waitFor();
+            ExecuteException exception = resultHandler.getException();
+            if (null != exception) {
+                throw exception;
+            }
+            return resultHandler.getExitValue();
         } catch (Exception e) {
             throw new ErrorException(e);
         }
     }
 
-    private CommandLine findCommanLine(String command, String... args) {
+    private CommandLine buildCommanLine(String command, String... args) {
         //第一个空格之后的所有参数都为参数
         CommandLine cmdLine = new CommandLine(command);
         cmdLine.addArguments(args);
