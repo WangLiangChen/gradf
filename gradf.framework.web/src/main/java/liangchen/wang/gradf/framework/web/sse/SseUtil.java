@@ -54,7 +54,7 @@ public enum SseUtil {
 
     public void multicast(String group, String message) {
         Set<SseKey> sseKeys = sseEmitterMap.keySet();
-        sseKeys.parallelStream().filter(e -> e.getGroup().equals(group)).forEach(e -> unicast(e, message));
+        sseKeys.stream().filter(e -> e.getGroup().equals(group)).forEach(e -> unicast(e, message));
     }
 
     public void broadcast(String message) {

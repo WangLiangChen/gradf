@@ -35,7 +35,7 @@ public class UserAgent {
     }
 
     public static Set<String> byOs(Os... os) {
-        return set.parallelStream().filter(e -> {
+        return set.stream().filter(e -> {
             for (Os o : os) {
                 if (e.getOs() == o) {
                     return true;
@@ -47,7 +47,7 @@ public class UserAgent {
 
     public static String byOsRandom(Os... os) {
         Set<String> set = byOs(os);
-        return set.parallelStream().findAny().get();
+        return set.stream().findAny().get();
     }
 
     public Os getOs() {

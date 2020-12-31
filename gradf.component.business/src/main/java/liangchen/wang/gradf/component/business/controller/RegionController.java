@@ -49,7 +49,7 @@ public class RegionController {
         query.setStatus(Status.NORMAL.name());
         List<RegionResultDomain> regions = manager.list(query);
         //去除中国
-        regions = regions.parallelStream().filter(e -> e.getRegion_code() > 0).collect(Collectors.toList());
+        regions = regions.stream().filter(e -> e.getRegion_code() > 0).collect(Collectors.toList());
         ResponseUtil.createResponse().data(regions).flush();
     }
 

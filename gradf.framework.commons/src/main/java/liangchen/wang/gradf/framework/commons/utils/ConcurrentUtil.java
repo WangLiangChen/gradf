@@ -32,7 +32,7 @@ public enum ConcurrentUtil {
     @SuppressWarnings("unchecked")
     public <T> CompletableFuture<List<T>> completableFuture2List(Collection<CompletableFuture<T>> futures) {
         CompletableFuture<T>[] completableFutures = futures.toArray(new CompletableFuture[futures.size()]);
-        return CompletableFuture.allOf(completableFutures).thenApply(e -> futures.parallelStream().map(CompletableFuture::join).collect(Collectors.toList()));
+        return CompletableFuture.allOf(completableFutures).thenApply(e -> futures.stream().map(CompletableFuture::join).collect(Collectors.toList()));
     }
 
     /**
@@ -45,7 +45,7 @@ public enum ConcurrentUtil {
      */
     public <T> CompletableFuture<List<T>> completableFuture2List(CompletableFuture<T>[] futures) {
         ArrayList<CompletableFuture<T>> completableFutures = new ArrayList<>(Arrays.asList(futures));
-        return CompletableFuture.allOf(futures).thenApply(e -> completableFutures.parallelStream().map(CompletableFuture::join).collect(Collectors.toList()));
+        return CompletableFuture.allOf(futures).thenApply(e -> completableFutures.stream().map(CompletableFuture::join).collect(Collectors.toList()));
     }
 
     public void block() {

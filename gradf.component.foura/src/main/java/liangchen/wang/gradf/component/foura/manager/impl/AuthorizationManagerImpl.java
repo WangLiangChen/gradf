@@ -106,7 +106,7 @@ public class AuthorizationManagerImpl implements IAuthorizationManager {
         Map<String, Boolean> results = new HashMap<>(parameters.size());
         //获取当前用户拥有的url pattern
         Set<String> urls = subjectUrls();
-        parameters.parallelStream().forEach(e -> {
+        parameters.stream().forEach(e -> {
             String auth_key = e.getAuth_key();
             results.put(auth_key, Boolean.FALSE);
             String auth_url = e.getAuth_url();
