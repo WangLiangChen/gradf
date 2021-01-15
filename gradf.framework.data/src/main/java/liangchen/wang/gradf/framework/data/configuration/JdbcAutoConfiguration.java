@@ -122,11 +122,16 @@ public class JdbcAutoConfiguration {
 
 
     @Bean
-    // MapperScannerConfigurer 是 BeanFactoryPostProcessor 的一个实现
-    // 如果配置类中出现 BeanFactoryPostProcessor ，会破坏默认的 post-processing 。
-    // 此时不能初始化太早，spring建议使用 static
-    // https://docs.spring.io/spring/docs/5.2.3.BUILD-SNAPSHOT/spring-framework-reference/core.html#beans
-    // Also, be particularly careful with BeanPostProcessor and BeanFactoryPostProcessor definitions through @Bean....
+    /*
+    MapperScannerConfigurer 是 BeanFactoryPostProcessor 的一个实现
+    如果配置类中出现 BeanFactoryPostProcessor ，会破坏默认的 post-processing 。
+    静态化从而不再需要依赖所在类的实例即可运行,防止因这个bean初始化早而导致 JdbcAutoConfiguration初始化过早
+    static静态方法属于类，执行静态方法时并不需要初始化所在类的实例
+    static关键字一般有且仅用于@Bean方法返回为BeanPostProcessor、BeanFactoryPostProcessor等类型的方法，并且建议此种方法请务必使用static修饰
+    https://docs.spring.io/spring-framework/docs/5.3.x/reference/html/core.html#beans
+    Also, be particularly careful with BeanPostProcessor and BeanFactoryPostProcessor definitions through @Bean. Those should usually be declared as static @Bean methods, not triggering the instantiation of their containing configuration class. Otherwise, @Autowired and @Value do not work on the configuration class itself, since it is being created as a bean instance too early.
+    另外，通过@Bean使用BeanPostProcessor和BeanFactoryPostProcessor定义时要特别小心。 通常应将这些声明为静态@Bean方法，而不触发其包含的配置类的实例化。 否则，@Autowired和@Value不适用于配置类本身，因为它太早被创建为Bean实例。
+    */
     public static MapperScannerConfigurer mapperScannerConfigurer() {
         MapperScannerConfigurer mapperScannerConfigurer = new MapperScannerConfigurer();
         //mapperScannerConfigurer.setSqlSessionFactoryBeanName("sqlSessionFactory");

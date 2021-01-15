@@ -90,17 +90,22 @@ public class BatchProcessor<E> {
                 } catch (InterruptedException e) {
                     throw new ErrorException(e);
                 }
-                if (bufferList.size() == 0) {
-                    finished = true;
-                    if (null != finishRunable) {
-                        finishRunable.run();
+                int size = bufferList.size();
+                if (size == batchSize) {
+                    if (null == consumer) {
+                        break;
                     }
-                    break;
+                    consumer.accept(bufferList);
+                    continue;
                 }
-                if (null == consumer) {
-                    break;
+                finished = true;
+                if (size > 0) {
+                    consumer.accept(bufferList);
                 }
-                consumer.accept(bufferList);
+                if (null != finishRunable) {
+                    finishRunable.run();
+                }
+                break;
             }
         });
     }

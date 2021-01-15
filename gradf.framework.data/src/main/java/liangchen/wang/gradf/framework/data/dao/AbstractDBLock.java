@@ -2,10 +2,10 @@ package liangchen.wang.gradf.framework.data.dao;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
 import liangchen.wang.gradf.framework.commons.exception.InfoException;
+import liangchen.wang.gradf.framework.commons.logger.Logger;
+import liangchen.wang.gradf.framework.commons.logger.LoggerFactory;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import net.javacrumbs.shedlock.support.LockException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
 import javax.inject.Inject;
@@ -23,6 +23,7 @@ public abstract class AbstractDBLock implements IDBLock {
     private static final String DELETESQL = "delete from gradf_lock where lock_key=?";
     // 持有锁的线程
     private TransmittableThreadLocal<HashSet<String>> lockOwnerThreads = new TransmittableThreadLocal<>();
+    private TransmittableThreadLocal<Connection> connectionThreads = new TransmittableThreadLocal<>();
     @Inject
     private DataSource dataSource;
 
@@ -185,7 +186,7 @@ public abstract class AbstractDBLock implements IDBLock {
     private HashSet<String> getLockOwnerThreads() {
         HashSet<String> threadLocks = lockOwnerThreads.get();
         if (threadLocks == null) {
-            threadLocks = new HashSet<String>();
+            threadLocks = new HashSet<>();
             lockOwnerThreads.set(threadLocks);
         }
         return threadLocks;
