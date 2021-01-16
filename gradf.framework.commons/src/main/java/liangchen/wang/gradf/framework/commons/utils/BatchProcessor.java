@@ -21,7 +21,6 @@ public class BatchProcessor<E> {
     private final TimeUnit timeUnit;
     private Consumer<List<E>> consumer;
     private Runnable finishRunable;
-    private List<E> bufferList;
     private boolean finished = false;
 
     public BatchProcessor(int batchSize) {
@@ -30,8 +29,7 @@ public class BatchProcessor<E> {
 
     public BatchProcessor(int batchSize, long timeout, TimeUnit timeUnit) {
         this.batchSize = batchSize;
-        this.blockingQueue = new ArrayBlockingQueue<>(batchSize);
-        this.bufferList = new ArrayList<>(batchSize);
+        this.blockingQueue = new ArrayBlockingQueue<>(batchSize * 5);
         this.timeout = timeout;
         this.timeUnit = timeUnit;
     }
@@ -65,8 +63,9 @@ public class BatchProcessor<E> {
             throw new InfoException("Set Consumer by method onConsume");
         }
         try {
-            blockingQueue.put(e);
+            blockingQueue.offer(e, timeout, timeUnit);
         } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
             throw new RuntimeException(ex);
         }
         return true;
@@ -83,11 +82,13 @@ public class BatchProcessor<E> {
 
     private void onDrain() {
         ThreadPoolUtil.INSTANCE.getExecutorService().execute(() -> {
+            List<E> bufferList;
             while (true) {
                 bufferList = new ArrayList<>(batchSize);
                 try {
                     Queues.drain(blockingQueue, bufferList, batchSize, timeout, timeUnit);
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                     throw new ErrorException(e);
                 }
                 int size = bufferList.size();
