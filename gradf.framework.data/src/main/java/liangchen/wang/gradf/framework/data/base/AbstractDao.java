@@ -40,9 +40,9 @@ public abstract class AbstractDao<E extends RootEntity, Q extends RootQuery> imp
     protected <E> E queryForObject(Class<E> clazz, SqlBuilder sqlBuilder) {
         try {
             if (ClassUtils.isPrimitiveOrWrapper(clazz) || String.class == clazz) {
-                return jdbcTemplate.queryForObject(sqlBuilder.getSql(), sqlBuilder.getArgs(), clazz);
+                return jdbcTemplate.queryForObject(sqlBuilder.getSql(), clazz, sqlBuilder.getArgs());
             }
-            return jdbcTemplate.queryForObject(sqlBuilder.getSql(), sqlBuilder.getArgs(), BeanPropertyRowMapper.newInstance(clazz));
+            return jdbcTemplate.queryForObject(sqlBuilder.getSql(), BeanPropertyRowMapper.newInstance(clazz), sqlBuilder.getArgs());
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -60,9 +60,9 @@ public abstract class AbstractDao<E extends RootEntity, Q extends RootQuery> imp
 
     protected <E> List<E> queryForList(SqlBuilder sqlBuilder, Class<E> clazz) {
         if (ClassUtils.isPrimitiveOrWrapper(clazz) || String.class == clazz) {
-            return jdbcTemplate.queryForList(sqlBuilder.getSql(), sqlBuilder.getArgs(), clazz);
+            return jdbcTemplate.queryForList(sqlBuilder.getSql(), clazz, sqlBuilder.getArgs());
         }
-        return jdbcTemplate.query(sqlBuilder.getSql(), sqlBuilder.getArgs(), BeanPropertyRowMapper.newInstance(clazz));
+        return jdbcTemplate.query(sqlBuilder.getSql(), BeanPropertyRowMapper.newInstance(clazz), sqlBuilder.getArgs());
     }
 
 
