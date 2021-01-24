@@ -35,8 +35,6 @@ public class RoleAccountManagerImpl extends AbstractManager<RoleAccount, RoleAcc
         parameter.populateEntity((entity) -> {
             RoleAccount roleAccount = (RoleAccount) entity;
             Assert.INSTANCE.notBlankElseRun(roleAccount.getStatus(), () -> roleAccount.setStatus(Status.NORMAL.name()));
-            roleAccount.initOperator();
-            ;
             roleAccount.initFields();
         });
         try {

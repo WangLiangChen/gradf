@@ -37,11 +37,11 @@ import java.util.Properties;
  */
 public class JdbcAutoConfiguration {
     private final ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
-    private final String AUTOSCAN_COFIG_FILE = "autoscan.properties";
-    private final String SYSTEM_MAPPER_SCAN_PACKAGE = "liangchen.wang.gradf";
+    private final static String AUTOSCAN_COFIG_FILE = "autoscan.properties";
+    private final static String SYSTEM_MAPPER_SCAN_PACKAGE = "liangchen.wang.gradf";
     private static String scanPackages;
 
-    public JdbcAutoConfiguration() {
+    static {
         boolean exists = ConfigurationUtil.INSTANCE.exists(AUTOSCAN_COFIG_FILE);
         Assert.INSTANCE.isTrue(exists, "Configuration file:{} does not exists", AUTOSCAN_COFIG_FILE);
         Configuration configuration = ConfigurationUtil.INSTANCE.getConfiguration(AUTOSCAN_COFIG_FILE);
@@ -49,16 +49,16 @@ public class JdbcAutoConfiguration {
         if (StringUtil.INSTANCE.isBlank(mybatis)) {
             Printer.INSTANCE.prettyPrint("MyBatis Mapper Scan Packages is Blank");
             scanPackages = SYSTEM_MAPPER_SCAN_PACKAGE;
-            return;
+        } else {
+            Printer.INSTANCE.prettyPrint("MyBatis Mapper Scan Packages is :{}", mybatis);
+            scanPackages = String.format("%s,%s", SYSTEM_MAPPER_SCAN_PACKAGE, mybatis);
         }
-        Printer.INSTANCE.prettyPrint("MyBatis Mapper Scan Packages is :{}", mybatis);
-        scanPackages = String.format("%s,%s", SYSTEM_MAPPER_SCAN_PACKAGE, mybatis);
     }
 
     /**
      * @param dataSource DynamicDataSource
      */
-    @Bean
+    @Inject
     public void initSQL(DataSource dataSource) {
         ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
         try {

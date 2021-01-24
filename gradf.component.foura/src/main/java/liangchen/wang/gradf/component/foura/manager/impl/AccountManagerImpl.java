@@ -111,7 +111,6 @@ public class AccountManagerImpl extends AbstractManager<Account, AccountQuery, A
             account.setPassword_salt(p.getPassword_salt());
             // make secret_key by random
             account.setSecret_key(PasswordUtil.INSTANCE.randomSalt());
-            account.initOperator();
             account.initFields();
         });
         return super.insert(parameter);

@@ -35,7 +35,6 @@ public class GroupAccountManagerImpl extends AbstractManager<GroupAccount, Group
         Assert.INSTANCE.notNull(parameter, "参数不能为空");
         parameter.populateEntity((groupAccount) -> {
             Assert.INSTANCE.notBlankElseRun(groupAccount.getStatus(), () -> groupAccount.setStatus(Status.NORMAL.name()));
-            groupAccount.initOperator();
             groupAccount.initFields();
         });
         try {

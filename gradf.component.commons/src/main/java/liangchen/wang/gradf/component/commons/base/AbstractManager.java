@@ -44,7 +44,6 @@ public abstract class AbstractManager<E extends RootEntity, Q extends RootQuery,
     protected boolean insert(ParameterDomain<E> parameter) {
         Assert.INSTANCE.validate(parameter, InsertGroup.class);
         E entity = parameter.copyTo(entityClass);
-        entity.initOperator();
         entity.initFields();
         Consumer<E> consumer = parameter.getEntityConsumer();
         if (consumer != null) {

@@ -37,7 +37,6 @@ public class ResourceManagerImpl extends AbstractManager<Resource, ResourceQuery
         Assert.INSTANCE.notBlank(resource_key, "resource_key不能为空");
         parameter.populateEntity((resource) -> {
             Assert.INSTANCE.notNullElseRun(resource.getResource_id(), () -> resource.setResource_id(UidDb.INSTANCE.uid()));
-            resource.initOperator();
             resource.initFields();
         });
         // 锁定判重
