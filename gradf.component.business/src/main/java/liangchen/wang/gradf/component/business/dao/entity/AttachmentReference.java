@@ -1,7 +1,7 @@
 package liangchen.wang.gradf.component.business.dao.entity;
 
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
-import liangchen.wang.gradf.framework.data.base.RootEntity;
+import liangchen.wang.gradf.framework.data.core.RootEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

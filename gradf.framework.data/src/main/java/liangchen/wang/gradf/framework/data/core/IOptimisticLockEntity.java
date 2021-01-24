@@ -1,9 +1,9 @@
-package liangchen.wang.gradf.framework.data.base;
+package liangchen.wang.gradf.framework.data.core;
 
 /**
  * @author LiangChen.Wang
  */
-public interface VersionEnhance {
+public interface IOptimisticLockEntity {
 
     Long getVersion();
 

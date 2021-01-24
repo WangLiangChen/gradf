@@ -4,7 +4,7 @@ import liangchen.wang.gradf.component.business.dao.IAddressDao;
 import liangchen.wang.gradf.component.business.dao.entity.Address;
 import liangchen.wang.gradf.component.business.dao.query.AddressQuery;
 import liangchen.wang.gradf.framework.cache.annotation.GradfAutoCacheable;
-import liangchen.wang.gradf.framework.data.base.AbstractBaseDao;
+import liangchen.wang.gradf.framework.data.core.AbstractJdbcDao;
 import org.springframework.stereotype.Repository;
 
 import java.util.concurrent.TimeUnit;
@@ -14,6 +14,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Repository("Gradf_Business_DefaultAddressDao")
 @GradfAutoCacheable(clearMethods = {"insert*", "delete*", "update*"}, durationRange = "1-24", timeUnit = TimeUnit.HOURS)
-public class AddressDaoImpl extends AbstractBaseDao<Address, AddressQuery> implements IAddressDao {
+public class AddressDaoImpl extends AbstractJdbcDao<Address, AddressQuery> implements IAddressDao {
 
 }

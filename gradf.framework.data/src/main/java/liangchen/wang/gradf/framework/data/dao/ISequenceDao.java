@@ -5,5 +5,5 @@ package liangchen.wang.gradf.framework.data.dao;
  */
 public interface ISequenceDao {
 
-    Long sequenceNumber(String sequenceKey, int initialValue);
+    Long sequenceNumber(String sequenceKey, long initialValue);
 }

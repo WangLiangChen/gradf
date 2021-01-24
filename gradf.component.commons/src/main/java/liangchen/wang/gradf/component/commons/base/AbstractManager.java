@@ -4,9 +4,9 @@ import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.commons.validator.InsertGroup;
 import liangchen.wang.gradf.framework.commons.validator.UpdateGroup;
-import liangchen.wang.gradf.framework.data.base.IAbstractDao;
-import liangchen.wang.gradf.framework.data.base.RootEntity;
-import liangchen.wang.gradf.framework.data.base.RootQuery;
+import liangchen.wang.gradf.framework.data.core.IDao;
+import liangchen.wang.gradf.framework.data.core.RootEntity;
+import liangchen.wang.gradf.framework.data.core.RootQuery;
 import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,12 +23,12 @@ public abstract class AbstractManager<E extends RootEntity, Q extends RootQuery,
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     private final String business_name;
     private final String business_type;
-    private final IAbstractDao<E, Q> dao;
+    private final IDao<E, Q> dao;
     private final Class<E> entityClass;
     private final Class<R> resultDomainClass;
 
     @SuppressWarnings({"unchecked"})
-    public AbstractManager(String business_name, String business_type, IAbstractDao<E, Q> dao) {
+    public AbstractManager(String business_name, String business_type, IDao<E, Q> dao) {
         this.business_name = business_name;
         this.business_type = business_type;
         this.dao = dao;

@@ -1,4 +1,4 @@
-package liangchen.wang.gradf.framework.data.datasource.annotation;
+package liangchen.wang.gradf.framework.data.annotation;
 
 import java.lang.annotation.*;
 

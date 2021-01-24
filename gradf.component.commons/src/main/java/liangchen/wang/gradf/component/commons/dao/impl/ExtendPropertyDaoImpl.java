@@ -4,7 +4,7 @@ import liangchen.wang.gradf.component.commons.dao.IExtendPropertyDao;
 import liangchen.wang.gradf.component.commons.dao.entity.ExtendProperty;
 import liangchen.wang.gradf.component.commons.dao.query.ExtendPropertyQuery;
 import liangchen.wang.gradf.framework.cache.annotation.GradfAutoCacheable;
-import liangchen.wang.gradf.framework.data.base.AbstractBaseDao;
+import liangchen.wang.gradf.framework.data.core.AbstractJdbcDao;
 import org.springframework.stereotype.Repository;
 
 import java.util.concurrent.TimeUnit;
@@ -14,6 +14,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Repository("Gradf_Business_DefaultExtendPropertyDao")
 @GradfAutoCacheable(clearMethods = {"insert", "delete*", "update*"}, durationRange = "1-24", timeUnit = TimeUnit.HOURS)
-public class ExtendPropertyDaoImpl extends AbstractBaseDao<ExtendProperty, ExtendPropertyQuery> implements IExtendPropertyDao {
+public class ExtendPropertyDaoImpl extends AbstractJdbcDao<ExtendProperty, ExtendPropertyQuery> implements IExtendPropertyDao {
 
 }

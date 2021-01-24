@@ -14,8 +14,8 @@ public enum DynamicDataSourceContext {
      *
      */
     INSTANCE;
-    private static final ThreadLocal<String> context = new ThreadLocal<>();
-    private static final Map<String, AbstractDialect> cachedDialect = new HashMap<>(10);
+    private final ThreadLocal<String> context = new ThreadLocal<>();
+    private final Map<String, AbstractDialect> cachedDialect = new HashMap<>(10);
 
     public void putDialect(String dataSourceName, AbstractDialect dialect) {
         cachedDialect.put(dataSourceName, dialect);

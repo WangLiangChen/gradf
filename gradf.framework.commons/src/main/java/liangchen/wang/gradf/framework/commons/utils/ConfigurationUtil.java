@@ -53,6 +53,9 @@ public enum ConfigurationUtil {
         return getFullUrl(fileName).toString();
     }
 
+    public boolean exists(String fileName) {
+        return NetUtil.INSTANCE.isAvailableURL(getFullUrl(fileName));
+    }
 
     public Configuration getConfiguration(String configurationFileName) {
         return getConfiguration(configurationFileName, 0, null);

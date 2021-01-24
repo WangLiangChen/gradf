@@ -1,4 +1,4 @@
-package liangchen.wang.gradf.framework.data.api;
+package liangchen.wang.gradf.framework.api;
 
 /**
  * @author LiangChen.Wang
@@ -13,10 +13,12 @@ public interface ILock {
 
     <R> R executeInLock(String lockKey, Callback<R> callback);
 
+    @FunctionalInterface
     interface Callback<R> {
         R execute();
     }
 
+    @FunctionalInterface
     interface VoidCallback {
         void execute();
     }

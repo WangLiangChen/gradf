@@ -1,34 +1,46 @@
-package liangchen.wang.gradf.framework.data.base;
+package liangchen.wang.gradf.framework.data.core;
 
 
 import liangchen.wang.gradf.framework.commons.exception.InfoException;
 import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
-import liangchen.wang.gradf.framework.data.datasource.DynamicDataSource;
-import liangchen.wang.gradf.framework.data.datasource.DynamicDataSourceContext;
-import liangchen.wang.gradf.framework.data.datasource.dialect.AbstractDialect;
 import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
+import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.util.ClassUtils;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
  * @author LiangChen.Wang
  */
-public abstract class AbstractBaseDao<E extends RootEntity, Q extends RootQuery> extends AbstractDao<E, Q> {
+public abstract class AbstractJdbcDao<E extends RootEntity, Q extends RootQuery> implements IDao<E, Q> {
     private final Class<E> entityClass;
     private final Class<Q> queryClass;
     @Inject
-    @Named("Gradf_Data_MysqlDaoBuilder")
-    private MysqlDaoBuilder mysqlDaoBuilder;
+    protected JdbcTemplate jdbcTemplate;
+    @Inject
+    protected SqlSessionTemplate sqlSessionTemplate;
+    @PersistenceContext
+    protected EntityManager entityManager;
+
+    @Inject
+    private MybatisStatementBuilder mybatisStatementBuilder;
 
     @SuppressWarnings({"unchecked"})
-    public AbstractBaseDao() {
+    public AbstractJdbcDao() {
         Class<?> implClass = getClass();
         Type thisType = implClass.getGenericSuperclass();
         Assert.INSTANCE.isTrue(thisType instanceof ParameterizedType, "必须设置参数化类型:<E extends RootEntity, Q extends RootQuery>");
@@ -42,7 +54,7 @@ public abstract class AbstractBaseDao<E extends RootEntity, Q extends RootQuery>
         if (null == entity) {
             return false;
         }
-        int rows = sqlSessionTemplate.insert(mysqlDaoBuilder.insertId(entityClass), entity);
+        int rows = sqlSessionTemplate.insert(mybatisStatementBuilder.insertId(entityClass), entity);
         if (rows == 1) {
             return true;
         }
@@ -54,7 +66,7 @@ public abstract class AbstractBaseDao<E extends RootEntity, Q extends RootQuery>
         if (null == entities || entities.size() == 0) {
             return 0;
         }
-        int rows = sqlSessionTemplate.insert(mysqlDaoBuilder.insertBatchId(entityClass), entities);
+        int rows = sqlSessionTemplate.insert(mybatisStatementBuilder.insertBatchId(entityClass), entities);
         return rows;
     }
 
@@ -64,7 +76,7 @@ public abstract class AbstractBaseDao<E extends RootEntity, Q extends RootQuery>
         if (null == query) {
             return 0;
         }
-        return sqlSessionTemplate.delete(mysqlDaoBuilder.deleteByQueryId(queryClass), query);
+        return sqlSessionTemplate.delete(mybatisStatementBuilder.deleteByQueryId(queryClass), query);
     }
 
     @Override
@@ -73,7 +85,7 @@ public abstract class AbstractBaseDao<E extends RootEntity, Q extends RootQuery>
             return 0;
         }
         query.setEntity(entity);
-        return sqlSessionTemplate.update(mysqlDaoBuilder.updateByQueryId(entityClass, queryClass), query);
+        return sqlSessionTemplate.update(mybatisStatementBuilder.updateByQueryId(entityClass, queryClass), query);
     }
 
     @Override
@@ -87,7 +99,7 @@ public abstract class AbstractBaseDao<E extends RootEntity, Q extends RootQuery>
         if (null == query) {
             return 0;
         }
-        return sqlSessionTemplate.selectOne(mysqlDaoBuilder.countId(queryClass), query);
+        return sqlSessionTemplate.selectOne(mybatisStatementBuilder.countId(queryClass), query);
     }
 
     @Override
@@ -128,7 +140,7 @@ public abstract class AbstractBaseDao<E extends RootEntity, Q extends RootQuery>
         } else {
             query.setReturnFields(returnFields);
         }
-        List<E> list = sqlSessionTemplate.selectList(mysqlDaoBuilder.listId(queryClass, entityClass), query);
+        List<E> list = sqlSessionTemplate.selectList(mybatisStatementBuilder.listId(queryClass, entityClass), query);
         // 清除query的returnFields字段，以免影响缓存Key
         query.setReturnFields(null);
         return list;
@@ -148,6 +160,51 @@ public abstract class AbstractBaseDao<E extends RootEntity, Q extends RootQuery>
             paginationResult.setDatas(Collections.emptyList());
         }
         return paginationResult;
+    }
+
+    protected <I> I getMapper(Class<I> type) {
+        return this.sqlSessionTemplate.getMapper(type);
+    }
+
+    protected int executeSql(SqlBuilder sqlBuilder) {
+        return jdbcTemplate.update(sqlBuilder.getSql(), sqlBuilder.getArgs());
+    }
+
+    protected int[] executeBatchSql(SqlBuilder sqlBuilder) {
+        return jdbcTemplate.batchUpdate(sqlBuilder.getSql(), sqlBuilder.getBatchArgs());
+    }
+
+    protected <E> E queryForObject(Class<E> clazz, SqlBuilder sqlBuilder) {
+        // queryForObject throw a DataAccessException while the ResultSet is empty
+        try {
+            if (ClassUtils.isPrimitiveOrWrapper(clazz) || String.class == clazz) {
+                return jdbcTemplate.queryForObject(sqlBuilder.getSql(), clazz, sqlBuilder.getArgs());
+            }
+            return jdbcTemplate.queryForObject(sqlBuilder.getSql(), BeanPropertyRowMapper.newInstance(clazz), sqlBuilder.getArgs());
+        } catch (DataAccessException e) {
+            return null;
+        }
+    }
+
+    protected Map<String, Object> queryForMap(SqlBuilder sqlBuilder) {
+        return jdbcTemplate.queryForMap(sqlBuilder.getSql(), sqlBuilder.getArgs());
+    }
+
+    protected <E> List<E> queryForList(SqlBuilder sqlBuilder, Class<E> clazz) {
+        if (ClassUtils.isPrimitiveOrWrapper(clazz) || String.class == clazz) {
+            return jdbcTemplate.queryForList(sqlBuilder.getSql(), clazz, sqlBuilder.getArgs());
+        }
+        return jdbcTemplate.query(sqlBuilder.getSql(), BeanPropertyRowMapper.newInstance(clazz), sqlBuilder.getArgs());
+    }
+
+
+    protected List<Map<String, Object>> queryForList(SqlBuilder sqlBuilder) {
+        return jdbcTemplate.queryForList(sqlBuilder.getSql(), sqlBuilder.getArgs());
+    }
+
+
+    protected ResultSetMetaData queryForMetaData(SqlBuilder sqlBuilder) {
+        return jdbcTemplate.query(sqlBuilder.getSql(), ResultSet::getMetaData);
     }
 
     public Class<E> getEntityClass() {

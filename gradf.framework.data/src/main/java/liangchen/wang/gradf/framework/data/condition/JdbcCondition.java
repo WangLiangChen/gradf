@@ -8,7 +8,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 /**
  * @author LiangChen.Wang
  */
-public class DataCondition implements ConfigurationCondition {
+public class JdbcCondition implements ConfigurationCondition {
     @Override
     public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata) {
         return DataStatus.INSTANCE.isJdbcEnable();

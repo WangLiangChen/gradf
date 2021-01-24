@@ -2,7 +2,7 @@ package liangchen.wang.gradf.framework.cluster.utils;
 
 
 import liangchen.wang.gradf.framework.cluster.enumeration.ClusterStatus;
-import liangchen.wang.gradf.framework.data.api.ILock;
+import liangchen.wang.gradf.framework.api.ILock;
 import liangchen.wang.gradf.framework.data.utils.DbLockUtil;
 
 /**

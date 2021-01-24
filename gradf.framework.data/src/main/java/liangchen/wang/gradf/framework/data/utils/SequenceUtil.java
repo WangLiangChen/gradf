@@ -18,7 +18,7 @@ public enum SequenceUtil {
         return sequenceManager.sequenceNumber(sequenceKey);
     }
 
-    public Long sequenceNumber(String sequenceKey, int initialValue) {
+    public Long sequenceNumber(String sequenceKey, long initialValue) {
         return sequenceManager.sequenceNumber(sequenceKey, initialValue);
     }
 }

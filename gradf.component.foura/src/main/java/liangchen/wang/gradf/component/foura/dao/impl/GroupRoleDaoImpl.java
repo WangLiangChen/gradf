@@ -4,7 +4,7 @@ import liangchen.wang.gradf.component.foura.dao.IGroupRoleDao;
 import liangchen.wang.gradf.component.foura.dao.entity.GroupRole;
 import liangchen.wang.gradf.component.foura.dao.query.GroupRoleQuery;
 import liangchen.wang.gradf.framework.cache.annotation.GradfAutoCacheable;
-import liangchen.wang.gradf.framework.data.base.AbstractBaseDao;
+import liangchen.wang.gradf.framework.data.core.AbstractJdbcDao;
 import org.springframework.stereotype.Repository;
 
 import java.util.concurrent.TimeUnit;
@@ -14,6 +14,6 @@ import java.util.concurrent.TimeUnit;
 */
 @Repository("Gradf_Foura_DefaultGroupRoleDao")
 @GradfAutoCacheable(clearMethods = {"insert*", "delete*", "update*"}, durationRange = "1-24", timeUnit = TimeUnit.HOURS)
-public class GroupRoleDaoImpl extends AbstractBaseDao<GroupRole,GroupRoleQuery> implements IGroupRoleDao {
+public class GroupRoleDaoImpl extends AbstractJdbcDao<GroupRole,GroupRoleQuery> implements IGroupRoleDao {
 
 }

@@ -1,6 +1,6 @@
 package liangchen.wang.gradf.framework.data.dao;
 
-import liangchen.wang.gradf.framework.data.api.ILock;
+import liangchen.wang.gradf.framework.api.ILock;
 
 /**
  * @author LiangChen.Wang

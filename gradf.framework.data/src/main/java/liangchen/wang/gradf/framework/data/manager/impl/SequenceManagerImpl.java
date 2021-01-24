@@ -20,13 +20,11 @@ public class SequenceManagerImpl implements ISequenceManager {
     }
 
     @Override
-    @Transactional
-    public Long sequenceNumber(String sequenceKey, int initialValue) {
+    public Long sequenceNumber(String sequenceKey, long initialValue) {
         return dao.sequenceNumber(sequenceKey, initialValue);
     }
 
     @Override
-    @Transactional
     public Long sequenceNumber(String sequenceKey) {
         return dao.sequenceNumber(sequenceKey, 0);
     }

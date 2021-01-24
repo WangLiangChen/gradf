@@ -10,9 +10,7 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.HashSet;
 
 /**
@@ -20,10 +18,12 @@ import java.util.HashSet;
  */
 public abstract class AbstractDBLock implements IDBLock {
     private static final Logger logger = LoggerFactory.getLogger(AbstractDBLock.class);
+    private int maxRetry = 3;
+    private long retryPeriod = 500L;
+
     private static final String DELETESQL = "delete from gradf_lock where lock_key=?";
     // 持有锁的线程
     private TransmittableThreadLocal<HashSet<String>> lockOwnerThreads = new TransmittableThreadLocal<>();
-    private TransmittableThreadLocal<Connection> connectionThreads = new TransmittableThreadLocal<>();
     @Inject
     private DataSource dataSource;
 
@@ -31,7 +31,7 @@ public abstract class AbstractDBLock implements IDBLock {
         return logger;
     }
 
-    protected abstract void executeLockSQL(Connection connection, String lockKey);
+    protected abstract void executeLockSQL(Connection connection, String lockKey) throws SQLException;
 
     @Override
     public boolean lock(String lockKey) {
@@ -131,40 +131,78 @@ public abstract class AbstractDBLock implements IDBLock {
             logger.debug("Lock '{}' Is already owned by: {}", lockKey, Thread.currentThread().getName());
             return true;
         }
-        // 如果获取到锁，executeLockSQL返回，将锁放入线程，提交事务后才释放
-        // 如果获取不到锁则等待
-        executeLockSQL(connection, lockKey);
+        // 如果获取到锁，loopExecuteLockSQL，将锁放入线程，提交事务后才释放,如果获取不到锁则等待
+        loopExecuteLockSQL(connection, lockKey);
         logger.debug("Lock '{}' given to: {}", lockKey, Thread.currentThread().getName());
         getLockOwnerThreads().add(lockKey);
         return true;
     }
 
-    private void commitConnection(Connection connection) throws SQLException {
-        if (connection != null) {
-            connection.commit();
+    private void loopExecuteLockSQL(Connection connection, String lockKey) {
+        SQLException lastException = null;
+        for (int count = 0; count < maxRetry; count++) {
+            try {
+                executeLockSQL(connection, lockKey);
+            } catch (SQLException e) {
+                lastException = e;
+                if ((count + 1) == maxRetry) {
+                    getLogger().debug("Lock '{}' was not obtained by: {}", lockKey, Thread.currentThread().getName());
+                } else {
+                    getLogger().debug("Lock '{}' was not obtained by: {} - will try again.", lockKey, Thread.currentThread().getName());
+                }
+                try {
+                    Thread.sleep(retryPeriod);
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
+        throw new InfoException("Failure obtaining db row lock, reached maximum number of attempts. Initial exception (if any) attached as root cause.{}", lastException.getMessage());
+    }
+
+    private void commitConnection(Connection connection) throws SQLException {
+        if (null == connection) {
+            return;
+        }
+        connection.commit();
     }
 
     private void rollbackConnection(Connection connection) {
-        if (connection != null) {
-            try {
-                connection.rollback();
-            } catch (SQLException e) {
-                getLogger().error("Couldn't rollback jdbc connection. ", e);
-            }
+        if (null == connection) {
+            return;
+        }
+        try {
+            connection.rollback();
+        } catch (SQLException e) {
+            getLogger().error("Couldn't rollback jdbc connection. ", e);
         }
     }
 
-    private void closeConnection(Connection conn) {
-        if (conn != null) {
-            try {
-                conn.close();
-            } catch (SQLException e) {
-                getLogger().error("Failed to close Connection", e);
-            } catch (Throwable e) {
-                getLogger().error("Unexpected exception closing Connection.This is often due to a Connection being returned after or during shutdown.", e);
-            }
+    private void closeConnection(Connection connection) {
+        if (null == connection) {
+            return;
         }
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            getLogger().error("Failed to close Connection", e);
+        } catch (Throwable e) {
+            getLogger().error("Unexpected exception closing Connection.This is often due to a Connection being returned after or during shutdown.", e);
+        }
+    }
+
+    protected void closeStatement(Statement statement) throws SQLException {
+        if (null == statement) {
+            return;
+        }
+        statement.close();
+    }
+
+    protected void closeResultSet(ResultSet resultSet) throws SQLException {
+        if (null == resultSet) {
+            return;
+        }
+        resultSet.close();
     }
 
     private void unLock(String lockKey, boolean obtainedLock) {

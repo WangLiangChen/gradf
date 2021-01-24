@@ -4,10 +4,9 @@ import liangchen.wang.gradf.component.foura.dao.IGroupDao;
 import liangchen.wang.gradf.component.foura.dao.entity.Group;
 import liangchen.wang.gradf.component.foura.dao.query.GroupQuery;
 import liangchen.wang.gradf.framework.cache.annotation.GradfAutoCacheable;
-import liangchen.wang.gradf.framework.data.base.AbstractBaseDao;
+import liangchen.wang.gradf.framework.data.core.AbstractJdbcDao;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -15,6 +14,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Repository("Gradf_Foura_DefaultGroupDao")
 @GradfAutoCacheable(clearMethods = {"insert*", "delete*", "update*"}, durationRange = "1-24", timeUnit = TimeUnit.HOURS)
-public class GroupDaoImpl extends AbstractBaseDao<Group, GroupQuery> implements IGroupDao {
+public class GroupDaoImpl extends AbstractJdbcDao<Group, GroupQuery> implements IGroupDao {
 
 }

@@ -1,11 +1,11 @@
 package liangchen.wang.gradf.framework.data.datasource;
 
 
+import com.google.common.base.Splitter;
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
 import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
 import liangchen.wang.gradf.framework.commons.utils.Printer;
-import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import liangchen.wang.gradf.framework.data.datasource.dialect.AbstractDialect;
 import liangchen.wang.gradf.framework.data.datasource.dialect.MySQLDialect;
 import org.apache.commons.configuration2.Configuration;
@@ -20,6 +20,7 @@ import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 //所有实现了该接口的类的都会被ConfigurationClassPostProcessor处理，实现了BeanFactoryPostProcessor接口，
@@ -29,26 +30,24 @@ import java.util.Map;
 /**
  * @author LiangChen.Wang
  */
-public class DynamicDataSourceRegister implements ImportBeanDefinitionRegistrar {
-    private final String DEFAULT_DATASOURCE = "com.zaxxer.hikari.HikariDataSource";
-    private final Configuration configuration = ConfigurationUtil.INSTANCE.getConfiguration("datasource.properties");
+public class MultipleDataSourceRegister implements ImportBeanDefinitionRegistrar {
+    // private final String DEFAULT_DATASOURCE = "com.zaxxer.hikari.HikariDataSource";
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata meta, BeanDefinitionRegistry registry) {
+        Configuration configuration = ConfigurationUtil.INSTANCE.getConfiguration("jdbc.properties");
         // 将配置分组
         Iterator<String> keys = configuration.getKeys();
         Map<String, Map<String, String>> datasourceMap = new HashMap<>();
         keys.forEachRemaining(key -> {
-            String[] array = key.split("\\.");
-            Map<String, String> properties = datasourceMap.get(array[0]);
-            if (null == properties) {
-                properties = new HashMap<>();
-                datasourceMap.put(array[0], properties);
-            }
-            properties.put(array[1], configuration.getString(key));
+            List<String> keyList = Splitter.on('.').splitToList(key);
+            String dataSourceFlag = keyList.get(0);
+            datasourceMap.putIfAbsent(dataSourceFlag, new HashMap<>());
+            Map<String, String> properties = datasourceMap.get(dataSourceFlag);
+            properties.put(keyList.get(1), configuration.getString(key));
         });
 
-        // 创建数据源
+        // 创建动态数据源
         BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(DynamicDataSource.class);
         AbstractBeanDefinition beanDefinition = beanDefinitionBuilder.getRawBeanDefinition();
         beanDefinition.setBeanClass(DynamicDataSource.class);
@@ -61,16 +60,16 @@ public class DynamicDataSourceRegister implements ImportBeanDefinitionRegistrar 
     }
 
     private DataSource buildDefaultTargetDatasource(Map<String, Map<String, String>> datasourceMap) {
-        String dataSourceName = "default";
-        Map<String, String> defaultDataSource = datasourceMap.get(dataSourceName);
-        Printer.INSTANCE.prettyPrint("Init DataSource:default,properties:{}", defaultDataSource);
-        DataSource dataSource = buildDataSource(dataSourceName, defaultDataSource);
-        datasourceMap.remove(dataSourceName);
+        String primaryDataSourceName = "primary";
+        Map<String, String> primaryDataSource = datasourceMap.get(primaryDataSourceName);
+        Printer.INSTANCE.prettyPrint("Init DataSource:primary,properties:{}", primaryDataSource);
+        DataSource dataSource = buildDataSource(primaryDataSourceName, primaryDataSource);
+        datasourceMap.remove(primaryDataSourceName);
         return dataSource;
     }
 
     private Map<String, DataSource> buildTargetDataSources(Map<String, Map<String, String>> datasourceMap) {
-        Map<String, DataSource> targetDataSources = new HashMap<>(datasourceMap.size(), 1);
+        Map<String, DataSource> targetDataSources = new HashMap<>(datasourceMap.size());
         datasourceMap.forEach((k, v) -> {
             Printer.INSTANCE.prettyPrint("Init DataSource:{},properties:{}", k, v);
             DataSource buildDataSource = buildDataSource(k, v);
@@ -83,22 +82,14 @@ public class DynamicDataSourceRegister implements ImportBeanDefinitionRegistrar 
         // 创建dialect
         AbstractDialect dialect = createDialect(dataSourceName, properties.get("dialect"));
         properties.remove("dialect");
-        String datasource = properties.get("datasource");
-        properties.remove("datasource");
-        if (StringUtil.INSTANCE.isBlank(datasource)) {
-            datasource = DEFAULT_DATASOURCE;
-            Printer.INSTANCE.prettyPrint("Use default DataSource:{}", DEFAULT_DATASOURCE);
-        } else {
-            Printer.INSTANCE.prettyPrint("Use DataSource:{}", datasource);
-        }
         Class<DataSource> dataSourceType = null;
         try {
-            dataSourceType = ClassBeanUtil.INSTANCE.cast(Class.forName(DEFAULT_DATASOURCE));
-            // 先获取默认的类 如果下面的指定类出现异常 则使用默认的类
-            dataSourceType = ClassBeanUtil.INSTANCE.cast(Class.forName(datasource));
+            dataSourceType = ClassBeanUtil.INSTANCE.cast(Class.forName(properties.get("datasource")));
+            properties.remove("datasource");
         } catch (ClassNotFoundException e) {
-            Printer.INSTANCE.prettyPrint("DataSource Class Not Found:{},use default DataSource:{}", datasource, DEFAULT_DATASOURCE);
+            throw new ErrorException(e);
         }
+
         String driverClassName = null;
         String url = null;
         if (dialect instanceof MySQLDialect) {
@@ -109,14 +100,15 @@ public class DynamicDataSourceRegister implements ImportBeanDefinitionRegistrar 
             properties.remove("port");
             properties.remove("database");
         }
+        // 构造DataSource 同时绑定其它属性 Binder binder = new Binder(source.withAliases(aliases));
         DataSourceBuilder<DataSource> factory = DataSourceBuilder.create().type(dataSourceType).driverClassName(driverClassName).url(url).properties(properties);
         return factory.build();
     }
 
     //创建自定义dialect
-    private AbstractDialect createDialect(String dataSourceName, String dialectClass) {
+    private AbstractDialect createDialect(String dataSourceName, String dialectClassName) {
         try {
-            Class<?> forName = Class.forName(dialectClass);
+            Class<?> forName = Class.forName(dialectClassName);
             AbstractDialect dialect = (AbstractDialect) forName.getDeclaredConstructor().newInstance();
             DynamicDataSourceContext.INSTANCE.putDialect(dataSourceName, dialect);
             return dialect;

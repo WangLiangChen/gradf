@@ -1,4 +1,4 @@
-package liangchen.wang.gradf.framework.data.base;
+package liangchen.wang.gradf.framework.data.core;
 
 import java.io.Serializable;
 

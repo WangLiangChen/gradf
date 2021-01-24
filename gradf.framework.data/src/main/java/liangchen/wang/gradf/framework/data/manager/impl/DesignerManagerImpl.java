@@ -4,7 +4,7 @@ import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import liangchen.wang.gradf.framework.commons.utils.DateTimeUtil;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
-import liangchen.wang.gradf.framework.data.condition.DataConditionAnnotation;
+import liangchen.wang.gradf.framework.data.condition.JdbcConditionAnnotation;
 import liangchen.wang.gradf.framework.data.dao.IDesignerDao;
 import liangchen.wang.gradf.framework.data.domain.DesignerDomain;
 import liangchen.wang.gradf.framework.data.domain.DesignerParameterDomain;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 /**
  * @author LiangChen.Wang 2019/11/20 12:34
  */
-@DataConditionAnnotation
+@JdbcConditionAnnotation
 @Component("Gradf_Data_DesignerManager")
 public class DesignerManagerImpl implements IDesignerManager {
     private final IDesignerDao dao;

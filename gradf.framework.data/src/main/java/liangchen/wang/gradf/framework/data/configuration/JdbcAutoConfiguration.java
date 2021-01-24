@@ -1,11 +1,12 @@
 package liangchen.wang.gradf.framework.data.configuration;
 
+import com.google.common.base.Splitter;
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
 import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
 import liangchen.wang.gradf.framework.commons.utils.Printer;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
-import liangchen.wang.gradf.framework.data.base.IAbstractDao;
+import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.data.mybatis.interceptor.PaginationInterceptor;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.lang3.ArrayUtils;
@@ -23,12 +24,12 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.lang.Nullable;
-import org.springframework.util.ClassUtils;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -36,32 +37,40 @@ import java.util.Properties;
  */
 public class JdbcAutoConfiguration {
     private final ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
-    private final static String SYSTEM_MAPPER_SCAN_PACKAGE = "liangchen.wang.gradf";
-    private final static Configuration config = ConfigurationUtil.INSTANCE.getConfiguration("autoscan.properties");
-    private static String scanPackages = config.getString("mybatis");
+    private final String AUTOSCAN_COFIG_FILE = "autoscan.properties";
+    private final String SYSTEM_MAPPER_SCAN_PACKAGE = "liangchen.wang.gradf";
+    private static String scanPackages;
 
-    static {
-        if (StringUtil.INSTANCE.isBlank(scanPackages)) {
+    public JdbcAutoConfiguration() {
+        boolean exists = ConfigurationUtil.INSTANCE.exists(AUTOSCAN_COFIG_FILE);
+        Assert.INSTANCE.isTrue(exists, "Configuration file:{} does not exists", AUTOSCAN_COFIG_FILE);
+        Configuration configuration = ConfigurationUtil.INSTANCE.getConfiguration(AUTOSCAN_COFIG_FILE);
+        String mybatis = configuration.getString("mybatis");
+        if (StringUtil.INSTANCE.isBlank(mybatis)) {
+            Printer.INSTANCE.prettyPrint("MyBatis Mapper Scan Packages is Blank");
             scanPackages = SYSTEM_MAPPER_SCAN_PACKAGE;
-            Printer.INSTANCE.prettyPrint("Mybatis Scan Packages:Blank");
-        } else {
-            scanPackages = SYSTEM_MAPPER_SCAN_PACKAGE + "," + scanPackages;
+            return;
         }
+        Printer.INSTANCE.prettyPrint("MyBatis Mapper Scan Packages is :{}", mybatis);
+        scanPackages = String.format("%s,%s", SYSTEM_MAPPER_SCAN_PACKAGE, mybatis);
     }
 
-    @Inject
+    /**
+     * @param dataSource DynamicDataSource
+     */
+    @Bean
     public void initSQL(DataSource dataSource) {
         ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
         try {
             Resource[] ddls = resourcePatternResolver.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX.concat("ddl.sql"));
             for (Resource ddl : ddls) {
-                databasePopulator.addScript(ddl);
                 Printer.INSTANCE.prettyPrint("init ddl sql script:{}", ddl.toString());
+                databasePopulator.addScript(ddl);
             }
             Resource[] dmls = resourcePatternResolver.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX.concat("dml.sql"));
             for (Resource dml : dmls) {
-                databasePopulator.addScript(dml);
                 Printer.INSTANCE.prettyPrint("init dml sql script:{}", dml.toString());
+                databasePopulator.addScript(dml);
             }
         } catch (IOException e) {
             throw new ErrorException(e);
@@ -70,6 +79,9 @@ public class JdbcAutoConfiguration {
         databasePopulator.execute(dataSource);
     }
 
+    /**
+     * @param dataSource DynamicDataSource
+     */
     @Bean
     public SqlSessionFactoryBean sqlSessionFactory(DataSource dataSource, @Nullable Interceptor[] interceptors) {
         SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
@@ -87,7 +99,7 @@ public class JdbcAutoConfiguration {
         mybatisConfiguration.put("localCacheScope", LocalCacheScope.STATEMENT.name());
         sqlSessionFactoryBean.setConfigurationProperties(mybatisConfiguration);
 
-        String[] packages = scanPackages.split(",");
+        List<String> packages = Splitter.on(',').splitToList(scanPackages);
         Resource[] mapperLocations = new Resource[0];
         for (String pack : packages) {
             pack = pack.replace('.', '/');
@@ -140,7 +152,7 @@ public class JdbcAutoConfiguration {
         // mapperScannerConfigurer.setMarkerInterface(IAbstractDao.class);
         mapperScannerConfigurer.setAnnotationClass(Mapper.class);
         mapperScannerConfigurer.setBasePackage(scanPackages);
-        Printer.INSTANCE.prettyPrint("Mybatis Scan Packages:{}", scanPackages);
+        Printer.INSTANCE.prettyPrint("MyBatis Mapper Scan Packages:{}", scanPackages);
         return mapperScannerConfigurer;
     }
 

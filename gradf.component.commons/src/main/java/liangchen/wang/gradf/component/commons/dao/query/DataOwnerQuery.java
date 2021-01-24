@@ -3,7 +3,7 @@ package liangchen.wang.gradf.component.commons.dao.query;
 
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
 import liangchen.wang.gradf.framework.data.annotation.Query;
-import liangchen.wang.gradf.framework.data.base.RootQuery;
+import liangchen.wang.gradf.framework.data.core.RootQuery;
 import liangchen.wang.gradf.framework.data.enumeration.Operator;
 
 import javax.persistence.Table;

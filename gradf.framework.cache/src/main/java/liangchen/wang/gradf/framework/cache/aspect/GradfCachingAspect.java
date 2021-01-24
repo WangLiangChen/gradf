@@ -74,7 +74,7 @@ public class GradfCachingAspect {
     public void pointcutCacheClear() {
     }
 
-    @Pointcut("(@within(liangchen.wang.gradf.framework.cache.annotation.GradfAutoCacheable) || target(liangchen.wang.gradf.framework.data.base.AbstractDao)) " +
+    @Pointcut("(@within(liangchen.wang.gradf.framework.cache.annotation.GradfAutoCacheable) || target(liangchen.wang.gradf.framework.data.core.AbstractJdbcDao)) " +
             "&& !@annotation(liangchen.wang.gradf.framework.cache.annotation.GradfCacheable) " +
             "&& !@annotation(liangchen.wang.gradf.framework.cache.annotation.GradfCacheClear) " +
             "&& !@annotation(liangchen.wang.gradf.framework.cache.annotation.GradfCacheEvict)")

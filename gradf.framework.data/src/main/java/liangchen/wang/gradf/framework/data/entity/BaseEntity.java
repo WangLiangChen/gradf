@@ -1,6 +1,6 @@
 package liangchen.wang.gradf.framework.data.entity;
 
-import liangchen.wang.gradf.framework.data.base.RootEntity;
+import liangchen.wang.gradf.framework.data.core.RootEntity;
 
 import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;

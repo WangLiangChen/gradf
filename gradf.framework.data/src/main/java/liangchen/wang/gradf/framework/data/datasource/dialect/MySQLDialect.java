@@ -1,7 +1,7 @@
 package liangchen.wang.gradf.framework.data.datasource.dialect;
 
 import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
-import liangchen.wang.gradf.framework.data.base.RootQuery;
+import liangchen.wang.gradf.framework.data.core.RootQuery;
 import liangchen.wang.gradf.framework.data.pagination.OrderBy;
 
 import java.util.List;

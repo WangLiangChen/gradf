@@ -5,7 +5,7 @@ import liangchen.wang.gradf.component.business.dao.entity.Infinite;
 import liangchen.wang.gradf.component.business.dao.query.InfiniteQuery;
 import liangchen.wang.gradf.framework.cache.annotation.GradfAutoCacheable;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
-import liangchen.wang.gradf.framework.data.base.AbstractBaseDao;
+import liangchen.wang.gradf.framework.data.core.AbstractJdbcDao;
 import liangchen.wang.gradf.framework.data.enumeration.Status;
 import org.springframework.stereotype.Repository;
 
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Repository("Gradf_Business_DefaultInfiniteDao")
 @GradfAutoCacheable(clearMethods = {"insert*", "delete*", "update*"}, durationRange = "1-24", timeUnit = TimeUnit.HOURS)
-public class InfiniteDaoImpl extends AbstractBaseDao<Infinite, InfiniteQuery> implements IInfiniteDao {
+public class InfiniteDaoImpl extends AbstractJdbcDao<Infinite, InfiniteQuery> implements IInfiniteDao {
     @Override
     public void insertChild(Infinite infinite) {
         // 查询父级节点右值

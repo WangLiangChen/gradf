@@ -1,10 +1,10 @@
-package liangchen.wang.gradf.framework.data.base;
+package liangchen.wang.gradf.framework.data.core;
 
 import liangchen.wang.gradf.framework.commons.exception.InfoException;
 import liangchen.wang.gradf.framework.commons.utils.ConcurrentUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.data.annotation.Query;
-import liangchen.wang.gradf.framework.data.condition.DataConditionAnnotation;
+import liangchen.wang.gradf.framework.data.condition.JdbcConditionAnnotation;
 import liangchen.wang.gradf.framework.data.entity.Between;
 import liangchen.wang.gradf.framework.data.enumeration.AndOr;
 import liangchen.wang.gradf.framework.data.enumeration.Operator;
@@ -19,10 +19,9 @@ import org.hibernate.metamodel.model.domain.internal.EntityTypeImpl;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Table;
@@ -38,14 +37,12 @@ import java.util.stream.Collectors;
 /**
  * @author LiangChen.Wang
  */
-@DataConditionAnnotation
-@Repository("Gradf_Data_MysqlDaoBuilder")
-public class MysqlDaoBuilder {
-    protected final Logger logger = LoggerFactory.getLogger(MysqlDaoBuilder.class);
+@JdbcConditionAnnotation
+@Repository("Gradf_Data_MybatisStatementBuilder")
+public class MybatisStatementBuilder {
+    protected final Logger logger = LoggerFactory.getLogger(MybatisStatementBuilder.class);
     private final static Map<String, Storer> storerMap = new ConcurrentHashMap<>(100);
-    @Resource(name = "jdbcTemplate")
-    private JdbcTemplate jdbcTemplate;
-    @Resource(name = "sqlSessionTemplate")
+    @Inject
     private SqlSessionTemplate sqlSessionTemplate;
     @PersistenceContext
     private EntityManager entityManager;
@@ -151,17 +148,17 @@ public class MysqlDaoBuilder {
                 StringBuilder sqlBuilder = new StringBuilder();
                 sqlBuilder.append("<script>update ").append(entityStorer.getTableName()).append("<set>");
                 entityStorer.getFields().forEach(e -> {
-                    sqlBuilder.append("<if test=\"@liangchen.wang.gradf.framework.data.GradfOgnl@isNotEmpty(entity.").append(e).append(")\">");
+                    sqlBuilder.append("<if test=\"@liangchen.wang.gradf.framework.data.mybatis.Ognl@isNotEmpty(entity.").append(e).append(")\">");
                     sqlBuilder.append(e).append("=#{entity.").append(e).append("},");
                     sqlBuilder.append("</if>");
                 });
 
-                sqlBuilder.append("<if test=\"@liangchen.wang.gradf.framework.data.GradfOgnl@isNotEmpty(entity.dynamicFields)\">");
+                sqlBuilder.append("<if test=\"@liangchen.wang.gradf.framework.data.mybatis.Ognl@isNotEmpty(entity.dynamicFields)\">");
                 sqlBuilder.append("<foreach collection=\"entity.dynamicFields.keys\" item=\"key\" separator=\",\">");
-                sqlBuilder.append("<if test=\"@liangchen.wang.gradf.framework.data.GradfOgnl@isNull(entity.dynamicFields[key])\">");
+                sqlBuilder.append("<if test=\"@liangchen.wang.gradf.framework.data.mybatis.Ognl@isNull(entity.dynamicFields[key])\">");
                 sqlBuilder.append("${key} = null");
                 sqlBuilder.append("</if>");
-                sqlBuilder.append("<if test=\"@liangchen.wang.gradf.framework.data.GradfOgnl@isNotNull(entity.dynamicFields[key])\">");
+                sqlBuilder.append("<if test=\"@liangchen.wang.gradf.framework.data.mybatis.Ognl@isNotNull(entity.dynamicFields[key])\">");
                 sqlBuilder.append("${key} = #{entity.dynamicFields.${key}}");
                 sqlBuilder.append("</if>");
                 sqlBuilder.append("</foreach>");
@@ -216,7 +213,7 @@ public class MysqlDaoBuilder {
                 listSql.append("<script>select <trim suffixOverrides=\",\"><foreach collection=\"returnFields\" item=\"item\" index=\"index\" separator=\",\">${item}</foreach></trim> from ").append(entityStorer.getTableName());
                 listSql.append(findWhereSql(queryClass));
                 listSql.append("<if test=\"true==forUpdate\">").append("for update").append("</if>");
-                listSql.append("<if test=\"@liangchen.wang.gradf.framework.data.GradfOgnl@isNotEmpty(orderBy)\"> order by <foreach collection=\"orderBy\" item=\"item\" index=\"index\" separator=\",\"> ${item.orderBy} ${item.direction} </foreach></if>");
+                listSql.append("<if test=\"@liangchen.wang.gradf.framework.data.mybatis.Ognl@isNotEmpty(orderBy)\"> order by <foreach collection=\"orderBy\" item=\"item\" index=\"index\" separator=\",\"> ${item.orderBy} ${item.direction} </foreach></if>");
                 listSql.append("<if test=\"null!=offset and null!=rows\">limit #{offset},#{rows}</if>");
                 listSql.append("</script>");
                 buildMappedStatement(cacheKey, SqlCommandType.SELECT, listSql.toString(), queryClass, entityClass);
@@ -242,7 +239,7 @@ public class MysqlDaoBuilder {
             if (columnName.length() == 0) {
                 columnName = fieldName;
             }
-            whereSql.append("<if test=\"@liangchen.wang.gradf.framework.data.GradfOgnl@isNotEmpty(").append(fieldName).append(")\">");
+            whereSql.append("<if test=\"@liangchen.wang.gradf.framework.data.mybatis.Ognl@isNotEmpty(").append(fieldName).append(")\">");
             AndOr andOr = annotation.andOr();
             whereSql.append(andOr.getAndOr()).append(columnName);
             Operator operator = annotation.operator();

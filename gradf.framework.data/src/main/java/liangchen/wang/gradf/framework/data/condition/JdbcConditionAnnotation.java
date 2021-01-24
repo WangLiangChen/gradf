@@ -11,6 +11,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Documented
-@Conditional(DataCondition.class)
-public @interface DataConditionAnnotation {
+@Conditional(JdbcCondition.class)
+public @interface JdbcConditionAnnotation {
 }

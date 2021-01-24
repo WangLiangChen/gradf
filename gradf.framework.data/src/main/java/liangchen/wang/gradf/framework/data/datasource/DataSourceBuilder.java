@@ -21,7 +21,8 @@ import java.util.Map;
  */
 public final class DataSourceBuilder<T extends DataSource> {
 
-    private static final String[] DATA_SOURCE_TYPE_NAMES = new String[]{"com.zaxxer.hikari.HikariDataSource",
+    private static final String[] DATA_SOURCE_TYPE_NAMES = new String[]{
+            "com.zaxxer.hikari.HikariDataSource",
             "org.apache.tomcat.jdbc.pool.DataSource",
             "org.apache.commons.dbcp2.BasicDataSource"};
 

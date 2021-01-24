@@ -1,4 +1,4 @@
-package liangchen.wang.gradf.framework.data;
+package liangchen.wang.gradf.framework.data.mybatis;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
@@ -7,9 +7,9 @@ import java.util.Map;
 /**
  * @author LiangChen.Wang
  * 提供给mybatis判断使用
- * <if test="@liangchen.wang.gradf.framework.data.GradfOgnl@isNotBlank(tenantId)">
+ * <if test="@liangchen.wang.gradf.framework.data.mybatis.Ognl@isNotBlank(tenantId)">
  */
-public class GradfOgnl {
+public class Ognl {
     public static boolean isTrue(Boolean bool) {
         return null != bool && bool;
     }

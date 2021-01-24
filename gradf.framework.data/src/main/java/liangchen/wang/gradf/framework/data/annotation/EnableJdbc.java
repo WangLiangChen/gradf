@@ -1,12 +1,13 @@
 package liangchen.wang.gradf.framework.data.annotation;
 
+import com.google.common.base.Splitter;
 import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
 import liangchen.wang.gradf.framework.commons.utils.NetUtil;
 import liangchen.wang.gradf.framework.commons.utils.Printer;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.data.configuration.JdbcAutoConfiguration;
-import liangchen.wang.gradf.framework.data.datasource.DynamicDataSourceRegister;
-import liangchen.wang.gradf.framework.data.datasource.aspect.DynamicDataSourceAspect;
+import liangchen.wang.gradf.framework.data.datasource.MultipleDataSourceRegister;
+import liangchen.wang.gradf.framework.data.aspect.DynamicDataSourceAspect;
 import liangchen.wang.gradf.framework.data.enumeration.DataStatus;
 import org.apache.commons.configuration2.Configuration;
 import org.springframework.context.annotation.Import;
@@ -29,8 +30,8 @@ import java.util.stream.Collectors;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public @interface EnableJdbc {
     class JdbcImportSelector implements ImportSelector {
+        private final String JDBC_CONFIG_FILE = "jdbc.properties";
         private final int TIMEOUT = 30 * 1000;
-        private final Configuration configuration = ConfigurationUtil.INSTANCE.getConfiguration("datasource.properties");
         private static boolean loaded = false;
 
         @Override
@@ -38,10 +39,12 @@ public @interface EnableJdbc {
             if (loaded) {
                 return new String[0];
             }
-            Printer.INSTANCE.prettyPrint("@EnableJdbc 开启了Jdbc......");
-            Printer.INSTANCE.prettyPrint("@EnableJdbc 匹配的类: {}", annotationMetadata.getClassName());
+            boolean exists = ConfigurationUtil.INSTANCE.exists(JDBC_CONFIG_FILE);
+            Assert.INSTANCE.isTrue(exists, "Configuration file: {} is required,because @EnableJdbc is setted", JDBC_CONFIG_FILE);
+            Printer.INSTANCE.prettyPrint("@EnableJdbc Start JDBC......");
+            Printer.INSTANCE.prettyPrint("@EnableJdbc matched class: {}", annotationMetadata.getClassName());
             validateConnectionalbe();
-            String[] imports = new String[]{DynamicDataSourceRegister.class.getName(), JdbcAutoConfiguration.class.getName(), DynamicDataSourceAspect.class.getName()};
+            String[] imports = new String[]{MultipleDataSourceRegister.class.getName(), JdbcAutoConfiguration.class.getName(), DynamicDataSourceAspect.class.getName()};
             loaded = true;
             // 设置全局jdbc状态
             DataStatus.INSTANCE.setJdbcEnable(true);
@@ -49,33 +52,32 @@ public @interface EnableJdbc {
         }
 
         private void validateConnectionalbe() {
-            Printer.INSTANCE.prettyPrint("尝试连接DB......");
+            Printer.INSTANCE.prettyPrint("Try to connect to DB......");
+            Configuration configuration = ConfigurationUtil.INSTANCE.getConfiguration(JDBC_CONFIG_FILE);
             // 将配置分组
             Iterator<String> keys = configuration.getKeys();
             Map<String, Map<String, String>> datasourceMap = new HashMap<>();
             keys.forEachRemaining(key -> {
-                String[] array = key.split("\\.");
-                Map<String, String> properties = datasourceMap.get(array[0]);
-                if (null == properties) {
-                    properties = new HashMap<>();
-                    datasourceMap.put(array[0], properties);
-                }
-                properties.put(array[1], configuration.getString(key));
+                List<String> keyList = Splitter.on('.').splitToList(key);
+                String dataSourceFlag = keyList.get(0);
+                datasourceMap.putIfAbsent(dataSourceFlag, new HashMap<>());
+                Map<String, String> properties = datasourceMap.get(dataSourceFlag);
+                properties.put(keyList.get(1), configuration.getString(key));
             });
-            Assert.INSTANCE.isTrue(datasourceMap.containsKey("default"), "default datasource is not exists");
+            Assert.INSTANCE.isTrue(datasourceMap.containsKey("primary"), "primary datasource is not exists");
 
             // 验证配置项是否缺失
             List<String> requiredKeyList = new ArrayList<>(Arrays.asList(new String[]{"dialect", "datasource", "host", "port", "database", "username", "password"}));
             String requiredKey = requiredKeyList.stream().sorted().collect(Collectors.joining(","));
             datasourceMap.forEach((k, v) -> {
-                String configuredKey = v.keySet().stream().map(String::valueOf).sorted().collect(Collectors.joining(","));
-                //Assert.INSTANCE.isTrue(configuredKey.contains(requiredKey), "配置项缺失,{}需要配置:{}", k, requiredKey);
+                String configuredKey = v.keySet().stream().sorted().collect(Collectors.joining(","));
+                Assert.INSTANCE.isTrue(requiredKey.equals(configuredKey), "DataSource: {}, configuration items :{} are required!", k, requiredKey);
             });
             // 验证基本网络是否通
             datasourceMap.forEach((k, v) -> {
-                Assert.INSTANCE.isTrue(NetUtil.INSTANCE.isConnectable(v.get("host"), Integer.valueOf(v.get("port")), TIMEOUT), "数据源 {} 连接测试失败", k);
+                Assert.INSTANCE.isTrue(NetUtil.INSTANCE.isConnectable(v.get("host"), Integer.valueOf(v.get("port")), TIMEOUT), "DataSource {} Connection test failed", k);
             });
-            Printer.INSTANCE.prettyPrint("DB连接测试成功......");
+            Printer.INSTANCE.prettyPrint("DB Connection test successed......");
         }
     }
 }

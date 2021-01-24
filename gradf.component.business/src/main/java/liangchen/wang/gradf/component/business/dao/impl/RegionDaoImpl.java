@@ -4,7 +4,7 @@ import liangchen.wang.gradf.component.business.dao.IRegionDao;
 import liangchen.wang.gradf.component.business.dao.entity.Region;
 import liangchen.wang.gradf.component.business.dao.query.RegionQuery;
 import liangchen.wang.gradf.framework.cache.annotation.GradfAutoCacheable;
-import liangchen.wang.gradf.framework.data.base.AbstractBaseDao;
+import liangchen.wang.gradf.framework.data.core.AbstractJdbcDao;
 import org.springframework.stereotype.Repository;
 
 import java.util.concurrent.TimeUnit;
@@ -14,6 +14,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Repository("Gradf_Business_DefaultRegionDao")
 @GradfAutoCacheable(clearMethods = {"insert", "delete*", "update*"}, durationRange = "1-24", timeUnit = TimeUnit.HOURS)
-public class RegionDaoImpl extends AbstractBaseDao<Region, RegionQuery> implements IRegionDao {
+public class RegionDaoImpl extends AbstractJdbcDao<Region, RegionQuery> implements IRegionDao {
 
 }

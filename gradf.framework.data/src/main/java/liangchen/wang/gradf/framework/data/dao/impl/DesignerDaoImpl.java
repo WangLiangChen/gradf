@@ -1,7 +1,7 @@
 package liangchen.wang.gradf.framework.data.dao.impl;
 
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
-import liangchen.wang.gradf.framework.data.condition.DataConditionAnnotation;
+import liangchen.wang.gradf.framework.data.condition.JdbcConditionAnnotation;
 import liangchen.wang.gradf.framework.data.dao.IDesignerDao;
 import liangchen.wang.gradf.framework.data.entity.Column;
 import liangchen.wang.gradf.framework.data.entity.Columns;
@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * @author LiangChen.Wang 2019/11/19 21:11
  */
-@DataConditionAnnotation
+@JdbcConditionAnnotation
 @Repository("Gradf_Data_DesignerDao")
 public class DesignerDaoImpl implements IDesignerDao {
     private final JdbcTemplate jdbcTemplate;

@@ -4,7 +4,7 @@ import liangchen.wang.gradf.component.foura.dao.IAccountDao;
 import liangchen.wang.gradf.component.foura.dao.entity.Account;
 import liangchen.wang.gradf.component.foura.dao.query.AccountQuery;
 import liangchen.wang.gradf.framework.cache.annotation.GradfAutoCacheable;
-import liangchen.wang.gradf.framework.data.base.AbstractBaseDao;
+import liangchen.wang.gradf.framework.data.core.AbstractJdbcDao;
 import org.springframework.stereotype.Repository;
 
 import java.util.concurrent.TimeUnit;
@@ -14,6 +14,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Repository("Gradf_Foura_DefaultAccountDao")
 @GradfAutoCacheable(clearMethods = {"insert*", "delete*", "update*"}, excludeMethods = {"accountIdByaccountKey"}, durationRange = "1-24", timeUnit = TimeUnit.HOURS)
-public class AccountDaoImpl extends AbstractBaseDao<Account, AccountQuery> implements IAccountDao {
+public class AccountDaoImpl extends AbstractJdbcDao<Account, AccountQuery> implements IAccountDao {
 
 }

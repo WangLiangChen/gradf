@@ -1,7 +1,7 @@
 package liangchen.wang.gradf.framework.cluster.redis;
 
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
-import liangchen.wang.gradf.framework.data.api.ILock;
+import liangchen.wang.gradf.framework.api.ILock;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.integration.redis.util.RedisLockRegistry;
 import org.springframework.stereotype.Component;

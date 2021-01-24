@@ -1,4 +1,4 @@
-package liangchen.wang.gradf.framework.data.base;
+package liangchen.wang.gradf.framework.data.core;
 
 
 import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
@@ -9,7 +9,7 @@ import java.util.Optional;
 /**
  * @author LiangChen.Wang
  */
-public interface IAbstractDao<E extends RootEntity, Q extends RootQuery> {
+public interface IDao<E extends RootEntity, Q extends RootQuery> {
 
     boolean insert(E entity);
 
