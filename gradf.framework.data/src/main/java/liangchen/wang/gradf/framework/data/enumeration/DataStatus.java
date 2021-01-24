@@ -8,17 +8,30 @@ public enum DataStatus {
      *
      */
     INSTANCE;
-    private boolean jdbcEnable;
+    private boolean jdbcEnabled;
+    private boolean cassandraEnabled;
 
-    public boolean isJdbcEnable() {
-        return jdbcEnable;
+    public boolean isJdbcEnabled() {
+        return jdbcEnabled;
     }
 
-    public boolean isNotJdbcEnable() {
-        return !jdbcEnable;
+    public boolean isNotJdbcEnabled() {
+        return !jdbcEnabled;
     }
 
-    public void setJdbcEnable(boolean jdbcEnable) {
-        this.jdbcEnable = jdbcEnable;
+    public void setJdbcEnabled(boolean jdbcEnabled) {
+        this.jdbcEnabled = jdbcEnabled;
+    }
+
+    public boolean isCassandraEnabled() {
+        return cassandraEnabled;
+    }
+
+    public boolean isNotCassandraEnabled() {
+        return !cassandraEnabled;
+    }
+
+    public void setCassandraEnabled(boolean cassandraEnabled) {
+        this.cassandraEnabled = cassandraEnabled;
     }
 }

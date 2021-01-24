@@ -47,7 +47,7 @@ public @interface EnableJdbc {
             String[] imports = new String[]{MultipleDataSourceRegister.class.getName(), JdbcAutoConfiguration.class.getName(), DynamicDataSourceAspect.class.getName()};
             loaded = true;
             // 设置全局jdbc状态
-            DataStatus.INSTANCE.setJdbcEnable(true);
+            DataStatus.INSTANCE.setJdbcEnabled(true);
             return imports;
         }
 
@@ -70,7 +70,7 @@ public @interface EnableJdbc {
             List<String> requiredKeyList = new ArrayList<>(Arrays.asList(new String[]{"dialect", "datasource", "host", "port", "database", "username", "password"}));
             String requiredKey = requiredKeyList.stream().sorted().collect(Collectors.joining(","));
             datasourceMap.forEach((k, v) -> {
-                String configuredKey = v.keySet().stream().sorted().collect(Collectors.joining(","));
+                String configuredKey = v.keySet().stream().sorted().limit(requiredKeyList.size()).collect(Collectors.joining(","));
                 Assert.INSTANCE.isTrue(requiredKey.equals(configuredKey), "DataSource: {}, configuration items :{} are required!", k, requiredKey);
             });
             // 验证基本网络是否通

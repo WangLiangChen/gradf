@@ -8,10 +8,10 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 /**
  * @author LiangChen.Wang
  */
-public class JdbcCondition implements ConfigurationCondition {
+public class CassandraCondition implements ConfigurationCondition {
     @Override
     public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata) {
-        return DataStatus.INSTANCE.isJdbcEnabled();
+        return DataStatus.INSTANCE.isCassandraEnabled();
     }
 
     @Override

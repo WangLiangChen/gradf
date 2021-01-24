@@ -81,6 +81,7 @@ public class DefaultApplicationContextInitializer implements ApplicationContextI
         defaultProperties.setProperty("spring.autoconfigure.exclude[2]", "org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration");
         defaultProperties.setProperty("spring.autoconfigure.exclude[3]", "org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration");
         defaultProperties.setProperty("spring.autoconfigure.exclude[4]", "org.springframework.boot.autoconfigure.aop.AopAutoConfiguration");
+        defaultProperties.setProperty("spring.autoconfigure.exclude[5]","org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration");
         // 将需要排除扫描的包放入Environment
         Set<Object> allSources = springApplication.getAllSources();
         String excludeScan = allSources.stream().map(e -> ((Class) e).getPackage().getName()).filter(e -> e.startsWith(DEFAULT_PACKAGES)).collect(Collectors.joining(","));
