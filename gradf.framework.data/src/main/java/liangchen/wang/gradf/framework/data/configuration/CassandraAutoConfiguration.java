@@ -10,6 +10,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +19,7 @@ public class CassandraAutoConfiguration {
     private final String CASSANDRA_CONFIG_FILE = "cassandra.properties";
 
     @Bean
+    @Primary
     public CassandraProperties cassandraProperties() {
         Configuration configuration = ConfigurationUtil.INSTANCE.getConfiguration(CASSANDRA_CONFIG_FILE);
         Map<String, Object> configItems = new HashMap<>();
