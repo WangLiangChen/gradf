@@ -68,10 +68,11 @@ public @interface EnableJdbc {
 
             // 验证配置项是否缺失
             List<String> requiredKeyList = new ArrayList<>(Arrays.asList(new String[]{"dialect", "datasource", "host", "port", "database", "username", "password"}));
-            String requiredKey = requiredKeyList.stream().sorted().collect(Collectors.joining(","));
             datasourceMap.forEach((k, v) -> {
-                String configuredKey = v.keySet().stream().sorted().limit(requiredKeyList.size()).collect(Collectors.joining(","));
-                Assert.INSTANCE.isTrue(requiredKey.equals(configuredKey), "DataSource: {}, configuration items :{} are required!", k, requiredKey);
+                Set<String> configedSet = v.keySet().stream().collect(Collectors.toSet());
+                // 取个交集
+                configedSet.retainAll(requiredKeyList);
+                Assert.INSTANCE.isTrue(configedSet.size() == requiredKeyList.size(), "DataSource: {}, configuration items :{} are required!", k, requiredKeyList);
             });
             // 验证基本网络是否通
             datasourceMap.forEach((k, v) -> {
