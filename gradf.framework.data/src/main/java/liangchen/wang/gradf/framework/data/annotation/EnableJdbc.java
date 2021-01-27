@@ -67,12 +67,13 @@ public @interface EnableJdbc {
             Assert.INSTANCE.isTrue(datasourceMap.containsKey("primary"), "primary datasource is not exists");
 
             // 验证配置项是否缺失
-            List<String> requiredKeyList = new ArrayList<>(Arrays.asList(new String[]{"dialect", "datasource", "host", "port", "database", "username", "password"}));
+            String[] requiredKeys = new String[]{"dialect", "datasource", "host", "port", "database", "username", "password"};
+            int requiredkeysLength = requiredKeys.length;
+            List<String> requiredKeyList = new ArrayList<>(Arrays.asList(requiredKeys));
             datasourceMap.forEach((k, v) -> {
-                Set<String> configedSet = v.keySet().stream().collect(Collectors.toSet());
                 // 取个交集
-                configedSet.retainAll(requiredKeyList);
-                Assert.INSTANCE.isTrue(configedSet.size() == requiredKeyList.size(), "DataSource: {}, configuration items :{} are required!", k, requiredKeyList);
+                requiredKeyList.retainAll(v.keySet());
+                Assert.INSTANCE.isTrue(requiredkeysLength == requiredKeyList.size(), "DataSource: {}, configuration items :{} are required!", k, requiredKeyList);
             });
             // 验证基本网络是否通
             datasourceMap.forEach((k, v) -> {
