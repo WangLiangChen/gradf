@@ -1,6 +1,7 @@
 package liangchen.wang.gradf.framework.commons.object;
 
 import com.esotericsoftware.reflectasm.MethodAccess;
+import com.google.common.base.Splitter;
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
 import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
@@ -30,39 +31,31 @@ public abstract class EnhancedObject implements Serializable, Cloneable {
         return dynamicFields.isEmpty();
     }
 
-    public boolean containsKey(Object key) {
-        boolean result = dynamicFields.containsKey(key);
-        if ((!result) && key instanceof Number) {
-            result = dynamicFields.containsKey(key.toString());
-        }
-        return result;
+    public boolean containsKey(String key) {
+        return dynamicFields.containsKey(key);
     }
 
     public boolean containsValue(Object value) {
         return dynamicFields.containsValue(value);
     }
 
-    public Object get(Object key) {
-        Object val = dynamicFields.get(key);
-        if (val == null && key instanceof Number) {
-            val = dynamicFields.get(key.toString());
-        }
-        return val;
+    public Object get(String key) {
+        return dynamicFields.get(key);
     }
 
     public Object put(String key, Object value) {
         return dynamicFields.put(key, value);
     }
 
-    public void putAll(Map<? extends String, ? extends Object> m) {
-        dynamicFields.putAll(m);
+    public void putAll(Map<String, Object> map) {
+        dynamicFields.putAll(map);
     }
 
     public void clear() {
         dynamicFields.clear();
     }
 
-    public Object remove(Object key) {
+    public Object remove(String key) {
         return dynamicFields.remove(key);
     }
 
@@ -105,20 +98,17 @@ public abstract class EnhancedObject implements Serializable, Cloneable {
     protected List<String> methodNames() {
         MethodAccess methodAccess = methodAccess();
         String[] methodNameArray = methodAccess.getMethodNames();
-        List<String> methodNames = Arrays.asList(methodNameArray);
-        return methodNames;
+        return Arrays.asList(methodNameArray);
     }
 
     public void initFields(String... ignoreFields) {
         Set<String> ignores = new HashSet<>();
         if (CollectionUtil.INSTANCE.isNotEmpty(ignoreFields)) {
-            Arrays.stream(ignoreFields).forEach(s -> {
-                String[] split = s.split(",");
-                Arrays.stream(split).forEach(ignores::add);
-            });
+            Arrays.stream(ignoreFields).forEach(s -> ignores.addAll(Splitter.on(',').splitToList(s)));
         }
         MethodAccess methodAccess = methodAccess();
         List<String> methodNames = methodNames();
+        //noinspection rawtypes
         Class[] returnTypes = methodAccess.getReturnTypes();
         methodNames.forEach(setter -> {
             if (!setter.startsWith("set")) {
@@ -134,13 +124,14 @@ public abstract class EnhancedObject implements Serializable, Cloneable {
                 return;
             }
             int getterIndex = methodAccess.getIndex(getter);
+            //noinspection rawtypes
             Class parameterType = returnTypes[getterIndex];
             initDefaultValue(methodAccess, getter, setter, parameterType);
         });
     }
 
     @SuppressWarnings("unchecked")
-    private void initDefaultValue(MethodAccess methodAccess, String getter, String setter, Class parameterType) {
+    private void initDefaultValue(MethodAccess methodAccess, String getter, String setter, @SuppressWarnings("rawtypes") Class parameterType) {
         Object invoke = methodAccess.invoke(this, getter);
         if (null != invoke) {
             return;
@@ -175,7 +166,6 @@ public abstract class EnhancedObject implements Serializable, Cloneable {
         }
         if (parameterType.isAssignableFrom(BigDecimal.class)) {
             methodAccess.invoke(this, setter, new BigDecimal(0));
-            return;
         }
     }
 
@@ -191,5 +181,33 @@ public abstract class EnhancedObject implements Serializable, Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new ErrorException(e);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        return o != null && getClass() == o.getClass();
+    }
+
+    protected boolean equals(Object a, Object b) {
+        return Objects.equals(a, b);
+    }
+
+    protected int hashCode(Object... objects) {
+        return Arrays.hashCode(objects);
+    }
+
+    protected int deepHashCode(Object... objects) {
+        return Arrays.deepHashCode(objects);
+    }
+
+    protected int hashCodePositive(Object... objects) {
+        return Arrays.hashCode(objects) & Integer.MAX_VALUE;
+    }
+
+    protected boolean deepEquals(Object a, Object b) {
+        return Objects.deepEquals(a, b);
     }
 }
