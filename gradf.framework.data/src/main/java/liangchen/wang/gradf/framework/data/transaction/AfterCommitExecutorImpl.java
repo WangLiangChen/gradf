@@ -2,7 +2,7 @@ package liangchen.wang.gradf.framework.data.transaction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.inject.Inject;
@@ -13,7 +13,7 @@ import java.util.concurrent.Executor;
 /**
  * @author LiangChen.Wang
  */
-public class AfterCommitExecutorImpl extends TransactionSynchronizationAdapter implements IAfterCommitExecutor {
+public class AfterCommitExecutorImpl implements TransactionSynchronization, IAfterCommitExecutor {
     private static final Logger logger = LoggerFactory.getLogger(AfterCommitExecutorImpl.class);
     private static final ThreadLocal<List<Runnable>> runnables = ThreadLocal.withInitial(() -> new ArrayList<>(10));
     private ThreadLocal<Boolean> registed = ThreadLocal.withInitial(() -> false);

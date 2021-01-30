@@ -1,7 +1,6 @@
 package liangchen.wang.gradf.framework.data.annotation;
 
 import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
-import liangchen.wang.gradf.framework.commons.utils.NetUtil;
 import liangchen.wang.gradf.framework.commons.utils.Printer;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.data.configuration.CassandraAutoConfiguration;
@@ -13,10 +12,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotationMetadata;
 
 import java.lang.annotation.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author LiangChen.Wang

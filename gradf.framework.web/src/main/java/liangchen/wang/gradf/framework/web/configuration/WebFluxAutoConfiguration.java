@@ -22,6 +22,6 @@ public class WebFluxAutoConfiguration implements WebFluxConfigurer {
 
     @Bean
     public Scheduler scheduler() {
-        return Schedulers.elastic();
+        return Schedulers.boundedElastic();
     }
 }

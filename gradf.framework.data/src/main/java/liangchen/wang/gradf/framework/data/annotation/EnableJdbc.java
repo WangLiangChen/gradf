@@ -5,9 +5,9 @@ import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
 import liangchen.wang.gradf.framework.commons.utils.NetUtil;
 import liangchen.wang.gradf.framework.commons.utils.Printer;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
+import liangchen.wang.gradf.framework.data.aspect.DynamicDataSourceAspect;
 import liangchen.wang.gradf.framework.data.configuration.JdbcAutoConfiguration;
 import liangchen.wang.gradf.framework.data.datasource.MultipleDataSourceRegister;
-import liangchen.wang.gradf.framework.data.aspect.DynamicDataSourceAspect;
 import liangchen.wang.gradf.framework.data.enumeration.DataStatus;
 import org.apache.commons.configuration2.Configuration;
 import org.springframework.context.annotation.Import;
@@ -18,7 +18,6 @@ import org.springframework.core.type.AnnotationMetadata;
 
 import java.lang.annotation.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author LiangChen.Wang

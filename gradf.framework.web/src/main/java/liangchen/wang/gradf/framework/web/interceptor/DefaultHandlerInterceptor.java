@@ -1,6 +1,6 @@
 package liangchen.wang.gradf.framework.web.interceptor;
 
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.AsyncHandlerInterceptor;
 
-public class DefaultHandlerInterceptor extends HandlerInterceptorAdapter {
+public class DefaultHandlerInterceptor implements AsyncHandlerInterceptor {
 }

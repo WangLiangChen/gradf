@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  * @author LiangChen.Wang

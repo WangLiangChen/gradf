@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.transaction.Transactional;
 
 @Component("Gradf_Data_SequenceManager")
 @ConditionalOnBean(ISequenceDao.class)

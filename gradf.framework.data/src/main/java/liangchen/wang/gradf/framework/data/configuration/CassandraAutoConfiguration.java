@@ -1,7 +1,6 @@
 package liangchen.wang.gradf.framework.data.configuration;
 
 import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
-import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
 import org.apache.commons.configuration2.Configuration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
