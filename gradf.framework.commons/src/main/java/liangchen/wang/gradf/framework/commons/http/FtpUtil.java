@@ -24,7 +24,7 @@ public enum FtpUtil {
     }
 
     public void download(URIResolver uriResolver, NetResponse<InputStream> netResponse) {
-        ThreadPoolUtil.INSTANCE.getExecutorService().execute(() -> {
+        ThreadPoolUtil.INSTANCE.getExecutor().execute(() -> {
             FTPClient ftpClient = new FTPClient();
             ftpClient.setConnectTimeout(60000);
             try {

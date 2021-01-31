@@ -2,10 +2,10 @@ package liangchen.wang.gradf.framework.data.dao;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
 import liangchen.wang.gradf.framework.commons.exception.InfoException;
-import liangchen.wang.gradf.framework.commons.logger.Logger;
 import liangchen.wang.gradf.framework.commons.logger.LoggerFactory;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import net.javacrumbs.shedlock.support.LockException;
+import org.slf4j.Logger;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
 import javax.inject.Inject;

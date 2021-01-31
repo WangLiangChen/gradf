@@ -39,7 +39,7 @@ public enum CommandUtil {
 
     public Stream<String> stream(Runnable commandCompletedRunnable, ExecuteWatchdog watchdog, String command, String... args) {
         BlockingQueue<String> queue = new LinkedBlockingQueue<>();
-        ThreadPoolUtil.INSTANCE.getExecutorService().execute(() -> {
+        ThreadPoolUtil.INSTANCE.getExecutor().execute(() -> {
             execute(line -> queue.offer(line), watchdog, command, args);
             if (null != commandCompletedRunnable) {
                 commandCompletedRunnable.run();

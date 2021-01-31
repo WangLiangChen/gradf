@@ -10,7 +10,7 @@ import java.util.Optional;
  * @author LiangChen.Wang 2020/11/24
  */
 
-public class Logger implements org.slf4j.Logger {
+public final class Logger implements org.slf4j.Logger {
     private final org.slf4j.Logger delegate;
 
     public Logger() {

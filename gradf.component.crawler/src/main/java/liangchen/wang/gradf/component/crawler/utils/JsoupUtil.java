@@ -12,7 +12,7 @@ public enum JsoupUtil {
     INSTANCE;
 
     public void crawl(String url, NetResponse<Document> netResponse) {
-        ThreadPoolUtil.INSTANCE.getExecutorService().execute(() -> {
+        ThreadPoolUtil.INSTANCE.getExecutor().execute(() -> {
             try {
                 Connection connection = Jsoup.connect(url).timeout(3600000).maxBodySize(5242880)
                         .userAgent(UserAgent.byOsRandom(UserAgent.Os.Windows, UserAgent.Os.Linux, UserAgent.Os.Mac));

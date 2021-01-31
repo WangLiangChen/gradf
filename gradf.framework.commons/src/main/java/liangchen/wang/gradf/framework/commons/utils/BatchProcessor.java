@@ -16,6 +16,7 @@ import java.util.function.Consumer;
  */
 public class BatchProcessor<E> {
     private final BlockingQueue<E> blockingQueue;
+    private final List<E> bufferList;
     private final int batchSize;
     private final long timeout;
     private final TimeUnit timeUnit;
@@ -30,6 +31,7 @@ public class BatchProcessor<E> {
     public BatchProcessor(int batchSize, long timeout, TimeUnit timeUnit) {
         this.batchSize = batchSize;
         this.blockingQueue = new ArrayBlockingQueue<>(batchSize * 5);
+        this.bufferList = new ArrayList<>(batchSize);
         this.timeout = timeout;
         this.timeUnit = timeUnit;
     }
@@ -81,10 +83,9 @@ public class BatchProcessor<E> {
     }
 
     private void onDrain() {
-        ThreadPoolUtil.INSTANCE.getExecutorService().execute(() -> {
-            List<E> bufferList;
+        ThreadPoolUtil.INSTANCE.getExecutor().execute(() -> {
             while (true) {
-                bufferList = new ArrayList<>(batchSize);
+                bufferList.clear();
                 try {
                     Queues.drain(blockingQueue, bufferList, batchSize, timeout, timeUnit);
                 } catch (InterruptedException e) {

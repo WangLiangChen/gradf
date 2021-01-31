@@ -1,7 +1,7 @@
 package liangchen.wang.gradf.framework.data.datasource;
 
-import liangchen.wang.gradf.framework.commons.logger.Logger;
 import liangchen.wang.gradf.framework.commons.logger.LoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
 /**

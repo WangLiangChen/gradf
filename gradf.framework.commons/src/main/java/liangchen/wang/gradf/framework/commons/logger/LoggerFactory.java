@@ -7,14 +7,14 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * @author LiangChen.Wang 2020/11/24
  */
-public class LoggerFactory {
+public final class LoggerFactory {
     private static final ConcurrentMap<String, Logger> loggerContainer = new ConcurrentHashMap<>();
 
-    public static Logger getLogger() {
+    public static org.slf4j.Logger getLogger() {
         return new Logger(LoggerFactory.class);
     }
 
-    public static Logger getLogger(String className) {
+    public static org.slf4j.Logger getLogger(String className) {
         Logger logger = loggerContainer.get(className);
         if (logger == null) {
             loggerContainer.putIfAbsent(className, new Logger(className));
@@ -23,7 +23,7 @@ public class LoggerFactory {
         return logger;
     }
 
-    public static Logger getLogger(Class clazz) {
+    public static org.slf4j.Logger getLogger(Class clazz) {
         return getLogger(clazz.getName());
     }
 }

@@ -6,16 +6,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 public enum ThreadPoolUtil {
     //
     INSTANCE;
-    private final ExecutorService executorService;
+    private final Executor executor;
 
     ThreadPoolUtil() {
         // 核心线程数0,最大线程数Integer.MAX_VALUE,空闲线程超时时间60 SECONDS , 线程等待队列SynchronousQueue(容量为0的队列)
-        executorService = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60, TimeUnit.SECONDS,
+        executor = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60, TimeUnit.SECONDS,
                 new SynchronousQueue<>(), getThreadFactory("unbounded-executor-", false));
     }
 
-    public ExecutorService getExecutorService() {
-        return executorService;
+    public Executor getExecutor() {
+        return executor;
     }
 
     public ThreadFactory getThreadFactory(String threadName, boolean daemon) {
