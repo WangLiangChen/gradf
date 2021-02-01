@@ -175,7 +175,7 @@ public abstract class EnhancedObject implements Serializable, Cloneable {
     }
 
     @Override
-    protected Object clone() {
+    public Object clone() {
         try {
             return super.clone();
         } catch (CloneNotSupportedException e) {
