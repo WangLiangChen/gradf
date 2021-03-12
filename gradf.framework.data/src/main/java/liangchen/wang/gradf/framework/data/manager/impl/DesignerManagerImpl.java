@@ -184,7 +184,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         if (extendedBaseEntity) {
             lines.add("import liangchen.wang.gradf.framework.data.entity.BaseEntity;");
         } else {
-            lines.add("import liangchen.wang.gradf.framework.data.base.RootEntity;");
+            lines.add("import liangchen.wang.gradf.framework.data.core.RootEntity;");
         }
         lines.add("");
         lines.add("import javax.persistence.Entity;");
@@ -262,7 +262,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("");
         lines.add("import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;");
         lines.add("import liangchen.wang.gradf.framework.data.annotation.Query;");
-        lines.add("import liangchen.wang.gradf.framework.data.base.RootQuery;");
+        lines.add("import liangchen.wang.gradf.framework.data.core.RootQuery;");
         lines.add("import liangchen.wang.gradf.framework.data.enumeration.Operator;");
         lines.add("");
         lines.add("import javax.persistence.Table;");
@@ -420,7 +420,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("import " + entityClass + ";");
         lines.add("import " + queryClass + ";");
         lines.add("import liangchen.wang.gradf.framework.cache.annotation.GradfAutoCacheable;");
-        lines.add("import liangchen.wang.gradf.framework.data.base.AbstractBaseDao;");
+        lines.add("import liangchen.wang.gradf.framework.data.core.AbstractJdbcDao;");
         lines.add("import org.springframework.stereotype.Repository;");
         lines.add("");
         lines.add("import java.util.concurrent.TimeUnit;");
@@ -432,7 +432,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("*/");
         lines.add("@Repository(\"" + daoBeanName + "\")");
         lines.add("@GradfAutoCacheable(clearMethods = {\"insert*\", \"delete*\", \"update*\"}, durationRange = \"1-24\", timeUnit = TimeUnit.HOURS)");
-        lines.add("public class " + daoName + " extends AbstractBaseDao<" + entityName + "," + queryName + "> implements " + iDaoName + " {");
+        lines.add("public class " + daoName + " extends AbstractJdbcDao<" + entityName + "," + queryName + "> implements " + iDaoName + " {");
         lines.add("");
         lines.add("}");
 
