@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -31,7 +32,7 @@ public class BatchProcessor<E> {
     public BatchProcessor(int batchSize, long timeout, TimeUnit timeUnit) {
         this.batchSize = batchSize;
         this.blockingQueue = new ArrayBlockingQueue<>(batchSize * 5);
-        this.bufferList = new ArrayList<>(batchSize);
+        this.bufferList = new CopyOnWriteArrayList<>(new ArrayList<>(batchSize));
         this.timeout = timeout;
         this.timeUnit = timeUnit;
     }
