@@ -1,11 +1,36 @@
 package liangchen.wang.gradf.framework.cache.annotation;
 
+import org.springframework.core.annotation.AliasFor;
+
 import java.lang.annotation.*;
 
+/**
+ * @author LiangChen.Wang
+ */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-@org.springframework.cache.annotation.Cacheable
 public @interface Cacheable {
+    @AliasFor("cacheNames")
+    String[] value() default {};
+
+    @AliasFor("value")
+    String[] cacheNames() default {};
+
+    String key() default "";
+
+    String keyGenerator() default "";
+
+    String cacheManager() default "";
+
+    String cacheResolver() default "";
+
+    String condition() default "";
+
+    String unless() default "";
+
+    boolean sync() default false;
+
+    long ttl() default 0;
 }

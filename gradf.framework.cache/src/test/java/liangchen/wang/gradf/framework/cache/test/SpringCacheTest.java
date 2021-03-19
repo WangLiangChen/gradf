@@ -14,6 +14,7 @@ import javax.inject.Inject;
 public class SpringCacheTest {
     @Inject
     private CacheClass cacheClass;
+
     @Test
     public void testCacheClass() {
         cacheClass.cacheMethod();
