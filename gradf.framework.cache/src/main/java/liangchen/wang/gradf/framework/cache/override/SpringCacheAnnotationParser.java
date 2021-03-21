@@ -1,4 +1,4 @@
-package liangchen.wang.gradf.framework.cache.parser;
+package liangchen.wang.gradf.framework.cache.override;
 
 import org.springframework.cache.annotation.*;
 import org.springframework.cache.interceptor.CacheEvictOperation;
@@ -32,6 +32,7 @@ public class SpringCacheAnnotationParser implements CacheAnnotationParser, Seria
         CACHE_OPERATION_ANNOTATIONS.add(liangchen.wang.gradf.framework.cache.annotation.Cacheable.class);
         CACHE_OPERATION_ANNOTATIONS.add(CacheEvict.class);
         CACHE_OPERATION_ANNOTATIONS.add(CachePut.class);
+        CACHE_OPERATION_ANNOTATIONS.add(liangchen.wang.gradf.framework.cache.annotation.CachePut.class);
         CACHE_OPERATION_ANNOTATIONS.add(Caching.class);
     }
 
@@ -81,59 +82,53 @@ public class SpringCacheAnnotationParser implements CacheAnnotationParser, Seria
 
         final Collection<CacheOperation> ops = new ArrayList<>(1);
         anns.stream().filter(ann -> ann instanceof Cacheable).forEach(
-                ann -> ops.add(parseCacheableAnnotation(ae, cachingConfig, (Cacheable) ann)));
+                ann -> ops.add(parseCacheableAnnotation(ae, cachingConfig, ann)));
         anns.stream().filter(ann -> ann instanceof liangchen.wang.gradf.framework.cache.annotation.Cacheable).forEach(
-                ann -> ops.add(parseCacheableAnnotation(ae, cachingConfig, (liangchen.wang.gradf.framework.cache.annotation.Cacheable) ann)));
+                ann -> ops.add(parseCacheableAnnotation(ae, cachingConfig, ann)));
         anns.stream().filter(ann -> ann instanceof CacheEvict).forEach(
                 ann -> ops.add(parseEvictAnnotation(ae, cachingConfig, (CacheEvict) ann)));
         anns.stream().filter(ann -> ann instanceof CachePut).forEach(
-                ann -> ops.add(parsePutAnnotation(ae, cachingConfig, (CachePut) ann)));
+                ann -> ops.add(parsePutAnnotation(ae, cachingConfig, ann)));
+        anns.stream().filter(ann -> ann instanceof CachePut).forEach(
+                ann -> ops.add(parsePutAnnotation(ae, cachingConfig, ann)));
         anns.stream().filter(ann -> ann instanceof Caching).forEach(
                 ann -> parseCachingAnnotation(ae, cachingConfig, (Caching) ann, ops));
         return ops;
     }
 
-    private CacheableOperation parseCacheableAnnotation(AnnotatedElement ae, DefaultCacheConfig defaultConfig, Cacheable cacheable) {
-
-        CacheableOperation.Builder builder = new CacheableOperation.Builder();
-
+    private CacheableOperation parseCacheableAnnotation(AnnotatedElement ae, DefaultCacheConfig defaultConfig, Annotation annotation) {
+        liangchen.wang.gradf.framework.cache.override.CacheableOperation.Builder builder = new liangchen.wang.gradf.framework.cache.override.CacheableOperation.Builder();
         builder.setName(ae.toString());
-        builder.setCacheNames(cacheable.cacheNames());
-        builder.setCondition(cacheable.condition());
-        builder.setUnless(cacheable.unless());
-        builder.setKey(cacheable.key());
-        builder.setKeyGenerator(cacheable.keyGenerator());
-        builder.setCacheManager(cacheable.cacheManager());
-        builder.setCacheResolver(cacheable.cacheResolver());
-        builder.setSync(cacheable.sync());
+        if (annotation instanceof Cacheable) {
+            Cacheable cacheable = (Cacheable) annotation;
+            builder.setCacheNames(cacheable.cacheNames());
+            builder.setCondition(cacheable.condition());
+            builder.setUnless(cacheable.unless());
+            builder.setKey(cacheable.key());
+            builder.setKeyGenerator(cacheable.keyGenerator());
+            builder.setCacheManager(cacheable.cacheManager());
+            builder.setCacheResolver(cacheable.cacheResolver());
+            builder.setSync(cacheable.sync());
+            builder.setTtl(0L);
+        } else {
+            liangchen.wang.gradf.framework.cache.annotation.Cacheable cacheable = (liangchen.wang.gradf.framework.cache.annotation.Cacheable) annotation;
+            builder.setCacheNames(cacheable.cacheNames());
+            builder.setCondition(cacheable.condition());
+            builder.setUnless(cacheable.unless());
+            builder.setKey(cacheable.key());
+            builder.setKeyGenerator(cacheable.keyGenerator());
+            builder.setCacheManager(cacheable.cacheManager());
+            builder.setCacheResolver(cacheable.cacheResolver());
+            builder.setSync(cacheable.sync());
+            builder.setTtl(cacheable.ttl());
+        }
 
         defaultConfig.applyDefault(builder);
         CacheableOperation op = builder.build();
         validateCacheOperation(ae, op);
-
         return op;
     }
 
-    private liangchen.wang.gradf.framework.cache.operation.CacheableOperation parseCacheableAnnotation(AnnotatedElement ae, DefaultCacheConfig defaultConfig, liangchen.wang.gradf.framework.cache.annotation.Cacheable cacheable) {
-
-        liangchen.wang.gradf.framework.cache.operation.CacheableOperation.Builder builder = new liangchen.wang.gradf.framework.cache.operation.CacheableOperation.Builder();
-
-        builder.setName(ae.toString());
-        builder.setCacheNames(cacheable.cacheNames());
-        builder.setCondition(cacheable.condition());
-        builder.setUnless(cacheable.unless());
-        builder.setKey(cacheable.key());
-        builder.setKeyGenerator(cacheable.keyGenerator());
-        builder.setCacheManager(cacheable.cacheManager());
-        builder.setCacheResolver(cacheable.cacheResolver());
-        builder.setSync(cacheable.sync());
-        builder.setTtl(cacheable.ttl());
-
-        defaultConfig.applyDefault(builder);
-        liangchen.wang.gradf.framework.cache.operation.CacheableOperation op = builder.build();
-        validateCacheOperation(ae, op);
-        return op;
-    }
 
     private CacheEvictOperation parseEvictAnnotation(
             AnnotatedElement ae, DefaultCacheConfig defaultConfig, CacheEvict cacheEvict) {
@@ -157,19 +152,30 @@ public class SpringCacheAnnotationParser implements CacheAnnotationParser, Seria
         return op;
     }
 
-    private CacheOperation parsePutAnnotation(
-            AnnotatedElement ae, DefaultCacheConfig defaultConfig, CachePut cachePut) {
-
-        CachePutOperation.Builder builder = new CachePutOperation.Builder();
-
+    private CacheOperation parsePutAnnotation(AnnotatedElement ae, DefaultCacheConfig defaultConfig, Annotation annotation) {
+        liangchen.wang.gradf.framework.cache.override.CachePutOperation.Builder builder = new liangchen.wang.gradf.framework.cache.override.CachePutOperation.Builder();
         builder.setName(ae.toString());
-        builder.setCacheNames(cachePut.cacheNames());
-        builder.setCondition(cachePut.condition());
-        builder.setUnless(cachePut.unless());
-        builder.setKey(cachePut.key());
-        builder.setKeyGenerator(cachePut.keyGenerator());
-        builder.setCacheManager(cachePut.cacheManager());
-        builder.setCacheResolver(cachePut.cacheResolver());
+        if (annotation instanceof CachePut) {
+            CachePut cachePut = (CachePut) annotation;
+            builder.setCacheNames(cachePut.cacheNames());
+            builder.setCondition(cachePut.condition());
+            builder.setUnless(cachePut.unless());
+            builder.setKey(cachePut.key());
+            builder.setKeyGenerator(cachePut.keyGenerator());
+            builder.setCacheManager(cachePut.cacheManager());
+            builder.setCacheResolver(cachePut.cacheResolver());
+            builder.setTtl(0L);
+        } else {
+            liangchen.wang.gradf.framework.cache.annotation.CachePut cachePut = (liangchen.wang.gradf.framework.cache.annotation.CachePut) annotation;
+            builder.setCacheNames(cachePut.cacheNames());
+            builder.setCondition(cachePut.condition());
+            builder.setUnless(cachePut.unless());
+            builder.setKey(cachePut.key());
+            builder.setKeyGenerator(cachePut.keyGenerator());
+            builder.setCacheManager(cachePut.cacheManager());
+            builder.setCacheResolver(cachePut.cacheResolver());
+            builder.setTtl(cachePut.ttl());
+        }
 
         defaultConfig.applyDefault(builder);
         CachePutOperation op = builder.build();
