@@ -96,18 +96,6 @@ public class CacheInterceptor extends org.springframework.cache.interceptor.Cach
     }
 
 
-    protected Cache.ValueWrapper doGet(Cache cache, Object key, long ttl) {
-        try {
-            if (cache instanceof liangchen.wang.gradf.framework.cache.override.Cache) {
-                return ((liangchen.wang.gradf.framework.cache.override.Cache) cache).get(key, ttl);
-            }
-            return cache.get(key);
-        } catch (RuntimeException ex) {
-            getErrorHandler().handleCacheGetError(ex, cache, key);
-            return null;  // If the exception is handled, return a cache miss
-        }
-    }
-
     protected void doPut(Cache cache, Object key, Object result, long ttl) {
         try {
             if (cache instanceof liangchen.wang.gradf.framework.cache.override.Cache) {
@@ -392,14 +380,8 @@ public class CacheInterceptor extends org.springframework.cache.interceptor.Cach
     @Nullable
     private Cache.ValueWrapper findInCaches(CacheAspectSupport.CacheOperationContext context, Object key) {
         CacheOperationContext cacheOperationContext = (CacheOperationContext) context;
-        CacheOperation operation = context.getOperation();
         for (Cache cache : cacheOperationContext.getCaches()) {
-            Cache.ValueWrapper wrapper;
-            if (operation instanceof CacheableOperation) {
-                wrapper = doGet(cache, key, ((CacheableOperation) operation).getTtl());
-            } else {
-                wrapper = doGet(cache, key);
-            }
+            Cache.ValueWrapper wrapper = doGet(cache, key);
             if (wrapper != null) {
                 if (logger.isTraceEnabled()) {
                     logger.trace("Cache entry for key '" + key + "' found in cache '" + cache.getName() + "'");

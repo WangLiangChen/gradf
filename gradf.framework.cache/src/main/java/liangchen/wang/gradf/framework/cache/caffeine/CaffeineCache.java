@@ -1,10 +1,9 @@
 package liangchen.wang.gradf.framework.cache.caffeine;
 
-import liangchen.wang.gradf.framework.cache.primary.GradfCache;
+import liangchen.wang.gradf.framework.cache.override.Cache;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.caffeine.CaffeineCache;
 
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -14,16 +13,18 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author LiangChen.Wang
  */
-public class GradfCaffeineCache extends org.springframework.cache.caffeine.CaffeineCache implements GradfCache {
-    private final static Logger logger = LoggerFactory.getLogger(GradfCaffeineCache.class);
+public class CaffeineCache extends org.springframework.cache.caffeine.CaffeineCache implements Cache {
+    private final static Logger logger = LoggerFactory.getLogger(CaffeineCache.class);
     private final String name;
+    private final long ttl;
     private final Set<Object> keys;
 
-    public GradfCaffeineCache(String name, boolean allowNullValues, long ttl, TimeUnit timeUnit) {
-        super(name, CaffeineCacheCreator.INSTANCE.nativeCaffeineCache(ttl, timeUnit), allowNullValues);
+    public CaffeineCache(String name, boolean allowNullValues, long ttl) {
+        super(name, CaffeineCacheCreator.INSTANCE.nativeCaffeineCache(ttl, TimeUnit.MILLISECONDS), allowNullValues);
         this.name = name;
+        this.ttl = ttl;
         this.keys = new ConcurrentSkipListSet<>();
-        logger.debug(loggerPrefix() + "is created,ttl:{}ms", name, timeUnit.toMillis(ttl));
+        logger.debug(loggerPrefix() + "is created,ttl:{}ms", name, ttl);
     }
 
     @Override
@@ -32,9 +33,20 @@ public class GradfCaffeineCache extends org.springframework.cache.caffeine.Caffe
     }
 
     @Override
+    public long getTtl() {
+        return this.ttl;
+    }
+
+    @Override
     public boolean containsKey(Object key) {
         Assert.INSTANCE.notNull(key, "key不能null");
         return keys.contains(key);
+    }
+
+
+    @Override
+    public void put(Object key, Object value, long ttl) {
+
     }
 
     @Override
@@ -120,6 +132,6 @@ public class GradfCaffeineCache extends org.springframework.cache.caffeine.Caffe
     }
 
     private String loggerPrefix() {
-        return "GradfCaffeineCache,name:{}";
+        return "CaffeineCache,name:{}";
     }
 }
