@@ -95,6 +95,31 @@ public class CacheInterceptor extends org.springframework.cache.interceptor.Cach
         return returnValue;
     }
 
+
+    protected Cache.ValueWrapper doGet(Cache cache, Object key, long ttl) {
+        try {
+            if (cache instanceof liangchen.wang.gradf.framework.cache.override.Cache) {
+                return ((liangchen.wang.gradf.framework.cache.override.Cache) cache).get(key, ttl);
+            }
+            return cache.get(key);
+        } catch (RuntimeException ex) {
+            getErrorHandler().handleCacheGetError(ex, cache, key);
+            return null;  // If the exception is handled, return a cache miss
+        }
+    }
+
+    protected void doPut(Cache cache, Object key, Object result, long ttl) {
+        try {
+            if (cache instanceof liangchen.wang.gradf.framework.cache.override.Cache) {
+                ((liangchen.wang.gradf.framework.cache.override.Cache) cache).put(key, result, ttl);
+                return;
+            }
+            cache.put(key, result);
+        } catch (RuntimeException ex) {
+            getErrorHandler().handleCachePutError(ex, cache, key, result);
+        }
+    }
+
     @Override
     public void afterSingletonsInstantiated() {
         super.afterSingletonsInstantiated();
@@ -115,19 +140,16 @@ public class CacheInterceptor extends org.springframework.cache.interceptor.Cach
             KeyGenerator operationKeyGenerator;
             if (StringUtils.hasText(operation.getKeyGenerator())) {
                 operationKeyGenerator = getBean(operation.getKeyGenerator(), KeyGenerator.class);
-            }
-            else {
+            } else {
                 operationKeyGenerator = getKeyGenerator();
             }
             CacheResolver operationCacheResolver;
             if (StringUtils.hasText(operation.getCacheResolver())) {
                 operationCacheResolver = getBean(operation.getCacheResolver(), CacheResolver.class);
-            }
-            else if (StringUtils.hasText(operation.getCacheManager())) {
+            } else if (StringUtils.hasText(operation.getCacheManager())) {
                 CacheManager cacheManager = getBean(operation.getCacheManager(), CacheManager.class);
                 operationCacheResolver = new SimpleCacheResolver(cacheManager);
-            }
-            else {
+            } else {
                 operationCacheResolver = getCacheResolver();
                 Assert.state(operationCacheResolver != null, "No CacheResolver/CacheManager set");
             }
@@ -370,8 +392,14 @@ public class CacheInterceptor extends org.springframework.cache.interceptor.Cach
     @Nullable
     private Cache.ValueWrapper findInCaches(CacheAspectSupport.CacheOperationContext context, Object key) {
         CacheOperationContext cacheOperationContext = (CacheOperationContext) context;
+        CacheOperation operation = context.getOperation();
         for (Cache cache : cacheOperationContext.getCaches()) {
-            Cache.ValueWrapper wrapper = doGet(cache, key);
+            Cache.ValueWrapper wrapper;
+            if (operation instanceof CacheableOperation) {
+                wrapper = doGet(cache, key, ((CacheableOperation) operation).getTtl());
+            } else {
+                wrapper = doGet(cache, key);
+            }
             if (wrapper != null) {
                 if (logger.isTraceEnabled()) {
                     logger.trace("Cache entry for key '" + key + "' found in cache '" + cache.getName() + "'");
@@ -423,8 +451,13 @@ public class CacheInterceptor extends org.springframework.cache.interceptor.Cach
 
         public void apply(@Nullable Object result) {
             CacheOperationContext cacheOperationContext = (CacheOperationContext) this.context;
+            CacheOperation operation = cacheOperationContext.getOperation();
             if (cacheOperationContext.canPutToCache(result)) {
                 for (Cache cache : cacheOperationContext.getCaches()) {
+                    if (operation instanceof CachePutOperation) {
+                        doPut(cache, this.key, result, ((CachePutOperation) operation).getTtl());
+                        continue;
+                    }
                     doPut(cache, this.key, result);
                 }
             }

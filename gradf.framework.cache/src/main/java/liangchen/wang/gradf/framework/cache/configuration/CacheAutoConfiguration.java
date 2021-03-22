@@ -4,7 +4,6 @@ import liangchen.wang.gradf.framework.cache.caffeine.GradfCaffeineCacheManager;
 import liangchen.wang.gradf.framework.cache.override.CacheInterceptor;
 import liangchen.wang.gradf.framework.cache.override.CacheableOperation;
 import liangchen.wang.gradf.framework.cache.override.SpringCacheAnnotationParser;
-import liangchen.wang.gradf.framework.cache.primary.GradfCacheManager;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.Cache;
@@ -18,7 +17,6 @@ import org.springframework.context.annotation.Role;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author LiangChen.Wang 2020/9/23
@@ -58,7 +56,7 @@ public class CacheAutoConfiguration {
                 }
                 BasicOperation operation = context.getOperation();
                 long ttl = 0;
-                if (operation instanceof CacheableOperation && cacheManager instanceof GradfCacheManager) {
+                if (operation instanceof CacheableOperation && cacheManager instanceof liangchen.wang.gradf.framework.cache.override.CacheManager) {
                     ttl = ((CacheableOperation) operation).getTtl();
                 }
                 Collection<Cache> result = new ArrayList<>(cacheNames.size());
@@ -67,7 +65,7 @@ public class CacheAutoConfiguration {
                     if (ttl == 0) {
                         cache = cacheManager.getCache(cacheName);
                     } else {
-                        cache = ((GradfCacheManager) cacheManager).getCache(cacheName, ttl, TimeUnit.MILLISECONDS);
+                        cache = ((liangchen.wang.gradf.framework.cache.override.CacheManager) cacheManager).getCache(cacheName, ttl);
                     }
                     if (cache == null) {
                         throw new IllegalArgumentException("Cannot find cache named '" + cacheName + "' for " + operation);

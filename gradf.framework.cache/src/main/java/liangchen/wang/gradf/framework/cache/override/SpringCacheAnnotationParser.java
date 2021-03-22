@@ -89,7 +89,7 @@ public class SpringCacheAnnotationParser implements CacheAnnotationParser, Seria
                 ann -> ops.add(parseEvictAnnotation(ae, cachingConfig, (CacheEvict) ann)));
         anns.stream().filter(ann -> ann instanceof CachePut).forEach(
                 ann -> ops.add(parsePutAnnotation(ae, cachingConfig, ann)));
-        anns.stream().filter(ann -> ann instanceof CachePut).forEach(
+        anns.stream().filter(ann -> ann instanceof liangchen.wang.gradf.framework.cache.annotation.CachePut).forEach(
                 ann -> ops.add(parsePutAnnotation(ae, cachingConfig, ann)));
         anns.stream().filter(ann -> ann instanceof Caching).forEach(
                 ann -> parseCachingAnnotation(ae, cachingConfig, (Caching) ann, ops));

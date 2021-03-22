@@ -1,5 +1,6 @@
 package liangchen.wang.gradf.framework.cache.test;
 
+import liangchen.wang.gradf.framework.cache.annotation.CachePut;
 import liangchen.wang.gradf.framework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class CacheClass {
-    @Cacheable(value = "testCache", ttl = 1000)
+    @CachePut(value = "testCache", ttl = 1000)
     public String cacheMethod() {
         System.out.println("=======================>test----null");
         return "I am LiangChen.Wang";
