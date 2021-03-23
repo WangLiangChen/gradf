@@ -1,5 +1,7 @@
 package liangchen.wang.gradf.framework.cache.primary;
 
+import liangchen.wang.gradf.framework.cache.caffeine.CaffeineCache;
+import liangchen.wang.gradf.framework.cache.caffeine.CaffeineCacheCreator;
 import liangchen.wang.gradf.framework.cache.override.CacheManager;
 import org.springframework.cache.Cache;
 import org.springframework.cache.transaction.AbstractTransactionSupportingCacheManager;
@@ -10,6 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -66,10 +69,7 @@ public class MultilevelCacheManager extends AbstractTransactionSupportingCacheMa
     }
 
     private Cache getMissingCache(String cacheName, long ttl) {
-        Cache localCache = null;
-        Cache distributedCache = null;
-        //return new MultilevelCache(cacheName, localCache, distributedCache, ttl);
-        return null;
+        return new MultilevelCache(cacheName, ttl, true);
     }
 
     @Override

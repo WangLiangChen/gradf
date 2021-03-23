@@ -1,5 +1,6 @@
 package liangchen.wang.gradf.framework.cache.primary;
 
+import liangchen.wang.gradf.framework.cache.caffeine.CaffeineCache;
 import liangchen.wang.gradf.framework.cache.override.Cache;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
 import org.springframework.cache.support.AbstractValueAdaptingCache;
@@ -25,11 +26,11 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
     private final Lock readLock = readWriteLock.readLock();
     private final Lock writeLock = readWriteLock.writeLock();
 
-    public MultilevelCache(String name, Cache localCache, Cache distributedCache, long ttl) {
-        super(true);
+    public MultilevelCache(String name, long ttl, boolean allowNullValues) {
+        super(allowNullValues);
         this.name = name;
-        this.localCache = localCache;
-        this.distributedCache = distributedCache;
+        this.localCache = new CaffeineCache(name, ttl, true);
+        this.distributedCache = null;
         this.ttl = ttl;
     }
 
@@ -38,13 +39,6 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
         // 如果未设置过期 则使用Cache的过期
         if (0 == ttl) {
             ttl = this.ttl;
-        }
-        if (0 == ttl) {
-            if (null != distributedCache) {
-                distributedCache.put(key, value);
-            }
-            localCache.put(key, value);
-            return;
         }
         if (null != distributedCache) {
             distributedCache.put(key, value, ttl);
