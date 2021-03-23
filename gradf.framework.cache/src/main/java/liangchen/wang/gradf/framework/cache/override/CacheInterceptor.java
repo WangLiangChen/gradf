@@ -45,8 +45,11 @@ public class CacheInterceptor extends org.springframework.cache.interceptor.Cach
                 Object key = generateKey(context, CacheOperationExpressionEvaluator.NO_RESULT);
                 CacheOperationContext cacheOperationContext = (CacheOperationContext) context;
                 Cache cache = cacheOperationContext.getCaches().iterator().next();
+                CacheableOperation operation = (CacheableOperation) cacheOperationContext.getOperation();
                 try {
-                    return wrapCacheValue(method, handleSynchronizedGet(invoker, key, cache));
+                    Object returnValue = handleSynchronizedGet(invoker, key, cache);
+                    // doPut(cache, key, returnValue, operation.getTtl());
+                    return wrapCacheValue(method, returnValue);
                 } catch (Cache.ValueRetrievalException ex) {
                     // Directly propagate ThrowableWrapper from the invoker,
                     // or potentially also an IllegalArgumentException etc.

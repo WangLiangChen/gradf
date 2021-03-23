@@ -1,6 +1,7 @@
 package liangchen.wang.gradf.framework.cache.override;
 
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 /**
  * @author LiangChen.Wang 2021/3/22
@@ -16,6 +17,8 @@ public interface Cache extends org.springframework.cache.Cache {
         }
         return existingValue;
     }
+
+    <T> T get(Object key, Callable<T> valueLoader, long ttl);
 
     Set<Object> keys();
 
