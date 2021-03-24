@@ -1,9 +1,10 @@
 package liangchen.wang.gradf.framework.cache.configuration;
 
-import liangchen.wang.gradf.framework.cache.caffeine.GradfCaffeineCacheManager;
 import liangchen.wang.gradf.framework.cache.override.CacheInterceptor;
+import liangchen.wang.gradf.framework.cache.override.CachePutOperation;
 import liangchen.wang.gradf.framework.cache.override.CacheableOperation;
 import liangchen.wang.gradf.framework.cache.override.SpringCacheAnnotationParser;
+import liangchen.wang.gradf.framework.cache.primary.MultilevelCacheManager;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.Cache;
@@ -24,8 +25,8 @@ import java.util.Collections;
 public class CacheAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(CacheManager.class)
-    public CacheManager gradfCaffeineCacheManager() {
-        return new GradfCaffeineCacheManager();
+    public CacheManager cacheManager() {
+        return new MultilevelCacheManager();
     }
 
     @Primary
@@ -56,8 +57,12 @@ public class CacheAutoConfiguration {
                 }
                 BasicOperation operation = context.getOperation();
                 long ttl = 0;
-                if (operation instanceof CacheableOperation && cacheManager instanceof liangchen.wang.gradf.framework.cache.override.CacheManager) {
-                    ttl = ((CacheableOperation) operation).getTtl();
+                if (cacheManager instanceof liangchen.wang.gradf.framework.cache.override.CacheManager) {
+                    if (operation instanceof CacheableOperation) {
+                        ttl = ((CacheableOperation) operation).getTtl();
+                    } else if (operation instanceof CachePutOperation) {
+                        ttl = ((CachePutOperation) operation).getTtl();
+                    }
                 }
                 Collection<Cache> result = new ArrayList<>(cacheNames.size());
                 for (String cacheName : cacheNames) {

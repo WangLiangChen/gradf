@@ -4,10 +4,12 @@ import liangchen.wang.gradf.framework.cache.override.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @author LiangChen.Wang
@@ -27,68 +29,50 @@ public class CaffeineCache implements Cache {
         this.ttl = ttl;
         this.allowNullValues = allowNullValues;
         this.keys = new ConcurrentSkipListSet<>();
-        this.loggerPrefix = String.format("name:%s,ttl:%s,allowNullValues:%s", name, ttl, allowNullValues);
+        this.loggerPrefix = String.format("Cache(name:%s,ttl:%s,allowNullValues:%s)", name, ttl, allowNullValues);
         logger.debug(loggerPrefix("Constructor"));
     }
 
 
     @Override
     public <T> T get(Object key, Callable<T> valueLoader, long ttl) {
-        logger.debug(loggerPrefix("get,key:{},valueLoader:{},ttl:{}"), key, valueLoader, ttl);
+        logger.debug(loggerPrefix("get", "key", "valueLoader", "ttl"), key, valueLoader, ttl);
         return springCaffeineCache.get(key, valueLoader);
     }
 
     @Override
+    public <T> T get(Object key, Callable<T> valueLoader) {
+        return this.get(key, valueLoader, 0L);
+    }
+
+    @Override
     public ValueWrapper get(Object key) {
-        logger.debug(loggerPrefix("get,key:{}"), key);
+        logger.debug(loggerPrefix("get", "key"), key);
         return springCaffeineCache.get(key);
     }
 
     @Override
     public <T> T get(Object key, Class<T> type) {
-        logger.debug(loggerPrefix("get,key:{},type:{}"), key, type);
+        logger.debug(loggerPrefix("get", "key", "type"), key, type);
         return springCaffeineCache.get(key, type);
     }
 
-    @Override
-    public <T> T get(Object key, Callable<T> valueLoader) {
-        logger.debug(loggerPrefix("get,key:{},valueLoader:{}"), key, valueLoader);
-        return springCaffeineCache.get(key, valueLoader);
-    }
 
     @Override
     public void put(Object key, Object value, long ttl) {
-        logger.debug(loggerPrefix("put,key:{},value:{},ttl:{}"), key, value, ttl);
+        logger.debug(loggerPrefix("put", "key", "value", "ttl"), key, value, ttl);
         springCaffeineCache.put(key, value);
         keys.add(key);
     }
 
     @Override
     public void put(Object key, Object value) {
-        logger.debug(loggerPrefix("put,key:{},value:{}"), key, value);
-        springCaffeineCache.put(key, value);
-        keys.add(key);
-    }
-
-    @Override
-    public ValueWrapper putIfAbsent(Object key, Object value, long ttl) {
-        logger.debug(loggerPrefix("putIfAbsent,key:{},value:{},ttl:{}"), key, value, ttl);
-        ValueWrapper valueWrapper = springCaffeineCache.putIfAbsent(key, value);
-        keys.add(key);
-        return valueWrapper;
-    }
-
-    @Override
-    public ValueWrapper putIfAbsent(Object key, Object value) {
-        logger.debug(loggerPrefix("putIfAbsent,key:{},value:{}"), key, value);
-        ValueWrapper valueWrapper = springCaffeineCache.putIfAbsent(key, value);
-        keys.add(key);
-        return valueWrapper;
+        this.put(key, value, 0L);
     }
 
     @Override
     public void evict(Object key) {
-        logger.debug(loggerPrefix("evict,key:{}"), key);
+        logger.debug(loggerPrefix("evict", "key"), key);
         springCaffeineCache.evict(key);
         keys.remove(key);
     }
@@ -98,14 +82,6 @@ public class CaffeineCache implements Cache {
         logger.debug(loggerPrefix("clear"));
         springCaffeineCache.clear();
         keys.clear();
-    }
-
-    @Override
-    public boolean evictIfPresent(Object key) {
-        logger.debug(loggerPrefix("evictIfPresent,key:{}"), key);
-        boolean evictIfPresent = springCaffeineCache.evictIfPresent(key);
-        keys.clear();
-        return evictIfPresent;
     }
 
     @Override
@@ -133,7 +109,11 @@ public class CaffeineCache implements Cache {
         return this.springCaffeineCache;
     }
 
-    private String loggerPrefix(String suffix) {
-        return String.format("%s,%s", loggerPrefix, suffix);
+    private String loggerPrefix(String method, String... args) {
+        String suffix = Arrays.stream(args).map(e -> String.format("%s:{}", e)).collect(Collectors.joining(","));
+        if (null == suffix || suffix.length() == 0) {
+            return String.format("%s\r\n - Method(name:%s)", loggerPrefix, method);
+        }
+        return String.format("%s\r\n - Method(name:%s,%s)", loggerPrefix, method, suffix);
     }
 }

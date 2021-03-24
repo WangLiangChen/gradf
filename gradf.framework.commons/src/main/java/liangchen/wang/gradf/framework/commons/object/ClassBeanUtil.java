@@ -69,6 +69,9 @@ public enum ClassBeanUtil {
 
     @SuppressWarnings("unchecked")
     public <T> T cast(Object obj) {
+        if (null == obj) {
+            return null;
+        }
         return (T) obj;
     }
 
