@@ -72,7 +72,7 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
     @Override
     public <T> T get(Object key, Callable<T> valueLoader, long ttl) {
         logger.debug(loggerPrefix("get", "key", "valueLoader", "ttl"), key, valueLoader, ttl);
-        ValueWrapper valueWrapper = get(key);
+        ValueWrapper valueWrapper = this.get(key);
         // 第一级 无锁查询
         if (null != valueWrapper) {
             return ClassBeanUtil.INSTANCE.cast(valueWrapper.get());
@@ -80,7 +80,7 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
         //第二级 读锁查询
         readLock.lock();
         try {
-            valueWrapper = get(key);
+            valueWrapper = this.get(key);
             if (null != valueWrapper) {
                 return ClassBeanUtil.INSTANCE.cast(valueWrapper.get());
             }
@@ -89,7 +89,7 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
             writeLock.lock();
             try {
                 //二次验证
-                valueWrapper = get(key);
+                valueWrapper = this.get(key);
                 if (null != valueWrapper) {
                     return ClassBeanUtil.INSTANCE.cast(valueWrapper.get());
                 }

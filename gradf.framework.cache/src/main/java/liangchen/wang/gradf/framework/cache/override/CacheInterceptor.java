@@ -10,6 +10,7 @@ import org.springframework.util.*;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -47,8 +48,7 @@ public class CacheInterceptor extends org.springframework.cache.interceptor.Cach
                 Cache cache = cacheOperationContext.getCaches().iterator().next();
                 CacheableOperation operation = (CacheableOperation) cacheOperationContext.getOperation();
                 try {
-                    Object returnValue = handleSynchronizedGet(invoker, key, cache);
-                    // doPut(cache, key, returnValue, operation.getTtl());
+                    Object returnValue = handleSynchronizedGet(invoker, key, cache, operation.getTtl());
                     return wrapCacheValue(method, returnValue);
                 } catch (Cache.ValueRetrievalException ex) {
                     // Directly propagate ThrowableWrapper from the invoker,
@@ -298,19 +298,28 @@ public class CacheInterceptor extends org.springframework.cache.interceptor.Cach
     }
 
     @Nullable
-    private Object handleSynchronizedGet(CacheOperationInvoker invoker, Object key, Cache cache) {
+    private Object handleSynchronizedGet(CacheOperationInvoker invoker, Object key, Cache cache, long ttl) {
         InvocationAwareResult invocationResult = new InvocationAwareResult();
-        Object result = cache.get(key, () -> {
+        Object result;
+        if (0 == ttl) {
+            result = cache.get(key, callable(invocationResult, invoker, key, cache));
+        } else {
+            result = ((liangchen.wang.gradf.framework.cache.override.Cache) cache).get(key, callable(invocationResult, invoker, key, cache), ttl);
+        }
+        if (!invocationResult.invoked && logger.isTraceEnabled()) {
+            logger.trace("Cache entry for key '" + key + "' found in cache '" + cache.getName() + "'");
+        }
+        return result;
+    }
+
+    private Callable callable(InvocationAwareResult invocationResult, CacheOperationInvoker invoker, Object key, Cache cache) {
+        return () -> {
             invocationResult.invoked = true;
             if (logger.isTraceEnabled()) {
                 logger.trace("No cache entry for key '" + key + "' in cache " + cache.getName());
             }
             return unwrapReturnValue(invokeOperation(invoker));
-        });
-        if (!invocationResult.invoked && logger.isTraceEnabled()) {
-            logger.trace("Cache entry for key '" + key + "' found in cache '" + cache.getName() + "'");
-        }
-        return result;
+        };
     }
 
     @Nullable
