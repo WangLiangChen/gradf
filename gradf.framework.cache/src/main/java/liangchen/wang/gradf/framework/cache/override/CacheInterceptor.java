@@ -405,7 +405,6 @@ public class CacheInterceptor extends org.springframework.cache.interceptor.Cach
     }
 
     private void collectPutRequests(Collection<CacheAspectSupport.CacheOperationContext> contexts, @Nullable Object result, Collection<CachePutRequest> putRequests) {
-
         for (CacheAspectSupport.CacheOperationContext context : contexts) {
             if (isConditionPassing(context, result)) {
                 Object key = generateKey(context, result);
@@ -450,6 +449,10 @@ public class CacheInterceptor extends org.springframework.cache.interceptor.Cach
                 for (Cache cache : cacheOperationContext.getCaches()) {
                     if (operation instanceof CachePutOperation) {
                         doPut(cache, this.key, result, ((CachePutOperation) operation).getTtl());
+                        continue;
+                    }
+                    if (operation instanceof CacheableOperation) {
+                        doPut(cache, this.key, result, ((CacheableOperation) operation).getTtl());
                         continue;
                     }
                     doPut(cache, this.key, result);

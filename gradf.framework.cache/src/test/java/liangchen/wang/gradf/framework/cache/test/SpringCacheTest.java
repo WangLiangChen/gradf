@@ -1,5 +1,6 @@
 package liangchen.wang.gradf.framework.cache.test;
 
+import liangchen.wang.gradf.framework.cache.test.service.ICacheTestService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.annotation.EnableCaching;
@@ -14,19 +15,11 @@ import java.util.concurrent.CountDownLatch;
 @EnableCaching
 public class SpringCacheTest {
     @Inject
-    private CacheClass cacheClass;
+    private ICacheTestService service;
 
     @Test
-    public void testCacheClass() throws InterruptedException {
-        CountDownLatch countDownLatch = new CountDownLatch(2);
-        for (int i = 0; i < 2; i++) {
-            int finalI = i;
-            new Thread(() -> {
-                String s = cacheClass.cacheMethod();
-                System.out.println(finalI +"---------" + s);
-                countDownLatch.countDown();
-            }).start();
-        }
-        countDownLatch.await();
+    public void testCacheable() throws InterruptedException {
+        String ret = service.insert("a");
+        System.out.println("---------" + ret);
     }
 }

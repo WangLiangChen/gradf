@@ -200,7 +200,7 @@ public class LocalRedisCache extends AbstractValueAdaptingCache implements Gradf
         if (ClusterStatus.INSTANCE.isNotRedisEnable()) {
             return null;
         }
-        return new RedisCache(name, ttl, timeUnit, redisTemplate);
+        return new RedisCache(name, ttl, true, redisTemplate);
     }
 
     private ValueWrapper getFromLocal(Object key) {

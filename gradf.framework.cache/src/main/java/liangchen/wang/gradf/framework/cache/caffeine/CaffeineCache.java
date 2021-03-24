@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,7 @@ public class CaffeineCache implements Cache {
         this.name = name;
         this.ttl = ttl;
         this.allowNullValues = allowNullValues;
-        this.keys = new ConcurrentSkipListSet<>();
+        this.keys = new CopyOnWriteArraySet<>();
         this.loggerPrefix = String.format("Cache(name:%s,ttl:%s,allowNullValues:%s)", name, ttl, allowNullValues);
         logger.debug(loggerPrefix("Constructor"));
     }

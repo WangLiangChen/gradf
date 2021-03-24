@@ -8,9 +8,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.BoundSetOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * 扩展补充spring的RedisCache
@@ -37,130 +39,86 @@ public class RedisCache extends org.springframework.data.redis.cache.RedisCache 
             this.keys.add(Symbol.BLANK.getSymbol());
             this.keys.expire(ttl, TimeUnit.MILLISECONDS);
         }
-        this.loggerPrefix = String.format("name:%s,ttl:%s,allowNullValues:%s", name, ttl, allowNullValues);
+        this.loggerPrefix = String.format("Cache(name:%s,ttl:%s,allowNullValues:%s)", name, ttl, allowNullValues);
         logger.debug(loggerPrefix("Constructor"));
     }
 
     @Override
     public <T> T get(Object key, Callable<T> valueLoader, long ttl) {
-        return null;
+        logger.debug(loggerPrefix("get", "key", "valueLoader", "ttl"), key, valueLoader, ttl);
+        return super.get(key, valueLoader);
     }
 
     @Override
-    public synchronized <T> T get(Object key, Callable<T> valueLoader) {
-        T t = super.get(key, valueLoader);
-        if (null == t) {
-            logger.debug(loggerPrefix() + ",get,key:{},missed", name, key);
-            return null;
-        }
-        logger.debug(loggerPrefix() + ",get,key:{},hit the value:{}", name, key, t);
-        return t;
+    public <T> T get(Object key, Callable<T> valueLoader) {
+        return this.get(key, valueLoader, 0L);
     }
 
     @Override
     public ValueWrapper get(Object key) {
-        ValueWrapper valueWrapper = super.get(key);
-        if (null == valueWrapper) {
-            logger.debug(loggerPrefix() + ",get,key:{},missed", name, key);
-            return null;
-        }
-        logger.debug(loggerPrefix() + ",get,key:{},hit the value:{}", name, key, valueWrapper.get());
-        return valueWrapper;
+        logger.debug(loggerPrefix("get", "key"), key);
+        return super.get(key);
     }
 
     @Override
     public <T> T get(Object key, Class<T> type) {
-        T t = super.get(key, type);
-        if (null == t) {
-            logger.debug(loggerPrefix() + ",get,key:{},missed", name, key);
-            return null;
-        }
-        logger.debug(loggerPrefix() + ",get,key:{},hit the value:{}", name, key, t);
-        return t;
+        logger.debug(loggerPrefix("get", "key", "type"), key, type);
+        return super.get(key, type);
     }
+
 
     @Override
     public void put(Object key, Object value, long ttl) {
-
+        logger.debug(loggerPrefix("put", "key", "value", "ttl"), key, value, ttl);
+        super.put(key, value);
+        keys.add(key);
     }
 
     @Override
     public void put(Object key, Object value) {
-        super.put(key, value);
-        keys.add(key);
-        logger.debug(loggerPrefix() + ",put,key:{},value:{}", name, key, value);
+        this.put(key, value, 0L);
     }
-
-    @Override
-    public ValueWrapper putIfAbsent(Object key, Object value) {
-        ValueWrapper valueWrapper = super.putIfAbsent(key, value);
-        if (valueWrapper == null) {
-            keys.add(key);
-            logger.debug(loggerPrefix() + ",putIfAbsent,key:{},value:{},data is absent,put it", name, key, value);
-        }
-        logger.debug(loggerPrefix() + ",putIfAbsent key:{},value:{},data is present,abort it,existing:{} ", name, key, value, valueWrapper.get());
-        return valueWrapper;
-    }
-
-    @Override
-    public ValueWrapper putIfAbsent(Object key, Object value, long ttl) {
-        return null;
-    }
-
 
     @Override
     public void evict(Object key) {
+        logger.debug(loggerPrefix("evict", "key"), key);
         super.evict(key);
         keys.remove(key);
-        logger.debug(loggerPrefix() + ",evict,key:{}", name, key);
-    }
-
-    @Override
-    public boolean evictIfPresent(Object key) {
-        boolean present = super.evictIfPresent(key);
-        if (present) {
-            keys.remove(key);
-        }
-        logger.debug(loggerPrefix() + ",evictIfPresent,key:{},present:{}", name, key, present);
-        return present;
     }
 
     @Override
     public void clear() {
+        logger.debug(loggerPrefix("clear"));
         super.clear();
         Set<Object> members = keys.members();
         keys.remove(members.toArray());
-        logger.debug(loggerPrefix() + ",clear", name);
-    }
-
-    @Override
-    public boolean invalidate() {
-        boolean invalidate = super.invalidate();
-        logger.debug(loggerPrefix() + ",invalidate:{}", invalidate);
-        return invalidate;
     }
 
     @Override
     public Set<Object> keys() {
-        return keys.members();
+        return this.keys.members();
     }
 
     @Override
     public boolean containsKey(Object key) {
-        Assert.INSTANCE.notNull(key, "key不能为null");
         return keys.isMember(key);
     }
 
     @Override
     public long getTtl() {
-        return 0;
+        return this.ttl;
     }
 
-    private String loggerPrefix() {
-        return "GradfRedisCache,name:{}";
+    @Override
+    public String getName() {
+        return this.name;
     }
 
-    private String loggerPrefix(String suffix) {
-        return String.format("%s,%s", loggerPrefix, suffix);
+    private String loggerPrefix(String method, String... args) {
+        String suffix = Arrays.stream(args).map(e -> String.format("%s:{}", e)).collect(Collectors.joining(","));
+        if (null == suffix || suffix.length() == 0) {
+            return String.format("%s\r\n - Method(name:%s)", loggerPrefix, method);
+        }
+        return String.format("%s\r\n - Method(name:%s,%s)", loggerPrefix, method, suffix);
     }
 }
