@@ -35,23 +35,6 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
     }
 
     @Override
-    public void put(Object key, Object value, long ttl) {
-        // 如果未设置过期 则使用Cache的过期
-        if (0 == ttl) {
-            ttl = this.ttl;
-        }
-        if (null != distributedCache) {
-            distributedCache.put(key, value, ttl);
-        }
-        localCache.put(key, value, ttl);
-    }
-
-    @Override
-    public void put(Object key, Object value) {
-        put(key, value, 0L);
-    }
-
-    @Override
     public ValueWrapper get(Object key) {
         // null说明缓存不存在
         ValueWrapper valueWrapper = localCache.get(key);
@@ -116,6 +99,23 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
     }
 
     @Override
+    public void put(Object key, Object value, long ttl) {
+        // 如果未设置过期 则使用Cache的过期
+        if (0 == ttl) {
+            ttl = this.ttl;
+        }
+        if (null != distributedCache) {
+            distributedCache.put(key, value, ttl);
+        }
+        localCache.put(key, value, ttl);
+    }
+
+    @Override
+    public void put(Object key, Object value) {
+        put(key, value, 0L);
+    }
+
+    @Override
     public void evict(Object key) {
         localCache.evict(key);
         if (null != distributedCache) {
@@ -133,17 +133,11 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
 
     @Override
     public Set<Object> keys() {
-        if (null != distributedCache) {
-            return distributedCache.keys();
-        }
         return localCache.keys();
     }
 
     @Override
     public boolean containsKey(Object key) {
-        if (null != distributedCache) {
-            return distributedCache.containsKey(key);
-        }
         return localCache.containsKey(key);
     }
 

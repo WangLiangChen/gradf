@@ -1,10 +1,10 @@
 package liangchen.wang.gradf.framework.cluster.cache;
 
-import liangchen.wang.gradf.framework.cache.primary.GradfCache;
+import liangchen.wang.gradf.framework.cache.override.Cache;
+import liangchen.wang.gradf.framework.commons.enumeration.Symbol;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.redis.cache.RedisCache;
 import org.springframework.data.redis.core.BoundSetOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 
@@ -17,33 +17,33 @@ import java.util.concurrent.TimeUnit;
  *
  * @author LiangChen.Wang
  */
-public class GradfRedisCache extends RedisCache implements GradfCache {
-    private final static Logger logger = LoggerFactory.getLogger(GradfRedisCache.class);
+public class RedisCache extends org.springframework.data.redis.cache.RedisCache implements Cache {
+    private final static Logger logger = LoggerFactory.getLogger(RedisCache.class);
     private final String name;
-    private final BoundSetOperations<Object, Object> boundSetOperations;
+    private final long ttl;
+    private final boolean allowNullValues;
+    private final BoundSetOperations<Object, Object> keys;
+    private final String loggerPrefix;
 
-    public GradfRedisCache(String name, long ttl, TimeUnit timeUnit, RedisTemplate<Object, Object> redisTemplate) {
-        super(name, RedisCacheCreator.INSTANCE.cacheWriter(redisTemplate), RedisCacheCreator.INSTANCE.cacheConfig(ttl, timeUnit));
+    public RedisCache(String name, long ttl, boolean allowNullValues, RedisTemplate<Object, Object> redisTemplate) {
+        super(name, RedisCacheCreator.INSTANCE.cacheWriter(redisTemplate), RedisCacheCreator.INSTANCE.cacheConfig(ttl, allowNullValues));
         this.name = name;
-        String keys = this.createCacheKey("keys");
-        this.boundSetOperations = redisTemplate.boundSetOps(keys);
-        // 设置expire 有key才管用 所以先add
-        if (boundSetOperations.getExpire() < 0) {
-            this.boundSetOperations.add("");
-            this.boundSetOperations.expire(ttl, timeUnit);
+        this.ttl = ttl;
+        this.allowNullValues = allowNullValues;
+        String keysKey = this.createCacheKey("keys");
+        this.keys = redisTemplate.boundSetOps(keysKey);
+        // 有key才能设置expire,所以先add
+        if (keys.getExpire() < 0) {
+            this.keys.add(Symbol.BLANK.getSymbol());
+            this.keys.expire(ttl, TimeUnit.MILLISECONDS);
         }
-        logger.debug(loggerPrefix() + "is created,ttl:{}ms", name, timeUnit.toMillis(ttl));
+        this.loggerPrefix = String.format("name:%s,ttl:%s,allowNullValues:%s", name, ttl, allowNullValues);
+        logger.debug(loggerPrefix("Constructor"));
     }
 
     @Override
-    public Set<Object> keys() {
-        return boundSetOperations.members();
-    }
-
-    @Override
-    public boolean containsKey(Object key) {
-        Assert.INSTANCE.notNull(key, "key不能为null");
-        return boundSetOperations.isMember(key);
+    public <T> T get(Object key, Callable<T> valueLoader, long ttl) {
+        return null;
     }
 
     @Override
@@ -80,9 +80,14 @@ public class GradfRedisCache extends RedisCache implements GradfCache {
     }
 
     @Override
+    public void put(Object key, Object value, long ttl) {
+
+    }
+
+    @Override
     public void put(Object key, Object value) {
         super.put(key, value);
-        boundSetOperations.add(key);
+        keys.add(key);
         logger.debug(loggerPrefix() + ",put,key:{},value:{}", name, key, value);
     }
 
@@ -90,7 +95,7 @@ public class GradfRedisCache extends RedisCache implements GradfCache {
     public ValueWrapper putIfAbsent(Object key, Object value) {
         ValueWrapper valueWrapper = super.putIfAbsent(key, value);
         if (valueWrapper == null) {
-            boundSetOperations.add(key);
+            keys.add(key);
             logger.debug(loggerPrefix() + ",putIfAbsent,key:{},value:{},data is absent,put it", name, key, value);
         }
         logger.debug(loggerPrefix() + ",putIfAbsent key:{},value:{},data is present,abort it,existing:{} ", name, key, value, valueWrapper.get());
@@ -98,9 +103,15 @@ public class GradfRedisCache extends RedisCache implements GradfCache {
     }
 
     @Override
+    public ValueWrapper putIfAbsent(Object key, Object value, long ttl) {
+        return null;
+    }
+
+
+    @Override
     public void evict(Object key) {
         super.evict(key);
-        boundSetOperations.remove(key);
+        keys.remove(key);
         logger.debug(loggerPrefix() + ",evict,key:{}", name, key);
     }
 
@@ -108,7 +119,7 @@ public class GradfRedisCache extends RedisCache implements GradfCache {
     public boolean evictIfPresent(Object key) {
         boolean present = super.evictIfPresent(key);
         if (present) {
-            boundSetOperations.remove(key);
+            keys.remove(key);
         }
         logger.debug(loggerPrefix() + ",evictIfPresent,key:{},present:{}", name, key, present);
         return present;
@@ -117,8 +128,8 @@ public class GradfRedisCache extends RedisCache implements GradfCache {
     @Override
     public void clear() {
         super.clear();
-        Set<Object> members = boundSetOperations.members();
-        boundSetOperations.remove(members.toArray());
+        Set<Object> members = keys.members();
+        keys.remove(members.toArray());
         logger.debug(loggerPrefix() + ",clear", name);
     }
 
@@ -129,7 +140,27 @@ public class GradfRedisCache extends RedisCache implements GradfCache {
         return invalidate;
     }
 
+    @Override
+    public Set<Object> keys() {
+        return keys.members();
+    }
+
+    @Override
+    public boolean containsKey(Object key) {
+        Assert.INSTANCE.notNull(key, "key不能为null");
+        return keys.isMember(key);
+    }
+
+    @Override
+    public long getTtl() {
+        return 0;
+    }
+
     private String loggerPrefix() {
         return "GradfRedisCache,name:{}";
+    }
+
+    private String loggerPrefix(String suffix) {
+        return String.format("%s,%s", loggerPrefix, suffix);
     }
 }

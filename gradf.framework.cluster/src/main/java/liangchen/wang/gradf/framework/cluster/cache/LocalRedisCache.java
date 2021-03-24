@@ -24,7 +24,7 @@ public class LocalRedisCache extends AbstractValueAdaptingCache implements Gradf
     private final TimeUnit timeUnit;
     private final RedisTemplate<Object, Object> redisTemplate;
     private final GradfCache localCache;
-    private final GradfRedisCache remoteCache;
+    private final RedisCache remoteCache;
 
     LocalRedisCache(String name, boolean allowNullValues, long ttl, TimeUnit timeUnit, RedisTemplate<Object, Object> redisTemplate) {
         super(allowNullValues);
@@ -196,11 +196,11 @@ public class LocalRedisCache extends AbstractValueAdaptingCache implements Gradf
         return new GradfCaffeineCache(name, allowNullValues, ttl, timeUnit);
     }
 
-    private GradfRedisCache obtainRedisCache() {
+    private RedisCache obtainRedisCache() {
         if (ClusterStatus.INSTANCE.isNotRedisEnable()) {
             return null;
         }
-        return new GradfRedisCache(name, ttl, timeUnit, redisTemplate);
+        return new RedisCache(name, ttl, timeUnit, redisTemplate);
     }
 
     private ValueWrapper getFromLocal(Object key) {
