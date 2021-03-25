@@ -5,12 +5,17 @@ import liangchen.wang.gradf.framework.cache.override.CachePutOperation;
 import liangchen.wang.gradf.framework.cache.override.CacheableOperation;
 import liangchen.wang.gradf.framework.cache.override.*;
 import liangchen.wang.gradf.framework.cache.primary.MultilevelCacheManager;
+import liangchen.wang.gradf.framework.commons.digest.HashUtil;
+import liangchen.wang.gradf.framework.commons.json.JsonUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.*;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Role;
 
@@ -21,7 +26,12 @@ import java.util.Collections;
 /**
  * @author LiangChen.Wang 2020/9/23
  */
+@Configuration(proxyBeanMethods = false)
 public class CacheAutoConfiguration {
+    private final Logger logger = LoggerFactory.getLogger(CacheAutoConfiguration.class);
+    private final String NO_PARAM_KEY = "NO_PARAM";
+    private final String NULL_PARAM_KEY = "NULL_PARAM";
+
     @Bean
     @ConditionalOnMissingBean(CacheManager.class)
     public CacheManager cacheManager() {
@@ -41,6 +51,7 @@ public class CacheAutoConfiguration {
     public CacheInterceptor cacheInterceptorOverride(CacheOperationSource cacheOperationSource, CacheManager cacheManager) {
         CacheInterceptor interceptor = new CacheInterceptor();
         interceptor.setCacheManager(cacheManager);
+        interceptor.setKeyGenerator(keyGenerator());
         interceptor.setCacheResolver(cacheResolver(cacheManager));
         interceptor.setCacheOperationSource(cacheOperationSource);
         return interceptor;
@@ -78,6 +89,31 @@ public class CacheAutoConfiguration {
                 }
                 return result;
             }
+        };
+    }
+
+    private KeyGenerator keyGenerator() {
+        return (target, method, params) -> {
+            StringBuilder key = new StringBuilder();
+            key.append(target.getClass().getName()).append(".").append(method.getName()).append(":");
+            if (params.length == 0) {
+                key.append(NO_PARAM_KEY);
+                return HashUtil.INSTANCE.md5Digest(key.toString());
+            }
+            Object param;
+            for (int i = 0; i < params.length; i++) {
+                if (i > 0) {
+                    key.append('-');
+                }
+                param = params[i];
+                if (param == null) {
+                    key.append(NULL_PARAM_KEY);
+                    continue;
+                }
+                key.append(JsonUtil.INSTANCE.toJsonStringWithTransientField(param));
+            }
+            logger.debug("Generated key:{}", key);
+            return HashUtil.INSTANCE.md5Digest(key.toString());
         };
     }
 }

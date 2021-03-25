@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
+@Deprecated
 public @interface GradfAutoCacheable {
     String[] clearMethods() default {};
 

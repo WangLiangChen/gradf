@@ -5,6 +5,6 @@ package liangchen.wang.gradf.framework.commons.lock;
  * @author LiangChen.Wang
  */
 @FunctionalInterface
-public interface Reader<R> {
-    R read() throws Exception;
+public interface LockWriter<R> {
+    R write() throws Exception;
 }

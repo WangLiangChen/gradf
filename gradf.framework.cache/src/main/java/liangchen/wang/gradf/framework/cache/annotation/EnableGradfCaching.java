@@ -15,6 +15,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Import({EnableGradfCaching.CachingImportSelector.class})
+@Deprecated
 public @interface EnableGradfCaching {
     class CachingImportSelector implements ImportSelector {
         private static boolean loaded = false;

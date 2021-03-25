@@ -41,8 +41,12 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author LiangChen.Wang
+ */
 @Aspect
 @Order(Ordered.HIGHEST_PRECEDENCE)
+@Deprecated
 public class GradfCachingAspect {
     private final Logger logger = LoggerFactory.getLogger(GradfCachingAspect.class);
     private final String _CLASS = "_class";
@@ -72,7 +76,8 @@ public class GradfCachingAspect {
     public void pointcutCacheClear() {
     }
 
-    @Pointcut("(@within(liangchen.wang.gradf.framework.cache.annotation.GradfAutoCacheable) || target(liangchen.wang.gradf.framework.data.core.AbstractJdbcDao)) " +
+    // || target(liangchen.wang.gradf.framework.data.core.AbstractJdbcDao)
+    @Pointcut("(@within(liangchen.wang.gradf.framework.cache.annotation.GradfAutoCacheable)) " +
             "&& !@annotation(liangchen.wang.gradf.framework.cache.annotation.GradfCacheable) " +
             "&& !@annotation(liangchen.wang.gradf.framework.cache.annotation.GradfCacheClear) " +
             "&& !@annotation(liangchen.wang.gradf.framework.cache.annotation.GradfCacheEvict)")

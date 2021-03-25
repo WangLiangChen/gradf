@@ -9,6 +9,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD})
 @Inherited
 @Documented
+@Deprecated
 public @interface GradfCacheEvict {
     String cacheName() default "";
 

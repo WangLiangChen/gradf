@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 @Target({ElementType.METHOD})
 @Inherited
 @Documented
+@Deprecated
 public @interface GradfCacheable {
     String cacheName() default "";
 

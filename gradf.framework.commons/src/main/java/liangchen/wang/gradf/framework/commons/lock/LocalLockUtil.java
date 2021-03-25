@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.StampedLock;
@@ -21,7 +22,10 @@ public enum LocalLockUtil {
     private final Logger logger = LoggerFactory.getLogger(LocalLockUtil.class);
     private final Map<String, ReadWriteLock> readWriteLockMap = new WeakHashMap<>();
     private final Map<String, StampedLock> stampedLockMap = new WeakHashMap<>();
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+    private final Lock readLock = readWriteLock.readLock();
+    private final Lock writeLock = readWriteLock.writeLock();
+
 
     public ReadWriteLock obtainReadWriteLock(String key) {
         Assert.INSTANCE.notBlank(key, "参数Key不能为空");
@@ -31,17 +35,17 @@ public enum LocalLockUtil {
             return readWriteLock;
         }
         //第二级 读锁查询
-        lock.readLock().lock();
+        this.readLock.lock();
         try {
             readWriteLock = readWriteLockMap.get(key);
             if (null != readWriteLock) {
                 return readWriteLock;
             }
             //第三级 释放读锁,加写锁写入
-            lock.readLock().unlock();
-            lock.writeLock().lock();
+            this.readLock.unlock();
+            this.writeLock.lock();
             try {
-                //二次验证
+                //加写锁后 二次验证
                 readWriteLock = readWriteLockMap.get(key);
                 if (null != readWriteLock) {
                     return readWriteLock;
@@ -51,11 +55,11 @@ public enum LocalLockUtil {
                 return readWriteLock;
             } finally {
                 //锁降级，释放写锁之前,再次获取读锁，防止在写锁释放的瞬间其它写锁修改数据，保证本次写线程读取数据的原子性，保证返回的是本次写入的内容。
-                lock.readLock().lock();
-                lock.writeLock().unlock();
+                this.readLock.lock();
+                this.writeLock.unlock();
             }
         } finally {
-            lock.readLock().unlock();
+            this.readLock.unlock();
         }
     }
 
@@ -67,15 +71,15 @@ public enum LocalLockUtil {
             return stampedLock;
         }
         //第二级 读锁查询
-        lock.readLock().lock();
+        readLock.lock();
         try {
             stampedLock = stampedLockMap.get(key);
             if (null != stampedLock) {
                 return stampedLock;
             }
             //第三级 释放读锁,加写锁写入
-            lock.readLock().unlock();
-            lock.writeLock().lock();
+            readLock.unlock();
+            writeLock.lock();
             try {
                 //二次验证
                 stampedLock = stampedLockMap.get(key);
@@ -87,28 +91,29 @@ public enum LocalLockUtil {
                 return stampedLock;
             } finally {
                 //锁降级，释放写锁之前,再次获取读锁，防止在写锁释放的瞬间其它写锁修改数据，保证本次写线程读取数据的原子性，保证返回的是本次写入的内容。
-                lock.readLock().lock();
-                lock.writeLock().unlock();
+                readLock.lock();
+                writeLock.unlock();
             }
         } finally {
-            lock.readLock().unlock();
+            readLock.unlock();
         }
     }
 
-    public <R> R readWriteInReadWriteLock(String key, Reader<R> reader, Writer<R> writer) throws Exception {
+    public <R> R readWriteInReadWriteLock(String key, LockReader<R> lockReader, LockWriter<R> lockWriter) throws Exception {
         //第一级不加锁读取
-        R result = reader.read();
+        R result = lockReader.read();
         if (result != null) {
             logger.debug("key:{},第一级不加锁,读取成功:{}", key, result);
             return result;
         }
         logger.debug("key:{},第一级不加锁,读取失败", key);
-
         ReadWriteLock readWriteLock = obtainReadWriteLock(key);
+        Lock readLock = readWriteLock.readLock();
+        Lock writeLock = readWriteLock.writeLock();
         // 第二级加读锁读取
-        readWriteLock.readLock().lock();
+        readLock.lock();
         try {
-            result = reader.read();
+            result = lockReader.read();
             if (result != null) {
                 logger.debug("key:{},第二级加读锁,读取成功:{}", key, result);
                 //finally release read lock
@@ -116,29 +121,29 @@ public enum LocalLockUtil {
             }
             logger.debug("key:{},第二级加读锁,读取失败", key);
             //Must release read lock before acquiring write lock，can't upgrade write lock from read lock
-            readWriteLock.readLock().unlock();
+            readLock.unlock();
             //第三级加写锁写入
-            readWriteLock.writeLock().lock();
+            writeLock.lock();
             try {
                 //Recheck state because another thread might have acquired write lock and changed state before we did.
-                result = reader.read();
+                result = lockReader.read();
                 if (result != null) {
                     logger.debug("key:{},第三级加写锁,验证读取成功:{}", key, result);
                     return result;
                 }
                 logger.debug("key:{},第三级加写锁,验证读取失败", key);
-                result = writer.write();
+                result = lockWriter.write();
                 logger.debug("key:{},第三级加写锁，写入成功:{}", key, result);
                 return result;
             } finally {
                 //锁降级遵循 先获取写锁，然后获取读锁，然后释放写锁，再释放读锁.
                 //Downgrade by acquiring read lock before releasing write lock
                 //still hold read lock，防止当前写锁释放后，调用返回前，有其它线再获取写锁,保证本次写线程读取数据的原子性，保证返回的是本次写入的内容。
-                readWriteLock.readLock().lock();
-                readWriteLock.writeLock().unlock();
+                readLock.lock();
+                writeLock.unlock();
             }
         } finally {
-            readWriteLock.readLock().unlock();
+            readLock.unlock();
         }
     }
 }
