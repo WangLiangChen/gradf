@@ -312,7 +312,7 @@ public class CacheInterceptor extends org.springframework.cache.interceptor.Cach
         return result;
     }
 
-    private Callable callable(InvocationAwareResult invocationResult, CacheOperationInvoker invoker, Object key, Cache cache) {
+    private Callable<Object> callable(InvocationAwareResult invocationResult, CacheOperationInvoker invoker, Object key, Cache cache) {
         return () -> {
             invocationResult.invoked = true;
             if (logger.isTraceEnabled()) {

@@ -70,9 +70,7 @@ public class SpringCacheAnnotationParser implements CacheAnnotationParser, Seria
     }
 
     @Nullable
-    private Collection<CacheOperation> parseCacheAnnotations(
-            DefaultCacheConfig cachingConfig, AnnotatedElement ae, boolean localOnly) {
-
+    private Collection<CacheOperation> parseCacheAnnotations(DefaultCacheConfig cachingConfig, AnnotatedElement ae, boolean localOnly) {
         Collection<? extends Annotation> anns = (localOnly ?
                 AnnotatedElementUtils.getAllMergedAnnotations(ae, CACHE_OPERATION_ANNOTATIONS) :
                 AnnotatedElementUtils.findAllMergedAnnotations(ae, CACHE_OPERATION_ANNOTATIONS));
