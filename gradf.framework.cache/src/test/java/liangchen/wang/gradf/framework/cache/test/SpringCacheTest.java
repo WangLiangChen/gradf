@@ -6,7 +6,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.annotation.EnableCaching;
 
 import javax.inject.Inject;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * @author LiangChen.Wang 2020/9/16
@@ -20,6 +19,12 @@ public class SpringCacheTest {
     @Test
     public void testCacheable() throws InterruptedException {
         String ret = service.insert("a");
+        System.out.println("---------" + ret);
+        ret = service.insert("a");
+        System.out.println("---------" + ret);
+        ret = service.update("a");
+        System.out.println("---------" + ret);
+        ret = service.update("a");
         System.out.println("---------" + ret);
     }
 }
