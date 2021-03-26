@@ -8,7 +8,7 @@ import liangchen.wang.gradf.component.commons.manager.domain.parameter.CaptchaPa
 import liangchen.wang.gradf.component.commons.manager.domain.parameter.CaptchaRefreshDomain;
 import liangchen.wang.gradf.component.commons.manager.domain.parameter.CaptchaValidateDomain;
 import liangchen.wang.gradf.component.commons.manager.domain.result.CaptchaResultDomain;
-import liangchen.wang.gradf.framework.cache.primary.GradfCacheManager;
+import liangchen.wang.gradf.framework.cache.override.CacheManager;
 import liangchen.wang.gradf.framework.commons.captcha.CaptchaProperties;
 import liangchen.wang.gradf.framework.commons.captcha.producer.impl.DefaultProducer;
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
@@ -25,7 +25,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.util.Base64;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author LiangChen.Wang 2019/6/28 14:51
@@ -36,13 +35,13 @@ public class CaptchaManagerImpl implements ICaptchaManager {
     private static final String DEFAULTCHARS = "abcdefghjkmnpqrstuvwxyz23456789ABCDEFGHJKMNPQRSTUVWXYZ";
     private static final DefaultProducer producer;
 
-    private final GradfCacheManager cacheManager;
+    private final CacheManager cacheManager;
     private final Cache cache;
 
     @Inject
-    public CaptchaManagerImpl(GradfCacheManager cacheManager) {
+    public CaptchaManagerImpl(CacheManager cacheManager) {
         this.cacheManager = cacheManager;
-        this.cache = cacheManager.getCache("Gradf_Captcha", 5, TimeUnit.MINUTES);
+        this.cache = cacheManager.getCache("Gradf_Captcha", 5 * 60000);
     }
 
     static {

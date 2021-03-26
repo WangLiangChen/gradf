@@ -6,5 +6,21 @@ package liangchen.wang.gradf.framework.commons.lock;
  */
 @FunctionalInterface
 public interface LockReader<R> {
-    R read() throws Exception;
+    LockValueWrapper<R> read() throws Exception;
+}
+
+class LockValueWrapper<R> {
+    private final R object;
+
+    LockValueWrapper(R object) {
+        this.object = object;
+    }
+
+    public R get() {
+        return object;
+    }
+
+    public static <R> LockValueWrapper<R> of(R object) {
+        return new LockValueWrapper<>(object);
+    }
 }

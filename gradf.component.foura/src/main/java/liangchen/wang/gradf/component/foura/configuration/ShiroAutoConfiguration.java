@@ -9,7 +9,7 @@ import liangchen.wang.gradf.component.foura.shiro.filterchain.GradfPathMatchingF
 import liangchen.wang.gradf.component.foura.shiro.permission.BitAndWildPermissionResolver;
 import liangchen.wang.gradf.component.foura.shiro.permission.GradfRolePermissionResolver;
 import liangchen.wang.gradf.component.foura.shiro.realm.*;
-import liangchen.wang.gradf.framework.cache.primary.GradfCacheManager;
+import liangchen.wang.gradf.framework.cache.override.CacheManager;
 import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.credential.AllowAllCredentialsMatcher;
@@ -53,10 +53,10 @@ import java.util.HashSet;
 @AutoConfigureAfter(ShiroLifecycleConfiguration.class)
 public class ShiroAutoConfiguration {
     private final static org.apache.commons.configuration2.Configuration config = ConfigurationUtil.INSTANCE.getConfiguration("4a.properties");
-    private final GradfCacheManager cacheManager;
+    private final CacheManager cacheManager;
 
     @Inject
-    public ShiroAutoConfiguration(GradfCacheManager cacheManager) {
+    public ShiroAutoConfiguration(CacheManager cacheManager) {
         this.cacheManager = cacheManager;
     }
 

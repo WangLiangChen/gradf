@@ -419,7 +419,7 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("import " + iDaoClass + ";");
         lines.add("import " + entityClass + ";");
         lines.add("import " + queryClass + ";");
-        lines.add("import liangchen.wang.gradf.framework.cache.annotation.GradfAutoCacheable;");
+        lines.add("");
         lines.add("import liangchen.wang.gradf.framework.data.core.AbstractJdbcDao;");
         lines.add("import org.springframework.stereotype.Repository;");
         lines.add("");

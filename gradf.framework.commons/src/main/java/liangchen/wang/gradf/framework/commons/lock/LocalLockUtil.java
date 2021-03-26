@@ -101,20 +101,23 @@ public enum LocalLockUtil {
 
     public <R> R readWriteInReadWriteLock(String key, LockReader<R> lockReader, LockWriter<R> lockWriter) throws Exception {
         //第一级不加锁读取
-        R result = lockReader.read();
-        if (result != null) {
+        LockValueWrapper<R> valueWrapper = lockReader.read();
+        if (valueWrapper != null) {
+            R result = valueWrapper.get();
             logger.debug("key:{},第一级不加锁,读取成功:{}", key, result);
             return result;
         }
         logger.debug("key:{},第一级不加锁,读取失败", key);
+        // 获取个读写锁
         ReadWriteLock readWriteLock = obtainReadWriteLock(key);
         Lock readLock = readWriteLock.readLock();
         Lock writeLock = readWriteLock.writeLock();
         // 第二级加读锁读取
         readLock.lock();
         try {
-            result = lockReader.read();
-            if (result != null) {
+            valueWrapper = lockReader.read();
+            if (valueWrapper != null) {
+                R result = valueWrapper.get();
                 logger.debug("key:{},第二级加读锁,读取成功:{}", key, result);
                 //finally release read lock
                 return result;
@@ -126,13 +129,14 @@ public enum LocalLockUtil {
             writeLock.lock();
             try {
                 //Recheck state because another thread might have acquired write lock and changed state before we did.
-                result = lockReader.read();
-                if (result != null) {
+                valueWrapper = lockReader.read();
+                if (valueWrapper != null) {
+                    R result = valueWrapper.get();
                     logger.debug("key:{},第三级加写锁,验证读取成功:{}", key, result);
                     return result;
                 }
                 logger.debug("key:{},第三级加写锁,验证读取失败", key);
-                result = lockWriter.write();
+                R result = lockWriter.write();
                 logger.debug("key:{},第三级加写锁，写入成功:{}", key, result);
                 return result;
             } finally {

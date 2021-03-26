@@ -5,7 +5,6 @@ import liangchen.wang.gradf.component.foura.dao.entity.Group;
 import liangchen.wang.gradf.component.foura.dao.query.GroupQuery;
 import liangchen.wang.gradf.component.foura.manager.IGroupManager;
 import liangchen.wang.gradf.component.foura.manager.domain.parameter.GroupParameterDomain;
-import liangchen.wang.gradf.framework.cache.annotation.EnableGradfCaching;
 import liangchen.wang.gradf.framework.commons.utils.ConcurrentUtil;
 import liangchen.wang.gradf.framework.data.annotation.EnableJdbc;
 import liangchen.wang.gradf.framework.data.enumeration.DataMode;
@@ -22,7 +21,6 @@ import java.util.concurrent.TimeUnit;
  */
 @SpringBootTest
 @EnableJdbc
-@EnableGradfCaching
 public class GroupTest {
     @Inject
     private IGroupManager manager;
