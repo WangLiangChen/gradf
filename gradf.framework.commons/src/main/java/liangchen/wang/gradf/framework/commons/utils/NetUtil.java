@@ -133,7 +133,7 @@ public enum NetUtil {
 
     public long ipV4ToLong(String ip) {
         int maskIndex = ip.lastIndexOf('/');
-        String prefix = null, mask = null;
+        String prefix, mask = null;
         int index;
         if (maskIndex == -1) {
             index = 3;
@@ -154,6 +154,20 @@ public enum NetUtil {
         }
         longIp |= Long.parseLong(mask);
         return longIp;
+    }
+
+    public Long netAddress(String ip, Byte mask) {
+        Long ipLong = NetUtil.INSTANCE.ipV4ToLong(ip);
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < 32; i++) {
+            if (i < mask) {
+                builder.append("1");
+            } else {
+                builder.append("0");
+            }
+        }
+        Long maskLong = Long.parseLong(builder.toString(), 2);
+        return ipLong & maskLong;
     }
 
 
