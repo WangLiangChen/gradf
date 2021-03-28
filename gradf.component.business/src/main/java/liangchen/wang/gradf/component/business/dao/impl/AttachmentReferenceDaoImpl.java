@@ -3,12 +3,10 @@ package liangchen.wang.gradf.component.business.dao.impl;
 import liangchen.wang.gradf.component.business.dao.IAttachmentReferenceDao;
 import liangchen.wang.gradf.component.business.dao.entity.AttachmentReference;
 import liangchen.wang.gradf.component.business.dao.query.AttachmentReferenceQuery;
-
 import liangchen.wang.gradf.framework.data.core.AbstractJdbcDao;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author LiangChen.Wang 2019-12-29 20:25:05

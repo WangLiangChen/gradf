@@ -1,4 +1,4 @@
-package liangchen.wang.gradf.framework.cluster.cache;
+package liangchen.wang.gradf.framework.cache.redis;
 
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheWriter;

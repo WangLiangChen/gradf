@@ -1,8 +1,8 @@
-package liangchen.wang.gradf.framework.cluster.annotation;
+package liangchen.wang.gradf.framework.cache.annotation;
 
 import com.google.common.base.Splitter;
-import liangchen.wang.gradf.framework.cluster.configuration.RedisAutoConfiguration;
-import liangchen.wang.gradf.framework.cluster.enumeration.ClusterStatus;
+import liangchen.wang.gradf.framework.cache.configuration.RedisAutoConfiguration;
+import liangchen.wang.gradf.framework.cache.enumeration.CacheStatus;
 import liangchen.wang.gradf.framework.commons.exception.InfoException;
 import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
 import liangchen.wang.gradf.framework.commons.utils.NetUtil;
@@ -48,7 +48,7 @@ public @interface EnableRedis {
                 Printer.INSTANCE.prettyPrint("Redis单机模式连接成功");
                 loaded = true;
                 // 设置全局redis状态
-                ClusterStatus.INSTANCE.setRedisEnable(true);
+                CacheStatus.INSTANCE.setRedisEnable(true);
                 return imports;
             }
             //集群模式
@@ -63,7 +63,7 @@ public @interface EnableRedis {
             Printer.INSTANCE.prettyPrint("Redis集群模式连接成功");
             loaded = true;
             // 设置全局redis状态
-            ClusterStatus.INSTANCE.setRedisEnable(true);
+            CacheStatus.INSTANCE.setRedisEnable(true);
             return imports;
         }
 

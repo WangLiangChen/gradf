@@ -1,8 +1,10 @@
-package liangchen.wang.gradf.framework.cluster.configuration;
+package liangchen.wang.gradf.framework.cache.configuration;
 
+import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.support.caching.CacheFrontend;
+import io.lettuce.core.support.caching.ClientSideCaching;
 import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
 import liangchen.wang.gradf.framework.commons.utils.Printer;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -11,7 +13,7 @@ import org.springframework.boot.context.properties.source.MapConfigurationProper
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.integration.redis.util.RedisLockRegistry;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 
 import java.util.Iterator;
 
@@ -33,9 +35,4 @@ public class RedisAutoConfiguration extends org.springframework.boot.autoconfigu
         return binder.bind(ConfigurationPropertyName.EMPTY, Bindable.of(RedisProperties.class)).get();
     }
 
-    @Bean
-    @ConditionalOnBean(RedisConnectionFactory.class)
-    public RedisLockRegistry redisLockRegistry(RedisConnectionFactory redisConnectionFactory) {
-        return new RedisLockRegistry(redisConnectionFactory, "GradfLock");
-    }
 }

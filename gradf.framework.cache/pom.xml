@@ -18,7 +18,7 @@
         </dependency>
         <dependency>
             <groupId>liangchen.wang</groupId>
-            <artifactId>gradf.framework.data</artifactId>
+            <artifactId>gradf.framework.commons</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -27,6 +27,11 @@
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
+        </dependency>
+        <!-- redis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
         </dependency>
     </dependencies>
 </project>

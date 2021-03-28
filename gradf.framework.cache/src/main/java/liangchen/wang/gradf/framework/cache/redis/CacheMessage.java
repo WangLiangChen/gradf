@@ -1,4 +1,4 @@
-package liangchen.wang.gradf.framework.cluster.cache;
+package liangchen.wang.gradf.framework.cache.redis;
 
 /**
  * @author LiangChen.Wang

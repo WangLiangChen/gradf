@@ -1,6 +1,6 @@
 package liangchen.wang.gradf.framework.cluster.annotation;
 
-import liangchen.wang.gradf.framework.cluster.configuration.RedisShedLockProviderAutoConfiguration;
+import liangchen.wang.gradf.framework.cluster.configuration.RedisLockAutoConfiguration;
 import liangchen.wang.gradf.framework.commons.utils.Printer;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import org.springframework.context.annotation.Import;
@@ -28,7 +28,7 @@ public @interface EnableRedisShedLock {
             }
             Printer.INSTANCE.prettyPrint("@EnableRedisShedLock 开启了RedisShedLock注解......");
             Printer.INSTANCE.prettyPrint("@EnableRedisShedLock 匹配的类: {}", annotationMetadata.getClassName());
-            String[] imports = new String[]{RedisShedLockProviderAutoConfiguration.class.getName()};
+            String[] imports = new String[]{RedisLockAutoConfiguration.class.getName()};
             loaded = true;
             return imports;
         }

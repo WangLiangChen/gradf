@@ -10,8 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.Cache;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * @author LiangChen.Wang
  */

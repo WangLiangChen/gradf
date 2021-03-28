@@ -2,12 +2,20 @@ package liangchen.wang.gradf.framework.cluster.configuration;
 
 import net.javacrumbs.shedlock.core.LockProvider;
 import net.javacrumbs.shedlock.provider.redis.spring.RedisLockProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.integration.redis.util.RedisLockRegistry;
 
-public class RedisShedLockProviderAutoConfiguration {
+public class RedisLockAutoConfiguration {
     @Bean
     public LockProvider jdbcTemplateLockProvider(RedisConnectionFactory redisConnectionFactory) {
         return new RedisLockProvider(redisConnectionFactory);
+    }
+
+    @Bean
+    @ConditionalOnBean(RedisConnectionFactory.class)
+    public RedisLockRegistry redisLockRegistry(RedisConnectionFactory redisConnectionFactory) {
+        return new RedisLockRegistry(redisConnectionFactory, "GradfRedisLock");
     }
 }

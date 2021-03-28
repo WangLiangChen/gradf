@@ -3,13 +3,10 @@ package liangchen.wang.gradf.component.business.dao.impl;
 import liangchen.wang.gradf.component.business.dao.IInfiniteDao;
 import liangchen.wang.gradf.component.business.dao.entity.Infinite;
 import liangchen.wang.gradf.component.business.dao.query.InfiniteQuery;
-
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.data.core.AbstractJdbcDao;
 import liangchen.wang.gradf.framework.data.enumeration.Status;
 import org.springframework.stereotype.Repository;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author LiangChen.Wang 2020-05-12 19:37:27
