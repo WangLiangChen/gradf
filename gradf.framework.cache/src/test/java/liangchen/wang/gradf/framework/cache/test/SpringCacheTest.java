@@ -1,5 +1,6 @@
 package liangchen.wang.gradf.framework.cache.test;
 
+import liangchen.wang.gradf.framework.cache.annotation.EnableRedis;
 import liangchen.wang.gradf.framework.cache.test.service.ICacheTestService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +13,7 @@ import javax.inject.Inject;
  */
 @SpringBootTest
 @EnableCaching
+@EnableRedis
 public class SpringCacheTest {
     @Inject
     private ICacheTestService service;

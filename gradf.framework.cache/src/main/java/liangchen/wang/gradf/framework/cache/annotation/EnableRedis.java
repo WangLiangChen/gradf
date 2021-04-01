@@ -8,6 +8,7 @@ import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
 import liangchen.wang.gradf.framework.commons.utils.NetUtil;
 import liangchen.wang.gradf.framework.commons.utils.Printer;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
+import liangchen.wang.gradf.framework.commons.validator.Assert;
 import org.apache.commons.configuration2.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
@@ -38,29 +39,15 @@ public @interface EnableRedis {
             Printer.INSTANCE.prettyPrint("@EnableRedis 开启了Redis......");
             Printer.INSTANCE.prettyPrint("@EnableRedis 匹配的类: {}", annotationMetadata.getClassName());
             //判断是否集群配置
-            String cluster = configuration.getString("cluster.nodes");
-            if (StringUtil.INSTANCE.isBlank(cluster)) {
-                Printer.INSTANCE.prettyPrint("Redis配置为单机模式......");
-                String host = configuration.getString("host");
-                int port = configuration.getInt("port", 0);
-                connectableCheck(host, port);
-                String[] imports = new String[]{RedisAutoConfiguration.class.getName()};
-                Printer.INSTANCE.prettyPrint("Redis单机模式连接成功");
-                loaded = true;
-                // 设置全局redis状态
-                CacheStatus.INSTANCE.setRedisEnable(true);
-                return imports;
-            }
-            //集群模式
-            Printer.INSTANCE.prettyPrint("Redis配置为集群模式......");
-            Iterator<String> hosts = Splitter.on(",").split(cluster).iterator();
-            while (hosts.hasNext()) {
-                String next = hosts.next();
-                List<String> hostAndPorts = Splitter.on(":").splitToList(next);
-                connectableCheck(hostAndPorts.get(0), Integer.parseInt(hostAndPorts.get(1)));
+            String[] nodes = configuration.getStringArray("cluster.nodes");
+            Assert.INSTANCE.notEmpty(nodes, "The configuration 'nodes' is required!");
+            Printer.INSTANCE.prettyPrint("Redis配置为{}模式......", nodes.length > 1 ? "集群" : "单机");
+            for (String node : nodes) {
+                int index = node.indexOf(':');
+                connectableCheck(node.substring(0, index), Integer.parseInt(node.substring(index + 1)));
             }
             String[] imports = new String[]{RedisAutoConfiguration.class.getName()};
-            Printer.INSTANCE.prettyPrint("Redis集群模式连接成功");
+            Printer.INSTANCE.prettyPrint("Redis连接成功");
             loaded = true;
             // 设置全局redis状态
             CacheStatus.INSTANCE.setRedisEnable(true);

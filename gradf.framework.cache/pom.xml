@@ -18,7 +18,7 @@
         </dependency>
         <dependency>
             <groupId>liangchen.wang</groupId>
-            <artifactId>gradf.framework.commons</artifactId>
+            <artifactId>gradf.framework.springboot</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

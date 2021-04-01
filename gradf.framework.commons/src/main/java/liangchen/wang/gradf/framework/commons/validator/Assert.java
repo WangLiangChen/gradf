@@ -172,6 +172,13 @@ public enum Assert {
         assertException(AssertLevel.INFO, message, args);
     }
 
+    public void notEmpty(String[] strings, String message, Object... args) {
+        if (CollectionUtil.INSTANCE.isNotEmpty(strings)) {
+            return;
+        }
+        assertException(AssertLevel.INFO, message, args);
+    }
+
     public void notEmpty(Collection<?> collection, String message, Object... args) {
         if (CollectionUtil.INSTANCE.isNotEmpty(collection)) {
             return;
