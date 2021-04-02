@@ -8,6 +8,11 @@ public class CacheMessage {
     private CacheAction action;
     private Object key;
 
+    public static CacheMessage newInstance() {
+        CacheMessage cacheMessage = new CacheMessage();
+        return cacheMessage;
+    }
+
     public CacheAction getAction() {
         return action;
     }
