@@ -8,8 +8,15 @@ public class CacheMessage {
     private CacheAction action;
     private Object key;
 
-    public static CacheMessage newInstance() {
+    public static CacheMessage newInstance(String name, CacheAction action) {
+        return newInstance(name, action, null);
+    }
+
+    public static CacheMessage newInstance(String name, CacheAction action, Object key) {
         CacheMessage cacheMessage = new CacheMessage();
+        cacheMessage.name = name;
+        cacheMessage.action = action;
+        cacheMessage.key = key;
         return cacheMessage;
     }
 
@@ -37,8 +44,8 @@ public class CacheMessage {
         this.name = name;
     }
 
-    enum CacheAction {
+    public enum CacheAction {
         //
-        clear, put, evict
+        none, clear, put, evict
     }
 }

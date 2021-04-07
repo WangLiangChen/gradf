@@ -9,8 +9,8 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.stream.*;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StreamOperations;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.stream.StreamListener;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
 import org.springframework.stereotype.Component;
@@ -31,7 +31,7 @@ public class CacheMessageConsumerRunner implements ApplicationRunner, Disposable
     private final StreamMessageListenerContainer<String, ObjectRecord<String, CacheMessage>> container;
 
     @Inject
-    public CacheMessageConsumerRunner(Executor taskExecutor, RedisTemplate<String, Object> stringKeyRedisTemplate) {
+    public CacheMessageConsumerRunner(Executor taskExecutor, StringRedisTemplate stringRedisTemplate) {
         StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, ObjectRecord<String, CacheMessage>> options =
                 StreamMessageListenerContainer.StreamMessageListenerContainerOptions.builder()
                         .targetType(CacheMessage.class)
@@ -39,9 +39,9 @@ public class CacheMessageConsumerRunner implements ApplicationRunner, Disposable
                         .executor(taskExecutor)
                         .pollTimeout(Duration.ZERO)
                         .build();
-        StreamMessageListenerContainer<String, ObjectRecord<String, CacheMessage>> container = StreamMessageListenerContainer.create(stringKeyRedisTemplate.getConnectionFactory(), options);
-        prepareChannelAndGroup(stringKeyRedisTemplate.opsForStream());
-        container.receiveAutoAck(Consumer.from(EXPIRE_GROUP, "CacheMessageConsumer"), StreamOffset.create(EXPIRE_CHANNEL, ReadOffset.lastConsumed()), new StreamMessageListener(stringKeyRedisTemplate));
+        StreamMessageListenerContainer<String, ObjectRecord<String, CacheMessage>> container = StreamMessageListenerContainer.create(stringRedisTemplate.getConnectionFactory(), options);
+        prepareChannelAndGroup(stringRedisTemplate);
+        container.receiveAutoAck(Consumer.from(EXPIRE_GROUP, "CacheMessageConsumer"), StreamOffset.create(EXPIRE_CHANNEL, ReadOffset.lastConsumed()), new StreamMessageListener(stringRedisTemplate));
         this.container = container;
     }
 
@@ -57,10 +57,10 @@ public class CacheMessageConsumerRunner implements ApplicationRunner, Disposable
     }
 
     public static class StreamMessageListener implements StreamListener<String, ObjectRecord<String, CacheMessage>> {
-        private final RedisTemplate<String, Object> stringKeyRedisTemplate;
+        private final StringRedisTemplate stringRedisTemplate;
 
-        public StreamMessageListener(RedisTemplate<String, Object> stringKeyRedisTemplate) {
-            this.stringKeyRedisTemplate = stringKeyRedisTemplate;
+        public StreamMessageListener(StringRedisTemplate stringRedisTemplate) {
+            this.stringRedisTemplate = stringRedisTemplate;
         }
 
         @Override
@@ -72,21 +72,18 @@ public class CacheMessageConsumerRunner implements ApplicationRunner, Disposable
     }
 
     /**
-     * 在初始化容器时，如果key对应的stream或者group不存在时会抛出异常，需要提前检查并且初始化。     *
-     *
-     * @param streamOperations
+     * 在初始化容器时，如果key对应的stream或者group不存在时会抛出异常，需要提前检查并且初始化
      */
-    private void prepareChannelAndGroup(StreamOperations<String, ?, ?> streamOperations) {
+    private void prepareChannelAndGroup(StringRedisTemplate stringRedisTemplate) {
         String status = "OK";
+        StreamOperations<String, Object, Object> streamOperations = stringRedisTemplate.opsForStream();
         try {
             StreamInfo.XInfoGroups groups = streamOperations.groups(EXPIRE_CHANNEL);
             if (groups.stream().noneMatch(group -> EXPIRE_GROUP.equals(group.groupName()))) {
                 status = streamOperations.createGroup(EXPIRE_CHANNEL, EXPIRE_GROUP);
             }
         } catch (Exception exception) {
-            ObjectRecord<String, CacheMessage> record = StreamRecords.newRecord()
-                    .ofObject(CacheMessage.newInstance())
-                    .withStreamKey(EXPIRE_CHANNEL);
+            ObjectRecord<String, CacheMessage> record = StreamRecords.newRecord().ofObject(CacheMessage.newInstance("name", CacheMessage.CacheAction.none)).withStreamKey(EXPIRE_CHANNEL);
             RecordId initialRecord = streamOperations.add(record);
             Assert.INSTANCE.notNull(initialRecord, "Cannot initialize stream with key '" + EXPIRE_CHANNEL + "'");
             status = streamOperations.createGroup(EXPIRE_CHANNEL, ReadOffset.from(initialRecord), EXPIRE_GROUP);
