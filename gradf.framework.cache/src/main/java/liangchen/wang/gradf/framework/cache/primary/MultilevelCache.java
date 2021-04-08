@@ -1,18 +1,24 @@
 package liangchen.wang.gradf.framework.cache.primary;
 
 import liangchen.wang.gradf.framework.cache.caffeine.CaffeineCache;
+import liangchen.wang.gradf.framework.cache.enumeration.CacheStatus;
 import liangchen.wang.gradf.framework.cache.override.Cache;
+import liangchen.wang.gradf.framework.cache.redis.CacheMessage;
+import liangchen.wang.gradf.framework.cache.redis.RedisCache;
+import liangchen.wang.gradf.framework.cache.runner.CacheMessageConsumerRunner;
+import liangchen.wang.gradf.framework.commons.lock.LocalLockUtil;
+import liangchen.wang.gradf.framework.commons.lock.LockReader;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.support.AbstractValueAdaptingCache;
+import org.springframework.data.redis.connection.stream.ObjectRecord;
+import org.springframework.data.redis.connection.stream.StreamRecords;
+import org.springframework.data.redis.core.StreamOperations;
 
 import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 
@@ -28,18 +34,22 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
     private final boolean allowNullValues;
     private final Cache localCache;
     private final Cache distributedCache;
-    private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
-    private final Lock readLock = readWriteLock.readLock();
-    private final Lock writeLock = readWriteLock.writeLock();
+    private final StreamOperations<String, Object, Object> streamOperations;
     private final String loggerPrefix;
 
-    public MultilevelCache(String name, long ttl, boolean allowNullValues) {
+    public MultilevelCache(String name, long ttl, boolean allowNullValues, MultilevelCacheManager multilevelCacheManager) {
         super(allowNullValues);
         this.name = name;
         this.ttl = ttl;
         this.allowNullValues = allowNullValues;
         this.localCache = new CaffeineCache(name, ttl, true);
-        this.distributedCache = null;
+        if (CacheStatus.INSTANCE.isRedisEnable()) {
+            this.distributedCache = new RedisCache(name, ttl, allowNullValues, multilevelCacheManager.getRedisTemplate());
+            this.streamOperations = multilevelCacheManager.getStringRedisTemplate().opsForStream();
+        } else {
+            this.distributedCache = null;
+            this.streamOperations = null;
+        }
         this.loggerPrefix = String.format("Cache(name:%s,ttl:%s,allowNullValues:%s)", name, ttl, allowNullValues);
         logger.debug(loggerPrefix("Constructor"));
     }
@@ -49,119 +59,107 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
         logger.debug(loggerPrefix("get", "key"), key);
         // null说明缓存不存在
         ValueWrapper valueWrapper = localCache.get(key);
-        if (null == valueWrapper && null != distributedCache) {
-            valueWrapper = distributedCache.get(key);
+        if (null != valueWrapper) {
+            return valueWrapper;
         }
+        if (CacheStatus.INSTANCE.isNotRedisEnable() || null == (valueWrapper = distributedCache.get(key))) {
+            return null;
+        }
+        // 写入localCache
+        localCache.put(key, valueWrapper.get());
         return valueWrapper;
     }
 
     @Override
     public <T> T get(Object key, Class<T> type) {
-        ValueWrapper valueWrapper = this.get(key);
-        if (null == valueWrapper || null == valueWrapper.get()) {
+        ValueWrapper valueWrapper = localCache.get(key);
+        if (null != valueWrapper) {
+            return localCache.get(key, type);
+        }
+        if (CacheStatus.INSTANCE.isNotRedisEnable() || null == distributedCache.get(key)) {
             return null;
         }
-        return ClassBeanUtil.INSTANCE.cast(valueWrapper.get());
+        T result = distributedCache.get(key, type);
+        // 写入localCache
+        localCache.put(key, result);
+        return result;
     }
 
     @Override
     public <T> T get(Object key, Callable<T> valueLoader) {
-        return get(key, valueLoader, 0L);
-    }
-
-    @Override
-    public <T> T get(Object key, Callable<T> valueLoader, long ttl) {
         logger.debug(loggerPrefix("get", "key", "valueLoader", "ttl"), key, valueLoader, ttl);
-        ValueWrapper valueWrapper = this.get(key);
-        // 第一级 无锁查询
-        if (null != valueWrapper) {
-            return ClassBeanUtil.INSTANCE.cast(valueWrapper.get());
-        }
-        //第二级 读锁查询
-        readLock.lock();
-        try {
-            valueWrapper = this.get(key);
-            if (null != valueWrapper) {
-                return ClassBeanUtil.INSTANCE.cast(valueWrapper.get());
+        return LocalLockUtil.INSTANCE.readWriteInReadWriteLock(String.format("%s_%s", this.name, key), () -> {
+            ValueWrapper valueWrapper = this.get(key);
+            if (null == valueWrapper) {
+                return null;
             }
-            //第三级 释放读锁,加写锁写入
-            readLock.unlock();
-            writeLock.lock();
+            return new LockReader.LockValueWrapper<>(ClassBeanUtil.INSTANCE.cast(valueWrapper.get()));
+        }, () -> {
             try {
-                //二次验证
-                valueWrapper = this.get(key);
-                if (null != valueWrapper) {
-                    return ClassBeanUtil.INSTANCE.cast(valueWrapper.get());
-                }
-                try {
-                    T returnValue = valueLoader.call();
-                    put(key, returnValue, ttl);
-                    return returnValue;
-                } catch (Exception e) {
-                    throw new ValueRetrievalException(key, valueLoader, e);
-                }
-            } finally {
-                //锁降级，释放写锁之前,再次获取读锁，防止在写锁释放的瞬间其它写锁修改数据，保证本次写线程读取数据的原子性，保证返回的是本次写入的内容。
-                readLock.lock();
-                writeLock.unlock();
+                T returnValue = valueLoader.call();
+                this.put(key, returnValue);
+                return returnValue;
+            } catch (Exception e) {
+                throw new ValueRetrievalException(key, valueLoader, e);
             }
-        } finally {
-            readLock.unlock();
-        }
+        });
     }
 
-    @Override
-    public void put(Object key, Object value, long ttl) {
-        logger.debug(loggerPrefix("put", "key", "value", "ttl"), key, value, ttl);
-        // 如果未设置过期 则使用Cache的过期
-        if (0 == ttl) {
-            ttl = this.ttl;
-        }
-        if (null != distributedCache) {
-            distributedCache.put(key, value, ttl);
-        }
-        localCache.put(key, value, ttl);
-    }
 
     @Override
     public void put(Object key, Object value) {
-        put(key, value, 0L);
+        logger.debug(loggerPrefix("put", "key", "value", "ttl"), key, value, ttl);
+        if (CacheStatus.INSTANCE.isRedisEnable()) {
+            distributedCache.put(key, value);
+        }
+        localCache.put(key, value);
     }
 
-    @Override
-    public ValueWrapper putIfAbsent(Object key, Object value, long ttl) {
-        logger.debug(loggerPrefix("putIfAbsent", "key", "value", "ttl"), key, value, ttl);
-        // 如果未设置过期 则使用Cache的过期
-        if (0 == ttl) {
-            ttl = this.ttl;
-        }
-        if (null != distributedCache) {
-            distributedCache.putIfAbsent(key, value, ttl);
-        }
-        return localCache.putIfAbsent(key, value, ttl);
-    }
 
     @Override
     public ValueWrapper putIfAbsent(Object key, Object value) {
-        return this.putIfAbsent(key, value, 0L);
+        logger.debug(loggerPrefix("putIfAbsent", "key", "value", "ttl"), key, value, ttl);
+        if (CacheStatus.INSTANCE.isRedisEnable()) {
+            distributedCache.putIfAbsent(key, value);
+        }
+        return localCache.putIfAbsent(key, value);
+
     }
 
     @Override
     public void evict(Object key) {
         logger.debug(loggerPrefix("evict", "key"), key);
-        localCache.evict(key);
-        if (null != distributedCache) {
-            distributedCache.evict(key);
+        if (CacheStatus.INSTANCE.isNotRedisEnable()) {
+            localCache.evict(key);
+            return;
         }
+        distributedCache.evict(key);
+        // 发送消息
+        ObjectRecord<String, CacheMessage> record = StreamRecords.newRecord().ofObject(CacheMessage.newInstance(this.name, CacheMessage.CacheAction.evict, key)).withStreamKey(CacheMessageConsumerRunner.EXPIRE_CHANNEL);
+        this.streamOperations.add(record);
+    }
+
+    public void evictLocal(Object key) {
+        logger.debug(loggerPrefix("evictLocal", "key"), key);
+        localCache.evict(key);
     }
 
     @Override
     public void clear() {
         logger.debug(loggerPrefix("clear"));
-        localCache.clear();
-        if (null != distributedCache) {
-            distributedCache.clear();
+        if (CacheStatus.INSTANCE.isNotRedisEnable()) {
+            localCache.clear();
+            return;
         }
+        distributedCache.clear();
+        // 发送消息
+        ObjectRecord<String, CacheMessage> record = StreamRecords.newRecord().ofObject(CacheMessage.newInstance(this.name, CacheMessage.CacheAction.clear)).withStreamKey(CacheMessageConsumerRunner.EXPIRE_CHANNEL);
+        this.streamOperations.add(record);
+    }
+
+    public void clearLocal() {
+        logger.debug(loggerPrefix("clearLocal"));
+        localCache.clear();
     }
 
     @Override

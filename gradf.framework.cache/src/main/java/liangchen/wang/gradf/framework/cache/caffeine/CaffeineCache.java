@@ -35,14 +35,9 @@ public class CaffeineCache implements Cache {
 
 
     @Override
-    public <T> T get(Object key, Callable<T> valueLoader, long ttl) {
+    public <T> T get(Object key, Callable<T> valueLoader) {
         logger.debug(loggerPrefix("get", "key", "valueLoader", "ttl"), key, valueLoader, ttl);
         return springCaffeineCache.get(key, valueLoader);
-    }
-
-    @Override
-    public <T> T get(Object key, Callable<T> valueLoader) {
-        return this.get(key, valueLoader, 0L);
     }
 
     @Override
@@ -57,17 +52,11 @@ public class CaffeineCache implements Cache {
         return springCaffeineCache.get(key, type);
     }
 
-
     @Override
-    public void put(Object key, Object value, long ttl) {
+    public void put(Object key, Object value) {
         logger.debug(loggerPrefix("put", "key", "value", "ttl"), key, value, ttl);
         springCaffeineCache.put(key, value);
         keys.add(key);
-    }
-
-    @Override
-    public void put(Object key, Object value) {
-        this.put(key, value, 0L);
     }
 
     @Override

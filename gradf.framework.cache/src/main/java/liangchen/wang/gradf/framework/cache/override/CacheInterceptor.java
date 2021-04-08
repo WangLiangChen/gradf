@@ -101,10 +101,6 @@ public class CacheInterceptor extends org.springframework.cache.interceptor.Cach
 
     protected void doPut(Cache cache, Object key, Object result, long ttl) {
         try {
-            if (cache instanceof liangchen.wang.gradf.framework.cache.override.Cache) {
-                ((liangchen.wang.gradf.framework.cache.override.Cache) cache).put(key, result, ttl);
-                return;
-            }
             cache.put(key, result);
         } catch (RuntimeException ex) {
             getErrorHandler().handleCachePutError(ex, cache, key, result);
@@ -300,12 +296,7 @@ public class CacheInterceptor extends org.springframework.cache.interceptor.Cach
     @Nullable
     private Object handleSynchronizedGet(CacheOperationInvoker invoker, Object key, Cache cache, long ttl) {
         InvocationAwareResult invocationResult = new InvocationAwareResult();
-        Object result;
-        if (0 == ttl) {
-            result = cache.get(key, callable(invocationResult, invoker, key, cache));
-        } else {
-            result = ((liangchen.wang.gradf.framework.cache.override.Cache) cache).get(key, callable(invocationResult, invoker, key, cache), ttl);
-        }
+        Object result = cache.get(key, callable(invocationResult, invoker, key, cache));
         if (!invocationResult.invoked && logger.isTraceEnabled()) {
             logger.trace("Cache entry for key '" + key + "' found in cache '" + cache.getName() + "'");
         }

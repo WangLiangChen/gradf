@@ -43,14 +43,9 @@ public class RedisCache extends org.springframework.data.redis.cache.RedisCache 
     }
 
     @Override
-    public <T> T get(Object key, Callable<T> valueLoader, long ttl) {
+    public <T> T get(Object key, Callable<T> valueLoader) {
         logger.debug(loggerPrefix("get", "key", "valueLoader", "ttl"), key, valueLoader, ttl);
         return super.get(key, valueLoader);
-    }
-
-    @Override
-    public <T> T get(Object key, Callable<T> valueLoader) {
-        return this.get(key, valueLoader, 0L);
     }
 
     @Override
@@ -67,15 +62,10 @@ public class RedisCache extends org.springframework.data.redis.cache.RedisCache 
 
 
     @Override
-    public void put(Object key, Object value, long ttl) {
+    public void put(Object key, Object value) {
         logger.debug(loggerPrefix("put", "key", "value", "ttl"), key, value, ttl);
         super.put(key, value);
         keys.add(key);
-    }
-
-    @Override
-    public void put(Object key, Object value) {
-        this.put(key, value, 0L);
     }
 
     @Override

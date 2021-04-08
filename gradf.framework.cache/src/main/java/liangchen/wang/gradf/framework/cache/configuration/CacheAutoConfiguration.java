@@ -35,7 +35,7 @@ public class CacheAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(CacheManager.class)
     public CacheManager cacheManager() {
-        return new MultilevelCacheManager();
+        return new MultilevelCacheManager(redisTemplate, stringRedisTemplate);
     }
 
     @Primary

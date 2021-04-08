@@ -6,5 +6,5 @@ package liangchen.wang.gradf.framework.commons.lock;
  */
 @FunctionalInterface
 public interface LockWriter<R> {
-    R write() throws Exception;
+    R write() throws RuntimeException;
 }

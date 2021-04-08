@@ -196,35 +196,14 @@
         </resources>
     </build>
 
-    <repositories>
-        <!--
-        <repository>
-            <id>gradf_nexus</id>
-            <url>http://47.94.196.28:8888/repository/maven-public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        -->
-    </repositories>
-
     <distributionManagement>
-        <!--
         <repository>
-            <id>gradf-release</id>
-            <url>http://47.94.196.28:8888/repository/maven-releases/</url>
+            <id>rdc-releases</id>
+            <url>https://repo.rdc.aliyun.com/repository/137477-release-xkSv51/</url>
         </repository>
         <snapshotRepository>
-            <id>gradf-snapshots</id>
-            <url>http://47.94.196.28:8888/repository/maven-snapshots/</url>
+            <id>rdc-snapshots</id>
+            <url>https://repo.rdc.aliyun.com/repository/137477-snapshot-bR7Cd4/</url>
         </snapshotRepository>
-        <repository>
-            <id>localRepository</id>
-            <url>file://${maven.basedir}/repository</url>
-        </repository>
-        -->
     </distributionManagement>
 </project>
