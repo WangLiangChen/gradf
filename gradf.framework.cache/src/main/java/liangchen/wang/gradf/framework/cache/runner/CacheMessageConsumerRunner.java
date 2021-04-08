@@ -1,13 +1,14 @@
 package liangchen.wang.gradf.framework.cache.runner;
 
+import liangchen.wang.gradf.framework.cache.primary.MultilevelCache;
+import liangchen.wang.gradf.framework.cache.primary.MultilevelCacheManager;
 import liangchen.wang.gradf.framework.cache.redis.CacheMessage;
-import liangchen.wang.gradf.framework.commons.json.JsonUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.cache.Cache;
 import org.springframework.data.redis.connection.stream.*;
 import org.springframework.data.redis.core.StreamOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -23,15 +24,14 @@ import java.util.concurrent.Executor;
  * @author LiangChen.Wang at 2021/3/28 17:28
  */
 @Component
-@ConditionalOnSingleCandidate(RedisConnectionFactory.class)
+@ConditionalOnSingleCandidate(MultilevelCacheManager.class)
 public class CacheMessageConsumerRunner implements ApplicationRunner, DisposableBean {
-
     public static final String EXPIRE_CHANNEL = "channel:stream:expire";
     public static final String EXPIRE_GROUP = "group:expire";
     private final StreamMessageListenerContainer<String, ObjectRecord<String, CacheMessage>> container;
 
     @Inject
-    public CacheMessageConsumerRunner(Executor taskExecutor, StringRedisTemplate stringRedisTemplate) {
+    public CacheMessageConsumerRunner(Executor taskExecutor, MultilevelCacheManager multilevelCacheManager) {
         StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, ObjectRecord<String, CacheMessage>> options =
                 StreamMessageListenerContainer.StreamMessageListenerContainerOptions.builder()
                         .targetType(CacheMessage.class)
@@ -39,9 +39,10 @@ public class CacheMessageConsumerRunner implements ApplicationRunner, Disposable
                         .executor(taskExecutor)
                         .pollTimeout(Duration.ZERO)
                         .build();
+        StringRedisTemplate stringRedisTemplate = multilevelCacheManager.getStringRedisTemplate();
         StreamMessageListenerContainer<String, ObjectRecord<String, CacheMessage>> container = StreamMessageListenerContainer.create(stringRedisTemplate.getConnectionFactory(), options);
         prepareChannelAndGroup(stringRedisTemplate);
-        container.receiveAutoAck(Consumer.from(EXPIRE_GROUP, "CacheMessageConsumer"), StreamOffset.create(EXPIRE_CHANNEL, ReadOffset.lastConsumed()), new StreamMessageListener(stringRedisTemplate));
+        container.receiveAutoAck(Consumer.from(EXPIRE_GROUP, "CacheMessageConsumer"), StreamOffset.create(EXPIRE_CHANNEL, ReadOffset.lastConsumed()), new StreamMessageListener(multilevelCacheManager));
         this.container = container;
     }
 
@@ -57,16 +58,32 @@ public class CacheMessageConsumerRunner implements ApplicationRunner, Disposable
     }
 
     public static class StreamMessageListener implements StreamListener<String, ObjectRecord<String, CacheMessage>> {
-        private final StringRedisTemplate stringRedisTemplate;
+        private final MultilevelCacheManager multilevelCacheManager;
 
-        public StreamMessageListener(StringRedisTemplate stringRedisTemplate) {
-            this.stringRedisTemplate = stringRedisTemplate;
+        public StreamMessageListener(MultilevelCacheManager multilevelCacheManager) {
+            this.multilevelCacheManager = multilevelCacheManager;
         }
 
         @Override
         public void onMessage(ObjectRecord<String, CacheMessage> message) {
             CacheMessage cacheMessage = message.getValue();
-            System.out.println("----------------------------cacheMessage:" + JsonUtil.INSTANCE.toJsonString(cacheMessage));
+            String cacheName = cacheMessage.getName();
+            Cache cache = multilevelCacheManager.getCache(cacheName);
+            if (!(cache instanceof MultilevelCache)) {
+                return;
+            }
+            MultilevelCache multilevelCache = (MultilevelCache) cache;
+            CacheMessage.CacheAction action = cacheMessage.getAction();
+            switch (action) {
+                case evict:
+                    multilevelCache.evictLocal(cacheMessage.getKey());
+                    break;
+                case clear:
+                    multilevelCache.clearLocal();
+                    break;
+                default:
+                    break;
+            }
             // redisTemplate.opsForStream().acknowledge(EXPIRE_GROUP, message);
         }
     }
