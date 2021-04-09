@@ -2,6 +2,7 @@ package liangchen.wang.gradf.framework.cache.test.service.impl;
 
 import liangchen.wang.gradf.framework.cache.annotation.Cacheable;
 import liangchen.wang.gradf.framework.cache.test.service.AbstractCacheTestService;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -12,5 +13,11 @@ public class CacheTestServiceImpl extends AbstractCacheTestService {
         String ret = "hello!update:" + text;
         System.out.println("+++++++++" + ret);
         return ret;
+    }
+
+    @Override
+    @CacheEvict(cacheNames = "CacheTest")
+    public String delete(String text) {
+        return null;
     }
 }

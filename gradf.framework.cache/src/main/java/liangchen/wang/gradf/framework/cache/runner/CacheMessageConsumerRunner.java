@@ -3,34 +3,32 @@ package liangchen.wang.gradf.framework.cache.runner;
 import liangchen.wang.gradf.framework.cache.primary.MultilevelCache;
 import liangchen.wang.gradf.framework.cache.primary.MultilevelCacheManager;
 import liangchen.wang.gradf.framework.cache.redis.CacheMessage;
+import liangchen.wang.gradf.framework.commons.json.JsonUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.cache.Cache;
 import org.springframework.data.redis.connection.stream.*;
 import org.springframework.data.redis.core.StreamOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.stream.StreamListener;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
-import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.time.Duration;
 import java.util.concurrent.Executor;
 
 /**
  * @author LiangChen.Wang at 2021/3/28 17:28
  */
-@Component
-@ConditionalOnSingleCandidate(MultilevelCacheManager.class)
 public class CacheMessageConsumerRunner implements ApplicationRunner, DisposableBean {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     public static final String EXPIRE_CHANNEL = "channel:stream:expire";
     public static final String EXPIRE_GROUP = "group:expire";
     private final StreamMessageListenerContainer<String, ObjectRecord<String, CacheMessage>> container;
 
-    @Inject
     public CacheMessageConsumerRunner(Executor taskExecutor, MultilevelCacheManager multilevelCacheManager) {
         StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, ObjectRecord<String, CacheMessage>> options =
                 StreamMessageListenerContainer.StreamMessageListenerContainerOptions.builder()
@@ -48,7 +46,7 @@ public class CacheMessageConsumerRunner implements ApplicationRunner, Disposable
 
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         this.container.start();
     }
 
@@ -57,7 +55,8 @@ public class CacheMessageConsumerRunner implements ApplicationRunner, Disposable
         this.container.stop();
     }
 
-    public static class StreamMessageListener implements StreamListener<String, ObjectRecord<String, CacheMessage>> {
+    static class StreamMessageListener implements StreamListener<String, ObjectRecord<String, CacheMessage>> {
+        private final Logger logger = LoggerFactory.getLogger(this.getClass());
         private final MultilevelCacheManager multilevelCacheManager;
 
         public StreamMessageListener(MultilevelCacheManager multilevelCacheManager) {
@@ -67,6 +66,7 @@ public class CacheMessageConsumerRunner implements ApplicationRunner, Disposable
         @Override
         public void onMessage(ObjectRecord<String, CacheMessage> message) {
             CacheMessage cacheMessage = message.getValue();
+            logger.debug("received CacheMessage:{}", JsonUtil.INSTANCE.toJsonString(cacheMessage));
             String cacheName = cacheMessage.getName();
             Cache cache = multilevelCacheManager.getCache(cacheName);
             if (!(cache instanceof MultilevelCache)) {

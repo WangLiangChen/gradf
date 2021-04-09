@@ -110,4 +110,13 @@ public class RedisCache extends org.springframework.data.redis.cache.RedisCache 
         }
         return String.format("%s\r\n - Method(name:%s,%s)", loggerPrefix, method, suffix);
     }
+
+    @Override
+    public String toString() {
+        return "RedisCache{" +
+                "name='" + name + '\'' +
+                ", ttl=" + ttl +
+                ", allowNullValues=" + allowNullValues +
+                '}';
+    }
 }

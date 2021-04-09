@@ -200,4 +200,13 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
         }
         return String.format("%s\r\n - Method(name:%s,%s)", loggerPrefix, method, suffix);
     }
+
+    @Override
+    public String toString() {
+        return "MultilevelCache{" +
+                "name='" + name + '\'' +
+                ", ttl=" + ttl +
+                ", allowNullValues=" + allowNullValues +
+                '}';
+    }
 }

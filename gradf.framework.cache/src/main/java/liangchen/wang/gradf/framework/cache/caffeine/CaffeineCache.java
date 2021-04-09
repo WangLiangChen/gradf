@@ -105,4 +105,13 @@ public class CaffeineCache implements Cache {
         }
         return String.format("%s\r\n - Method(name:%s,%s)", loggerPrefix, method, suffix);
     }
+
+    @Override
+    public String toString() {
+        return "CaffeineCache{" +
+                "name='" + name + '\'' +
+                ", ttl=" + ttl +
+                ", allowNullValues=" + allowNullValues +
+                '}';
+    }
 }

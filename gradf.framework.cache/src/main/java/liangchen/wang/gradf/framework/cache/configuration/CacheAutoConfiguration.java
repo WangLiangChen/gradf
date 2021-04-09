@@ -5,11 +5,14 @@ import liangchen.wang.gradf.framework.cache.override.CachePutOperation;
 import liangchen.wang.gradf.framework.cache.override.CacheableOperation;
 import liangchen.wang.gradf.framework.cache.override.*;
 import liangchen.wang.gradf.framework.cache.primary.MultilevelCacheManager;
+import liangchen.wang.gradf.framework.cache.runner.CacheMessageConsumerRunner;
 import liangchen.wang.gradf.framework.commons.digest.HashUtil;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -18,10 +21,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Role;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.Executor;
 
 /**
  * @author LiangChen.Wang 2020/9/23
@@ -34,8 +40,14 @@ public class CacheAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(CacheManager.class)
-    public CacheManager cacheManager() {
+    public CacheManager cacheManager(RedisTemplate<Object, Object> redisTemplate, StringRedisTemplate stringRedisTemplate) {
         return new MultilevelCacheManager(redisTemplate, stringRedisTemplate);
+    }
+
+    @Bean
+    @ConditionalOnBean(MultilevelCacheManager.class)
+    public ApplicationRunner CacheMessageConsumerRunner(Executor taskExecutor, MultilevelCacheManager multilevelCacheManager) {
+        return new CacheMessageConsumerRunner(taskExecutor, multilevelCacheManager);
     }
 
     @Primary
