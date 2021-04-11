@@ -2,6 +2,7 @@ package liangchen.wang.gradf.framework.cache.redis;
 
 import liangchen.wang.gradf.framework.cache.override.Cache;
 import liangchen.wang.gradf.framework.commons.enumeration.Symbol;
+import liangchen.wang.gradf.framework.commons.json.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.BoundSetOperations;
@@ -38,32 +39,38 @@ public class RedisCache extends org.springframework.data.redis.cache.RedisCache 
             this.keys.add(Symbol.BLANK.getSymbol());
             this.keys.expire(ttl, TimeUnit.MILLISECONDS);
         }
-        this.loggerPrefix = String.format("Cache(name:%s,ttl:%s,allowNullValues:%s)", name, ttl, allowNullValues);
+        this.loggerPrefix = String.format("RedisCache(name:%s,ttl:%s,allowNullValues:%s)", name, ttl, allowNullValues);
         logger.debug(loggerPrefix("Constructor"));
     }
 
     @Override
     public <T> T get(Object key, Callable<T> valueLoader) {
-        logger.debug(loggerPrefix("get", "key", "valueLoader", "ttl"), key, valueLoader, ttl);
-        return super.get(key, valueLoader);
+        logger.debug(loggerPrefix("get", "key", "valueLoader"), key, valueLoader);
+        T value = super.get(key, valueLoader);
+        logger.debug(loggerPrefix("get", "key", "value"), key, JsonUtil.INSTANCE.toJsonString(value));
+        return value;
     }
 
     @Override
     public ValueWrapper get(Object key) {
         logger.debug(loggerPrefix("get", "key"), key);
-        return super.get(key);
+        ValueWrapper valueWrapper = super.get(key);
+        logger.debug(loggerPrefix("get", "key", "valueWrapper", "value"), key, valueWrapper, null == valueWrapper ? null : JsonUtil.INSTANCE.toJsonString(valueWrapper.get()));
+        return valueWrapper;
     }
 
     @Override
     public <T> T get(Object key, Class<T> type) {
         logger.debug(loggerPrefix("get", "key", "type"), key, type);
-        return super.get(key, type);
+        T value = super.get(key, type);
+        logger.debug(loggerPrefix("get", "key", "type", "value"), key, type, JsonUtil.INSTANCE.toJsonString(value));
+        return value;
     }
 
 
     @Override
     public void put(Object key, Object value) {
-        logger.debug(loggerPrefix("put", "key", "value", "ttl"), key, value, ttl);
+        logger.debug(loggerPrefix("put", "key", "value"), key, JsonUtil.INSTANCE.toJsonString(value));
         super.put(key, value);
         keys.add(key);
     }

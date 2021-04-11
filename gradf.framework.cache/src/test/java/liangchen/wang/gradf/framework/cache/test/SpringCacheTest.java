@@ -1,7 +1,9 @@
 package liangchen.wang.gradf.framework.cache.test;
 
 import liangchen.wang.gradf.framework.cache.annotation.EnableRedis;
+import liangchen.wang.gradf.framework.cache.test.entity.CacheTest;
 import liangchen.wang.gradf.framework.cache.test.service.ICacheTestService;
+import liangchen.wang.gradf.framework.commons.json.JsonUtil;
 import liangchen.wang.gradf.framework.commons.utils.ConcurrentUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,8 +23,10 @@ public class SpringCacheTest {
     private ICacheTestService service;
 
     @Test
-    public void testCacheable() throws InterruptedException {
-        service.delete("wanglc");
-        ConcurrentUtil.INSTANCE.threadSleep(10, TimeUnit.SECONDS);
+    public void testCacheableMethod() {
+        CacheTest one = service.one();
+        System.out.println("+++++++++one:" + JsonUtil.INSTANCE.toJsonString(one));
+        //one = service.one();
+        //System.out.println("+++++++++one:"+ JsonUtil.INSTANCE.toJsonString(one));
     }
 }

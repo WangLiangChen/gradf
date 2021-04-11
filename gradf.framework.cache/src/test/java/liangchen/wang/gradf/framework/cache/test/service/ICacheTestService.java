@@ -1,7 +1,19 @@
 package liangchen.wang.gradf.framework.cache.test.service;
 
+import liangchen.wang.gradf.framework.cache.test.entity.CacheTest;
+
+import java.util.List;
+
 public interface ICacheTestService {
-    String insert(String text);
-    String update(String text);
-    String delete(String text);
+    CacheTest one();
+
+    List<CacheTest> list(CacheTest cacheTest);
+
+    Long insert(CacheTest cacheTest);
+
+    int update(CacheTest cacheTest);
+
+    void delete(Long cacheTestId);
+
+    void deleteAll();
 }

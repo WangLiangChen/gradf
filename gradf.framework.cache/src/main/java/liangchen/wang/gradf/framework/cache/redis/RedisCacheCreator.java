@@ -21,9 +21,11 @@ public enum RedisCacheCreator {
     }
 
     public RedisCacheConfiguration cacheConfig(long ttl, boolean allowNullValues) {
-        RedisSerializer<String> redisSerializer = StringRedisSerializer.UTF_8;
-        RedisSerializationContext.SerializationPair<String> pair = RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer);
-        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig().serializeKeysWith(pair).serializeValuesWith(pair);
+        RedisSerializer<String> keySerializer = StringRedisSerializer.UTF_8;
+        RedisSerializer<Object> valueSerializer = new ProtostuffRedisSerializer();
+        RedisSerializationContext.SerializationPair<String> keyPair = RedisSerializationContext.SerializationPair.fromSerializer(keySerializer);
+        RedisSerializationContext.SerializationPair<Object> valuePair = RedisSerializationContext.SerializationPair.fromSerializer(valueSerializer);
+        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig().serializeKeysWith(keyPair).serializeValuesWith(valuePair);
         if (ttl > 0) {
             Duration duration = Duration.ofMillis(ttl);
             //此处会返回一个新的RedisCacheConfiguration

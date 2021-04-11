@@ -135,7 +135,7 @@ public enum LocalLockUtil {
                     logger.debug("key:{},第三级加写锁,验证读取成功:{}", key, result);
                     return result;
                 }
-                logger.debug("key:{},第三级加写锁,验证读取失败", key);
+                logger.debug("key:{},第三级加写锁,验证读取失败,开始写入", key);
                 R result = lockWriter.write();
                 logger.debug("key:{},第三级加写锁，写入成功:{}", key, result);
                 return result;

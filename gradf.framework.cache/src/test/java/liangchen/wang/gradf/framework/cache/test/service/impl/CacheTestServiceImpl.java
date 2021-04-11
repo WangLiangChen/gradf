@@ -1,23 +1,44 @@
 package liangchen.wang.gradf.framework.cache.test.service.impl;
 
 import liangchen.wang.gradf.framework.cache.annotation.Cacheable;
+import liangchen.wang.gradf.framework.cache.test.entity.CacheTest;
 import liangchen.wang.gradf.framework.cache.test.service.AbstractCacheTestService;
+import liangchen.wang.gradf.framework.commons.json.JsonUtil;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 @Component
-@Cacheable(cacheNames = "CacheTest")
 public class CacheTestServiceImpl extends AbstractCacheTestService {
     @Override
-    public String update(String text) {
-        String ret = "hello!update:" + text;
-        System.out.println("+++++++++" + ret);
-        return ret;
+    @Cacheable(cacheNames = "CacheTest")
+    public CacheTest one() {
+        CacheTest cacheTest = new CacheTest();
+        cacheTest.setCacheTestId(110L);
+        cacheTest.setCacheTestText("110");
+        System.out.println("-----------------------one:" + JsonUtil.INSTANCE.toJsonString(cacheTest));
+        return cacheTest;
     }
 
     @Override
-    @CacheEvict(cacheNames = "CacheTest")
-    public String delete(String text) {
-        return null;
+    public Long insert(CacheTest cacheTest) {
+        System.out.println("--------------inset:" + JsonUtil.INSTANCE.toJsonString(cacheTest));
+        return 0L;
+    }
+
+    @Override
+    public int update(CacheTest cacheTest) {
+        System.out.println("--------------inset:" + JsonUtil.INSTANCE.toJsonString(cacheTest));
+        return 2;
+    }
+
+    @Override
+    public void delete(Long cacheTestId) {
+        System.out.println("--------------delete:" + cacheTestId);
+    }
+
+    @Override
+    public void deleteAll() {
+        System.out.println("--------------deleteAll");
     }
 }
