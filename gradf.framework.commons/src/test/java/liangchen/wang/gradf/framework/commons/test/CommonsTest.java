@@ -1,5 +1,7 @@
 package liangchen.wang.gradf.framework.commons.test;
 
+import liangchen.wang.gradf.framework.commons.json.JsonUtil;
+import liangchen.wang.gradf.framework.commons.object.ProtostuffUtil;
 import liangchen.wang.gradf.framework.commons.utils.DateTimeUtil;
 import liangchen.wang.gradf.framework.commons.utils.NetUtil;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
@@ -59,6 +61,16 @@ public class CommonsTest {
         1.0.0.0
         4294967295
         255.255.255.255*/
+    }
+    @Test
+    public void testProtostuff(){
+        TestBean testBean = new TestBean();
+        testBean.setBeanId(1L);
+        testBean.setBeanName("name_1");
+        byte[] bytes = ProtostuffUtil.INSTANCE.object2Bytes(testBean);
+        Object o = ProtostuffUtil.INSTANCE.bytes2Object(bytes);
+        System.out.println(JsonUtil.INSTANCE.toJsonString(o));
+
     }
 
 }
