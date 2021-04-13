@@ -6,11 +6,7 @@ import liangchen.wang.gradf.framework.cache.override.Cache;
 import liangchen.wang.gradf.framework.cache.redis.CacheMessage;
 import liangchen.wang.gradf.framework.cache.redis.RedisCache;
 import liangchen.wang.gradf.framework.cache.runner.CacheMessageConsumerRunner;
-import liangchen.wang.gradf.framework.commons.json.Json;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
-import liangchen.wang.gradf.framework.commons.lock.LocalLockUtil;
-import liangchen.wang.gradf.framework.commons.lock.LockReader;
-import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.support.AbstractValueAdaptingCache;
@@ -31,6 +27,7 @@ import java.util.stream.Collectors;
  */
 public class MultilevelCache extends AbstractValueAdaptingCache implements Cache {
     private final Logger logger = LoggerFactory.getLogger(MultilevelCache.class);
+    private final long LOCAL_CACHE_TTL_DELAY = 100;
     private final String name;
     private final long ttl;
     private final boolean allowNullValues;
@@ -44,16 +41,21 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
         this.name = name;
         this.ttl = ttl;
         this.allowNullValues = allowNullValues;
-        this.localCache = new CaffeineCache(name, ttl, true);
+        long localTtl = ttl;
         if (CacheStatus.INSTANCE.isRedisEnable()) {
             this.distributedCache = new RedisCache(name, ttl, allowNullValues, multilevelCacheManager.getRedisTemplate());
             this.streamOperations = multilevelCacheManager.getStringRedisTemplate().opsForStream();
+            // 本地缓存增加过期延时
+            if (ttl > 0) {
+                localTtl = ttl + LOCAL_CACHE_TTL_DELAY;
+            }
         } else {
             this.distributedCache = null;
             this.streamOperations = null;
         }
+        this.localCache = new CaffeineCache(name, localTtl, true);
         this.loggerPrefix = String.format("MultilevelCache(name:%s,ttl:%s,allowNullValues:%s)", name, ttl, allowNullValues);
-        logger.debug(loggerPrefix("Constructor"));
+        logger.debug("Construct {}", this.toString());
     }
 
     @Override
@@ -61,16 +63,16 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
         logger.debug(loggerPrefix("get", "key"), key);
         // null说明缓存不存在
         ValueWrapper valueWrapper = localCache.get(key);
-        logger.debug(loggerPrefix("get from local", "key", "valueWrapper", "value"), key, valueWrapper, null == valueWrapper ? null : JsonUtil.INSTANCE.toJsonString(valueWrapper.get()));
+        logger.debug(loggerPrefix("getFromLocal", "key", "valueWrapper", "value"), key, valueWrapper, null == valueWrapper ? null : JsonUtil.INSTANCE.toJsonString(valueWrapper.get()));
         if (null != valueWrapper) {
             return valueWrapper;
         }
         if (CacheStatus.INSTANCE.isNotRedisEnable() || null == (valueWrapper = distributedCache.get(key))) {
-            logger.debug(loggerPrefix("get from remote", "key", "valueWrapper"), key, null);
+            logger.debug(loggerPrefix("getFromRemote", "key", "valueWrapper"), key, null);
             return null;
         }
         Object value = valueWrapper.get();
-        logger.debug(loggerPrefix("get from remote", "key", "value"), key, JsonUtil.INSTANCE.toJsonString(value));
+        logger.debug(loggerPrefix("getFromRemote,putIntoLocal", "key", "value"), key, JsonUtil.INSTANCE.toJsonString(value));
         // 写入localCache
         localCache.put(key, value);
         return valueWrapper;
@@ -81,16 +83,16 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
         logger.debug(loggerPrefix("get", "key", "type"), key, type);
         // null说明缓存不存在
         ValueWrapper valueWrapper = localCache.get(key);
-        logger.debug(loggerPrefix("get from local", "key", "type", "valueWrapper", "value"), key, type, valueWrapper, null == valueWrapper ? null : JsonUtil.INSTANCE.toJsonString(valueWrapper.get()));
+        logger.debug(loggerPrefix("getFromLocal", "key", "type", "valueWrapper", "value"), key, type, valueWrapper, null == valueWrapper ? null : JsonUtil.INSTANCE.toJsonString(valueWrapper.get()));
         if (null != valueWrapper) {
             return localCache.get(key, type);
         }
         if (CacheStatus.INSTANCE.isNotRedisEnable() || null == distributedCache.get(key)) {
-            logger.debug(loggerPrefix("get from remote", "key", "type", "valueWrapper"), key, type, null);
+            logger.debug(loggerPrefix("getFromRemote", "key", "type", "valueWrapper"), key, type, null);
             return null;
         }
         T value = distributedCache.get(key, type);
-        logger.debug(loggerPrefix("get from remote", "key", "type", "value"), key, type, JsonUtil.INSTANCE.toJsonString(value));
+        logger.debug(loggerPrefix("getFromRemote,putIntoLocal", "key", "type", "value"), key, type, JsonUtil.INSTANCE.toJsonString(value));
         // 写入localCache
         localCache.put(key, value);
         return value;
@@ -98,28 +100,18 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
 
     @Override
     public <T> T get(Object key, Callable<T> valueLoader) {
-        logger.debug(loggerPrefix("get", "key", "valueLoader"), key, valueLoader);
-        return LocalLockUtil.INSTANCE.readWriteInReadWriteLock(String.format("%s_%s", this.name, key), () -> {
-            ValueWrapper valueWrapper = this.get(key);
-            if (null == valueWrapper) {
-                logger.debug(loggerPrefix("get with read lock", "key", "valueWrapper"), key, null);
-                return null;
-            }
-            Object value = valueWrapper.get();
-            logger.debug(loggerPrefix("get with read lock", "key", "value"), key, JsonUtil.INSTANCE.toJsonString(value));
-            return new LockReader.LockValueWrapper<>(ClassBeanUtil.INSTANCE.cast(value));
-        }, () -> {
-            try {
-                T value = valueLoader.call();
-                logger.debug(loggerPrefix("get with write lock", "key", "value"), key, JsonUtil.INSTANCE.toJsonString(value));
-                this.put(key, value);
-                return value;
-            } catch (Exception e) {
-                throw new ValueRetrievalException(key, valueLoader, e);
-            }
-        });
+        logger.debug(loggerPrefix("get,sync=true", "key", "valueLoader"), key, valueLoader);
+        if (CacheStatus.INSTANCE.isRedisEnable()) {
+            T value = distributedCache.get(key, valueLoader);
+            logger.debug(loggerPrefix("getFromRemote,putIntoLocal,sync=true", "key", "valueLoader", "value"), key, valueLoader, JsonUtil.INSTANCE.toJsonString(value));
+            // 写入localCache
+            localCache.put(key, value);
+            return value;
+        }
+        T value = localCache.get(key, valueLoader);
+        logger.debug(loggerPrefix("getFromLocal,sync=true", "key", "valueLoader", "value"), key, valueLoader, JsonUtil.INSTANCE.toJsonString(value));
+        return value;
     }
-
 
     @Override
     public void put(Object key, Object value) {

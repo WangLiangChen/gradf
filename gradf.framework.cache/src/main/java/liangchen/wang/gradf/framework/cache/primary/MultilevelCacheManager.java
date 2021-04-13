@@ -3,6 +3,8 @@ package liangchen.wang.gradf.framework.cache.primary;
 import liangchen.wang.gradf.framework.cache.override.CacheManager;
 import liangchen.wang.gradf.framework.commons.lock.LocalLockUtil;
 import liangchen.wang.gradf.framework.commons.lock.LockReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.Cache;
 import org.springframework.cache.transaction.AbstractTransactionSupportingCacheManager;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -19,6 +21,7 @@ import java.util.concurrent.ConcurrentMap;
  * @author LiangChen.Wang 2021/3/22
  */
 public class MultilevelCacheManager extends AbstractTransactionSupportingCacheManager implements CacheManager {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ConcurrentMap<String, Cache> cacheMap = new ConcurrentHashMap<>(16);
     private volatile Set<String> cacheNames = Collections.emptySet();
     private final RedisTemplate<Object, Object> redisTemplate;
@@ -35,11 +38,14 @@ public class MultilevelCacheManager extends AbstractTransactionSupportingCacheMa
         return LocalLockUtil.INSTANCE.readWriteInReadWriteLock(cacheName, () -> {
             Cache cache = this.cacheMap.get(cacheName);
             if (null == cache) {
+                logger.debug("get with read lock,cacheName:{},cache:null", cacheName);
                 return null;
             }
+            logger.debug("get with read lock,cacheName:{},cache:{}", cacheName, cache);
             return new LockReader.LockValueWrapper<>(cache);
         }, () -> {
             Cache missingCache = getMissingCache(cacheName, ttl);
+            logger.debug("get with write lock,cacheName:{},cache:{}", cacheName, missingCache);
             if (null == missingCache) {
                 return null;
             }

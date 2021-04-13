@@ -11,6 +11,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.redis.connection.stream.*;
 import org.springframework.data.redis.core.StreamOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -29,7 +30,18 @@ public class CacheMessageConsumerRunner implements ApplicationRunner, Disposable
     public static final String EXPIRE_GROUP = "group:expire";
     private final StreamMessageListenerContainer<String, ObjectRecord<String, CacheMessage>> container;
 
-    public CacheMessageConsumerRunner(Executor taskExecutor, MultilevelCacheManager multilevelCacheManager) {
+    public CacheMessageConsumerRunner(Executor taskExecutor, CacheManager cacheManager) {
+        if (!(cacheManager instanceof MultilevelCacheManager)) {
+            this.container = null;
+            return;
+        }
+        MultilevelCacheManager multilevelCacheManager = (MultilevelCacheManager) cacheManager;
+        StringRedisTemplate stringRedisTemplate = multilevelCacheManager.getStringRedisTemplate();
+        if (null == stringRedisTemplate) {
+            this.container = null;
+            return;
+        }
+
         StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, ObjectRecord<String, CacheMessage>> options =
                 StreamMessageListenerContainer.StreamMessageListenerContainerOptions.builder()
                         .targetType(CacheMessage.class)
@@ -37,7 +49,6 @@ public class CacheMessageConsumerRunner implements ApplicationRunner, Disposable
                         .executor(taskExecutor)
                         .pollTimeout(Duration.ZERO)
                         .build();
-        StringRedisTemplate stringRedisTemplate = multilevelCacheManager.getStringRedisTemplate();
         StreamMessageListenerContainer<String, ObjectRecord<String, CacheMessage>> container = StreamMessageListenerContainer.create(stringRedisTemplate.getConnectionFactory(), options);
         prepareChannelAndGroup(stringRedisTemplate);
         container.receiveAutoAck(Consumer.from(EXPIRE_GROUP, "CacheMessageConsumer"), StreamOffset.create(EXPIRE_CHANNEL, ReadOffset.lastConsumed()), new StreamMessageListener(multilevelCacheManager));
@@ -47,11 +58,17 @@ public class CacheMessageConsumerRunner implements ApplicationRunner, Disposable
 
     @Override
     public void run(ApplicationArguments args) {
+        if (null == this.container) {
+            return;
+        }
         this.container.start();
     }
 
     @Override
     public void destroy() {
+        if (null == this.container) {
+            return;
+        }
         this.container.stop();
     }
 

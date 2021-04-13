@@ -1,10 +1,12 @@
 package liangchen.wang.gradf.framework.cache.redis;
 
+import liangchen.wang.gradf.framework.commons.object.ProtostuffUtil;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.SerializationException;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
@@ -22,7 +24,17 @@ public enum RedisCacheCreator {
 
     public RedisCacheConfiguration cacheConfig(long ttl, boolean allowNullValues) {
         RedisSerializer<String> keySerializer = StringRedisSerializer.UTF_8;
-        RedisSerializer<Object> valueSerializer = new ProtostuffRedisSerializer();
+        RedisSerializer<Object> valueSerializer = new RedisSerializer<Object>() {
+            @Override
+            public byte[] serialize(Object object) throws SerializationException {
+                return ProtostuffUtil.INSTANCE.object2Bytes(object);
+            }
+
+            @Override
+            public Object deserialize(byte[] bytes) throws SerializationException {
+                return ProtostuffUtil.INSTANCE.bytes2Object(bytes);
+            }
+        };
         RedisSerializationContext.SerializationPair<String> keyPair = RedisSerializationContext.SerializationPair.fromSerializer(keySerializer);
         RedisSerializationContext.SerializationPair<Object> valuePair = RedisSerializationContext.SerializationPair.fromSerializer(valueSerializer);
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig().serializeKeysWith(keyPair).serializeValuesWith(valuePair);

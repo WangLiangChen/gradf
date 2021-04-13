@@ -4,20 +4,18 @@ import liangchen.wang.gradf.framework.cache.annotation.Cacheable;
 import liangchen.wang.gradf.framework.cache.test.entity.CacheTest;
 import liangchen.wang.gradf.framework.cache.test.service.AbstractCacheTestService;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
-import org.checkerframework.checker.units.qual.C;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CacheTestServiceImpl extends AbstractCacheTestService {
     @Override
-    @Cacheable(cacheNames = "CacheTest")
+    @Cacheable(cacheNames = "CacheTest", sync = true)
     public CacheTest one() {
         CacheTest cacheTest = new CacheTest();
         cacheTest.setCacheTestId(110L);
         cacheTest.setCacheTestText("110");
         System.out.println("-----------------------one:" + JsonUtil.INSTANCE.toJsonString(cacheTest));
-        return cacheTest;
+        return null;
     }
 
     @Override

@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Role;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,14 +41,14 @@ public class CacheAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(CacheManager.class)
-    public CacheManager cacheManager(RedisTemplate<Object, Object> redisTemplate, StringRedisTemplate stringRedisTemplate) {
+    public CacheManager cacheManager(@Nullable RedisTemplate<Object, Object> redisTemplate, @Nullable StringRedisTemplate stringRedisTemplate) {
         return new MultilevelCacheManager(redisTemplate, stringRedisTemplate);
     }
 
     @Bean
-    @ConditionalOnBean(MultilevelCacheManager.class)
-    public ApplicationRunner CacheMessageConsumerRunner(Executor taskExecutor, MultilevelCacheManager multilevelCacheManager) {
-        return new CacheMessageConsumerRunner(taskExecutor, multilevelCacheManager);
+    @ConditionalOnBean(CacheManager.class)
+    public ApplicationRunner CacheMessageConsumerRunner(Executor taskExecutor, CacheManager cacheManager) {
+        return new CacheMessageConsumerRunner(taskExecutor, cacheManager);
     }
 
     @Primary

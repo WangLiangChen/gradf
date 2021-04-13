@@ -17,33 +17,33 @@ public enum ProtostuffUtil {
         schema = RuntimeSchema.getSchema(ValueWrapper.class);
     }
 
-    public byte[] object2Bytes(Object value) {
+    public byte[] object2Bytes(Object object) {
         final LinkedBuffer buffer = LinkedBuffer.allocate();
-        return ProtostuffIOUtil.toByteArray(new ValueWrapper(value), schema, buffer);
+        return ProtostuffIOUtil.toByteArray(new ValueWrapper(object), schema, buffer);
     }
 
-    public Object bytes2Object(byte[] bytes) {
+    public <T> T bytes2Object(byte[] bytes) {
         ValueWrapper valueWrapper = new ValueWrapper();
         ProtostuffIOUtil.mergeFrom(bytes, valueWrapper, schema);
-        return valueWrapper.getData();
+        Object data = valueWrapper.getData();
+        return ClassBeanUtil.INSTANCE.cast(data);
     }
 
-    public static class ValueWrapper<T> {
-        private T data;
+    public static class ValueWrapper {
+        private Object data;
 
         public ValueWrapper() {
-
         }
 
-        public ValueWrapper(T data) {
+        public ValueWrapper(Object data) {
             this.data = data;
         }
 
-        public T getData() {
+        public Object getData() {
             return data;
         }
 
-        public void setData(T data) {
+        public void setData(Object data) {
             this.data = data;
         }
     }
