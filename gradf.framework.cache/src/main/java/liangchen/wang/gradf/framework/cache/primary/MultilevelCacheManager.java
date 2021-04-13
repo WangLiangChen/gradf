@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class MultilevelCacheManager extends AbstractTransactionSupportingCacheManager implements CacheManager {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final String LOCK_KEY = "MultilevelCacheManager";
     private final ConcurrentMap<String, Cache> cacheMap = new ConcurrentHashMap<>(16);
     private volatile Set<String> cacheNames = Collections.emptySet();
     private final RedisTemplate<Object, Object> redisTemplate;
@@ -35,17 +36,18 @@ public class MultilevelCacheManager extends AbstractTransactionSupportingCacheMa
 
     @Override
     public Cache getCache(String cacheName, long ttl) {
-        return LocalLockUtil.INSTANCE.readWriteInReadWriteLock(cacheName, () -> {
+        String lockKey = String.format("%s::%s", LOCK_KEY, cacheName);
+        return LocalLockUtil.INSTANCE.readWriteInReadWriteLock(lockKey, () -> {
             Cache cache = this.cacheMap.get(cacheName);
             if (null == cache) {
-                logger.debug("get with read lock,cacheName:{},cache:null", cacheName);
+                logger.debug("getCache with read lock,cacheName:{},cache:null", cacheName);
                 return null;
             }
-            logger.debug("get with read lock,cacheName:{},cache:{}", cacheName, cache);
+            logger.debug("getCache with read lock,cacheName:{},cache:{}", cacheName, cache);
             return new LockReader.LockValueWrapper<>(cache);
         }, () -> {
             Cache missingCache = getMissingCache(cacheName, ttl);
-            logger.debug("get with write lock,cacheName:{},cache:{}", cacheName, missingCache);
+            logger.debug("getCache with write lock,cacheName:{},cache:{}", cacheName, missingCache);
             if (null == missingCache) {
                 return null;
             }

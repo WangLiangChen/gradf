@@ -7,6 +7,9 @@ import liangchen.wang.gradf.framework.cache.redis.CacheMessage;
 import liangchen.wang.gradf.framework.cache.redis.RedisCache;
 import liangchen.wang.gradf.framework.cache.runner.CacheMessageConsumerRunner;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
+import liangchen.wang.gradf.framework.commons.lock.LocalLockUtil;
+import liangchen.wang.gradf.framework.commons.lock.LockReader;
+import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.support.AbstractValueAdaptingCache;
@@ -27,6 +30,7 @@ import java.util.stream.Collectors;
  */
 public class MultilevelCache extends AbstractValueAdaptingCache implements Cache {
     private final Logger logger = LoggerFactory.getLogger(MultilevelCache.class);
+    private final String LOCK_KEY = "MultilevelCache::";
     private final long LOCAL_CACHE_TTL_DELAY = 100;
     private final String name;
     private final long ttl;
@@ -100,17 +104,27 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
 
     @Override
     public <T> T get(Object key, Callable<T> valueLoader) {
-        logger.debug(loggerPrefix("get,sync=true", "key", "valueLoader"), key, valueLoader);
-        if (CacheStatus.INSTANCE.isRedisEnable()) {
-            T value = distributedCache.get(key, valueLoader);
-            logger.debug(loggerPrefix("getFromRemote,putIntoLocal,sync=true", "key", "valueLoader", "value"), key, valueLoader, JsonUtil.INSTANCE.toJsonString(value));
-            // 写入localCache
-            localCache.put(key, value);
-            return value;
-        }
-        T value = localCache.get(key, valueLoader);
-        logger.debug(loggerPrefix("getFromLocal,sync=true", "key", "valueLoader", "value"), key, valueLoader, JsonUtil.INSTANCE.toJsonString(value));
-        return value;
+        logger.debug(loggerPrefix("syncGet", "key", "valueLoader"), key, valueLoader);
+        String lockKey = String.format("%s::%s::%s", LOCK_KEY, this.name, key);
+        return LocalLockUtil.INSTANCE.readWriteInReadWriteLock(lockKey, () -> {
+            ValueWrapper valueWrapper = this.get(key);
+            if (null == valueWrapper) {
+                logger.debug(loggerPrefix("syncGet with read lock", "key", "valueWrapper"), key, null);
+                return null;
+            }
+            Object value = valueWrapper.get();
+            logger.debug(loggerPrefix("syncGet with read lock", "key", "value"), key, JsonUtil.INSTANCE.toJsonString(value));
+            return new LockReader.LockValueWrapper<>(ClassBeanUtil.INSTANCE.cast(value));
+        }, () -> {
+            try {
+                T value = valueLoader.call();
+                logger.debug(loggerPrefix("syncGet with write lock", "key", "value"), key, JsonUtil.INSTANCE.toJsonString(value));
+                this.put(key, value);
+                return value;
+            } catch (Exception e) {
+                throw new ValueRetrievalException(key, valueLoader, e);
+            }
+        });
     }
 
     @Override
