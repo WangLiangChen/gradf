@@ -22,6 +22,7 @@
         <module>gradf.component.merchant</module>
         <module>gradf.component.crawler</module>
         <module>gradf.framework.api</module>
+        <module>gradf.framework.cache.cluster</module>
     </modules>
     <packaging>pom</packaging>
 

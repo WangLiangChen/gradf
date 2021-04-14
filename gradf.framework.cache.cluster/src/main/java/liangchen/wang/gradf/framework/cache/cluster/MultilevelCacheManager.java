@@ -1,4 +1,4 @@
-package liangchen.wang.gradf.framework.cache.primary;
+package liangchen.wang.gradf.framework.cache.cluster;
 
 import liangchen.wang.gradf.framework.cache.override.CacheManager;
 import liangchen.wang.gradf.framework.commons.lock.LocalLockUtil;

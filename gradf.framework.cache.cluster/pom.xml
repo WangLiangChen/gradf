@@ -9,7 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>gradf.framework.cache</artifactId>
+    <artifactId>gradf.framework.cache.cluster</artifactId>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -18,15 +19,12 @@
         </dependency>
         <dependency>
             <groupId>liangchen.wang</groupId>
-            <artifactId>gradf.framework.springboot</artifactId>
+            <artifactId>gradf.framework.cache</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-cache</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.ben-manes.caffeine</groupId>
-            <artifactId>caffeine</artifactId>
+            <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
         </dependency>
     </dependencies>
+
 </project>

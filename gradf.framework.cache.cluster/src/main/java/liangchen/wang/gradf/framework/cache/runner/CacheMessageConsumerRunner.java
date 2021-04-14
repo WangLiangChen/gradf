@@ -1,7 +1,7 @@
 package liangchen.wang.gradf.framework.cache.runner;
 
-import liangchen.wang.gradf.framework.cache.primary.MultilevelCache;
-import liangchen.wang.gradf.framework.cache.primary.MultilevelCacheManager;
+import liangchen.wang.gradf.framework.cache.cluster.MultilevelCache;
+import liangchen.wang.gradf.framework.cache.cluster.MultilevelCacheManager;
 import liangchen.wang.gradf.framework.cache.redis.CacheMessage;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;

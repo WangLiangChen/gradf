@@ -1,6 +1,5 @@
 package liangchen.wang.gradf.framework.cache.annotation;
 
-import com.google.common.base.Splitter;
 import liangchen.wang.gradf.framework.cache.configuration.RedisAutoConfiguration;
 import liangchen.wang.gradf.framework.cache.enumeration.CacheStatus;
 import liangchen.wang.gradf.framework.commons.exception.InfoException;
@@ -15,8 +14,6 @@ import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
 
 import java.lang.annotation.*;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * @author LiangChen.Wang

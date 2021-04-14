@@ -1,4 +1,4 @@
-package liangchen.wang.gradf.framework.cache.primary;
+package liangchen.wang.gradf.framework.cache.cluster;
 
 import liangchen.wang.gradf.framework.cache.caffeine.CaffeineCache;
 import liangchen.wang.gradf.framework.cache.enumeration.CacheStatus;
