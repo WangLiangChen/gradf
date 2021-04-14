@@ -22,13 +22,12 @@ public class SpringCacheTest {
 
     @Test
     public void testCacheableMethod() throws InterruptedException {
-        CountDownLatch countDownLatch = new CountDownLatch(3);
-        for (int i = 0; i < 3; i++) {
-            new Thread(() -> {
-                CacheTest one = service.one();
-                System.out.println("+++++++++one:" + JsonUtil.INSTANCE.toJsonString(one));
-                countDownLatch.countDown();
-            }).start();
+        int count = 3;
+        CountDownLatch countDownLatch = new CountDownLatch(count);
+        for (int i = 0; i < count; i++) {
+            CacheTest one = service.one();
+            System.out.println(i + "+++++++++one:" + JsonUtil.INSTANCE.toJsonString(one));
+            countDownLatch.countDown();
         }
         countDownLatch.await();
     }

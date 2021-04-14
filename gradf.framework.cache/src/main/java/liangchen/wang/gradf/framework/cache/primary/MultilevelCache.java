@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  */
 public class MultilevelCache extends AbstractValueAdaptingCache implements Cache {
     private final Logger logger = LoggerFactory.getLogger(MultilevelCache.class);
-    private final String LOCK_KEY = "MultilevelCache::";
+    private final String LOCK_KEY = "MultilevelCache";
     private final long LOCAL_CACHE_TTL_DELAY = 100;
     private final String name;
     private final long ttl;
@@ -71,7 +71,11 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
         if (null != valueWrapper) {
             return valueWrapper;
         }
-        if (CacheStatus.INSTANCE.isNotRedisEnable() || null == (valueWrapper = distributedCache.get(key))) {
+        if (CacheStatus.INSTANCE.isNotRedisEnable()) {
+            return null;
+        }
+        valueWrapper = distributedCache.get(key);
+        if (null == valueWrapper) {
             logger.debug(loggerPrefix("getFromRemote", "key", "valueWrapper"), key, null);
             return null;
         }
@@ -91,7 +95,11 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
         if (null != valueWrapper) {
             return localCache.get(key, type);
         }
-        if (CacheStatus.INSTANCE.isNotRedisEnable() || null == distributedCache.get(key)) {
+        if (CacheStatus.INSTANCE.isNotRedisEnable()) {
+            return null;
+        }
+        valueWrapper = distributedCache.get(key);
+        if (null == valueWrapper) {
             logger.debug(loggerPrefix("getFromRemote", "key", "type", "valueWrapper"), key, type, null);
             return null;
         }
@@ -109,16 +117,16 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
         return LocalLockUtil.INSTANCE.readWriteInReadWriteLock(lockKey, () -> {
             ValueWrapper valueWrapper = this.get(key);
             if (null == valueWrapper) {
-                logger.debug(loggerPrefix("syncGet with read lock", "key", "valueWrapper"), key, null);
+                logger.debug(loggerPrefix("syncGet with readLock", "key", "valueWrapper"), key, null);
                 return null;
             }
             Object value = valueWrapper.get();
-            logger.debug(loggerPrefix("syncGet with read lock", "key", "value"), key, JsonUtil.INSTANCE.toJsonString(value));
+            logger.debug(loggerPrefix("syncGet with readLock", "key", "value"), key, JsonUtil.INSTANCE.toJsonString(value));
             return new LockReader.LockValueWrapper<>(ClassBeanUtil.INSTANCE.cast(value));
         }, () -> {
             try {
                 T value = valueLoader.call();
-                logger.debug(loggerPrefix("syncGet with write lock", "key", "value"), key, JsonUtil.INSTANCE.toJsonString(value));
+                logger.debug(loggerPrefix("syncGet with writeLock", "key", "value"), key, JsonUtil.INSTANCE.toJsonString(value));
                 this.put(key, value);
                 return value;
             } catch (Exception e) {
@@ -135,7 +143,6 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
         }
         localCache.put(key, value);
     }
-
 
     @Override
     public ValueWrapper putIfAbsent(Object key, Object value) {

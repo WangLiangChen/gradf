@@ -40,14 +40,14 @@ public class MultilevelCacheManager extends AbstractTransactionSupportingCacheMa
         return LocalLockUtil.INSTANCE.readWriteInReadWriteLock(lockKey, () -> {
             Cache cache = this.cacheMap.get(cacheName);
             if (null == cache) {
-                logger.debug("getCache with read lock,cacheName:{},cache:null", cacheName);
+                logger.debug("getCache with readLock,cacheName:{},cache:null", cacheName);
                 return null;
             }
-            logger.debug("getCache with read lock,cacheName:{},cache:{}", cacheName, cache);
+            logger.debug("getCache with readLock,cacheName:{},cache:{}", cacheName, cache);
             return new LockReader.LockValueWrapper<>(cache);
         }, () -> {
             Cache missingCache = getMissingCache(cacheName, ttl);
-            logger.debug("getCache with write lock,cacheName:{},cache:{}", cacheName, missingCache);
+            logger.debug("getCache with writeLock,cacheName:{},cache:{}", cacheName, missingCache);
             if (null == missingCache) {
                 return null;
             }
