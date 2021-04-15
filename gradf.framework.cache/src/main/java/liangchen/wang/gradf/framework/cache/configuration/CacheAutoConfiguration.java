@@ -1,5 +1,8 @@
 package liangchen.wang.gradf.framework.cache.configuration;
 
+import com.github.benmanes.caffeine.cache.CacheLoader;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import liangchen.wang.gradf.framework.cache.override.CacheInterceptor;
 import liangchen.wang.gradf.framework.cache.override.CachePutOperation;
 import liangchen.wang.gradf.framework.cache.override.CacheableOperation;
@@ -8,27 +11,81 @@ import liangchen.wang.gradf.framework.commons.digest.HashUtil;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
+import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizers;
+import org.springframework.boot.autoconfigure.cache.CacheProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.cache.interceptor.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Role;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author LiangChen.Wang 2020/9/23
  */
 @Configuration(proxyBeanMethods = false)
+@EnableConfigurationProperties(CacheProperties.class)
 public class CacheAutoConfiguration {
     private final Logger logger = LoggerFactory.getLogger(CacheAutoConfiguration.class);
     private final String NO_PARAM_KEY = "NO_PARAM";
     private final String NULL_PARAM_KEY = "NULL_PARAM";
+
+    @Bean
+    @ConditionalOnMissingBean
+    public CacheManagerCustomizers cacheManagerCustomizers(ObjectProvider<CacheManagerCustomizer<?>> customizers) {
+        return new CacheManagerCustomizers(customizers.orderedStream().collect(Collectors.toList()));
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CacheManager.class)
+    CaffeineCacheManager cacheManager(CacheProperties cacheProperties, CacheManagerCustomizers customizers,
+                                      ObjectProvider<Caffeine<Object, Object>> caffeine, ObjectProvider<CaffeineSpec> caffeineSpec,
+                                      ObjectProvider<CacheLoader<Object, Object>> cacheLoader) {
+        CaffeineCacheManager cacheManager = createCacheManager(cacheProperties, caffeine, caffeineSpec, cacheLoader);
+        List<String> cacheNames = cacheProperties.getCacheNames();
+        if (!CollectionUtils.isEmpty(cacheNames)) {
+            cacheManager.setCacheNames(cacheNames);
+        }
+        return customizers.customize(cacheManager);
+    }
+
+    private CaffeineCacheManager createCacheManager(CacheProperties cacheProperties,
+                                                    ObjectProvider<Caffeine<Object, Object>> caffeine, ObjectProvider<CaffeineSpec> caffeineSpec,
+                                                    ObjectProvider<CacheLoader<Object, Object>> cacheLoader) {
+        CaffeineCacheManager cacheManager = new liangchen.wang.gradf.framework.cache.override.CaffeineCacheManager();
+        setCacheBuilder(cacheProperties, caffeineSpec.getIfAvailable(), caffeine.getIfAvailable(), cacheManager);
+        cacheLoader.ifAvailable(cacheManager::setCacheLoader);
+        return cacheManager;
+    }
+
+    private void setCacheBuilder(CacheProperties cacheProperties, CaffeineSpec caffeineSpec,
+                                 Caffeine<Object, Object> caffeine, CaffeineCacheManager cacheManager) {
+        String specification = cacheProperties.getCaffeine().getSpec();
+        if (StringUtils.hasText(specification)) {
+            cacheManager.setCacheSpecification(specification);
+        } else if (caffeineSpec != null) {
+            cacheManager.setCaffeineSpec(caffeineSpec);
+        } else if (caffeine != null) {
+            cacheManager.setCaffeine(caffeine);
+        }
+    }
 
     @Primary
     @Bean
