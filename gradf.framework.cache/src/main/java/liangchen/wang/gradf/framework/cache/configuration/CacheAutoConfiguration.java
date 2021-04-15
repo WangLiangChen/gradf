@@ -9,9 +9,11 @@ import liangchen.wang.gradf.framework.commons.json.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.*;
+import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -25,10 +27,13 @@ import java.util.Collections;
  * @author LiangChen.Wang 2020/9/23
  */
 @Configuration(proxyBeanMethods = false)
+@AutoConfigureAfter(org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration.class)
 public class CacheAutoConfiguration {
     private final Logger logger = LoggerFactory.getLogger(CacheAutoConfiguration.class);
     private final String NO_PARAM_KEY = "NO_PARAM";
     private final String NULL_PARAM_KEY = "NULL_PARAM";
+
+
 
     @Primary
     @Bean
