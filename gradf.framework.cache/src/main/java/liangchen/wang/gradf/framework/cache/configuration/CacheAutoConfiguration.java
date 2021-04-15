@@ -30,7 +30,6 @@ public class CacheAutoConfiguration {
     private final String NO_PARAM_KEY = "NO_PARAM";
     private final String NULL_PARAM_KEY = "NULL_PARAM";
 
-
     @Primary
     @Bean
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
