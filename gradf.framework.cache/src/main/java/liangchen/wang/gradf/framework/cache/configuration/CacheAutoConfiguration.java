@@ -13,7 +13,6 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.*;
-import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -33,7 +32,11 @@ public class CacheAutoConfiguration {
     private final String NO_PARAM_KEY = "NO_PARAM";
     private final String NULL_PARAM_KEY = "NULL_PARAM";
 
-
+    @Primary
+    @Bean
+    public CaffeineCacheManager cacheManagerOverride() {
+        return new CaffeineCacheManager();
+    }
 
     @Primary
     @Bean
