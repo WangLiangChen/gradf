@@ -1,4 +1,4 @@
-package liangchen.wang.gradf.framework.cache.test;
+package liangchen.wang.gradf.framework.cache.cluster.test;
 
 import liangchen.wang.gradf.framework.cache.test.entity.CacheTest;
 import liangchen.wang.gradf.framework.cache.test.service.ICacheTestService;

@@ -1,4 +1,4 @@
-package liangchen.wang.gradf.framework.cache.annotation;
+package liangchen.wang.gradf.framework.cache.cluster.annotation;
 
 import liangchen.wang.gradf.framework.cache.configuration.RedisAutoConfiguration;
 import liangchen.wang.gradf.framework.cache.enumeration.CacheStatus;

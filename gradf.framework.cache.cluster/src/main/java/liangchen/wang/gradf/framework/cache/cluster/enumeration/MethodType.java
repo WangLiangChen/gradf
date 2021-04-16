@@ -1,4 +1,4 @@
-package liangchen.wang.gradf.framework.cache.enumeration;
+package liangchen.wang.gradf.framework.cache.cluster.enumeration;
 
 /**
  * @author wangliangchen
