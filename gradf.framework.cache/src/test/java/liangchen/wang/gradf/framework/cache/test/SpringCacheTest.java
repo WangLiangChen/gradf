@@ -1,13 +1,10 @@
 package liangchen.wang.gradf.framework.cache.test;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.BeansException;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.interceptor.CacheResolver;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.cache.interceptor.CacheOperationSource;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -17,17 +14,14 @@ import java.util.Map;
  */
 @SpringBootTest
 @EnableCaching
-public class SpringCacheTest implements ApplicationContextAware {
+public class SpringCacheTest {
     @Inject
     private Map<String, CacheManager> cacheManagerMap;
+    @Inject
+    private Map<String, CacheOperationSource> cacheOperationSourceMap;
 
     @Test
     public void testCacheManager() {
-        System.out.println();
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         System.out.println();
     }
 }
