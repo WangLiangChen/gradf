@@ -12,7 +12,6 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -82,12 +81,13 @@ public class DefaultApplicationContextInitializer implements ApplicationContextI
         defaultProperties.setProperty("spring.autoconfigure.exclude[2]", "org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration");
         defaultProperties.setProperty("spring.autoconfigure.exclude[3]", "org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration");
         defaultProperties.setProperty("spring.autoconfigure.exclude[4]", "org.springframework.boot.autoconfigure.aop.AopAutoConfiguration");
-        defaultProperties.setProperty("spring.autoconfigure.exclude[5]","org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration");
+        defaultProperties.setProperty("spring.autoconfigure.exclude[5]", "org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration");
+        defaultProperties.setProperty("spring.autoconfigure.exclude[6]", "org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration");
         // 将需要排除扫描的包放入Environment
         Set<Object> allSources = springApplication.getAllSources();
         String excludeScan = allSources.stream().map(e -> ((Class) e).getPackage().getName()).filter(e -> e.startsWith(DEFAULT_PACKAGES)).collect(Collectors.joining(","));
         System.setProperty("exclude.scan", excludeScan);
-        // 此处使用springApplication.setDefaultProperties()无效
+        // 因加载顺序的原因,此处使用springApplication.setDefaultProperties()无效
         environment.getPropertySources().addLast(new PropertiesPropertySource("defaultProperties", defaultProperties));
     }
 

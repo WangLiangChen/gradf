@@ -2,10 +2,13 @@ package liangchen.wang.gradf.framework.springboot.processor;
 
 import liangchen.wang.gradf.framework.commons.utils.Printer;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.PriorityOrdered;
+import org.springframework.core.env.Environment;
 
 /**
  * 该类会特别早的执行
@@ -18,16 +21,10 @@ import org.springframework.core.PriorityOrdered;
  *
  * @author LiangChen.Wang 2020/9/15
  */
-public class FirstBeanDefinitionRegistryPostProcessor implements BeanDefinitionRegistryPostProcessor, PriorityOrdered {
+public class FirstBeanDefinitionRegistryPostProcessor implements BeanDefinitionRegistryPostProcessor, PriorityOrdered, EnvironmentAware, BeanClassLoaderAware {
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
         Printer.INSTANCE.prettyPrint("postProcessBeanDefinitionRegistry");
-        //BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(XXX.class, () -> {return XXX});
-        //设置依赖
-        //beanDefinitionBuilder.addPropertyReference("personDao", "personDao");
-        //BeanDefinition beanDefinition = beanDefinitionBuilder.getRawBeanDefinition();
-        //注册bean定义
-        //beanDefinitionRegistry.registerBeanDefinition("xxx", beanDefinition);
     }
 
     @Override
@@ -38,5 +35,15 @@ public class FirstBeanDefinitionRegistryPostProcessor implements BeanDefinitionR
     @Override
     public int getOrder() {
         return PriorityOrdered.HIGHEST_PRECEDENCE;
+    }
+
+    @Override
+    public void setBeanClassLoader(ClassLoader classLoader) {
+
+    }
+
+    @Override
+    public void setEnvironment(Environment environment) {
+
     }
 }
