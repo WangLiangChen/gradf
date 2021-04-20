@@ -1,7 +1,6 @@
 package liangchen.wang.gradf.framework.cache.configuration;
 
 import com.github.benmanes.caffeine.cache.CacheLoader;
-import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import liangchen.wang.gradf.framework.cache.override.CacheInterceptor;
 import liangchen.wang.gradf.framework.cache.override.CachePutOperation;
 import liangchen.wang.gradf.framework.cache.override.CacheableOperation;
@@ -20,19 +19,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.cache.interceptor.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Role;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * @author LiangChen.Wang 2020/9/23
@@ -50,12 +45,10 @@ public class CacheAutoConfiguration {
     @Bean
     @ConditionalOnBean(CaffeineCacheManager.class)
     @ConditionalOnMissingBean(liangchen.wang.gradf.framework.cache.override.CacheManager.class)
-    CaffeineCacheManager cacheManagerOverride(CacheProperties cacheProperties, CacheManagerCustomizers customizers, ObjectProvider<CaffeineSpec> caffeineSpec, ObjectProvider<CacheLoader<Object, Object>> cacheLoader) {
-        CaffeineCacheManager cacheManager = createCacheManager(cacheProperties, caffeineSpec, cacheLoader);
-        List<String> cacheNames = cacheProperties.getCacheNames();
-        if (!CollectionUtils.isEmpty(cacheNames)) {
-            cacheManager.setCacheNames(cacheNames);
-        }
+    CaffeineCacheManager cacheManagerOverride(CacheProperties cacheProperties, CacheManagerCustomizers customizers, ObjectProvider<CacheLoader<Object, Object>> cacheLoader) {
+        String specification = cacheProperties.getCaffeine().getSpec();
+        String[] initialCacheNames = cacheProperties.getCacheNames().toArray(new String[0]);
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager(specification, cacheLoader.getIfAvailable(), initialCacheNames);
         return customizers.customize(cacheManager);
     }
 
@@ -138,19 +131,4 @@ public class CacheAutoConfiguration {
         };
     }
 
-    private CaffeineCacheManager createCacheManager(CacheProperties cacheProperties, ObjectProvider<CaffeineSpec> caffeineSpec, ObjectProvider<CacheLoader<Object, Object>> cacheLoader) {
-        CaffeineCacheManager cacheManager = new liangchen.wang.gradf.framework.cache.override.CaffeineCacheManager();
-        setCacheBuilder(cacheProperties, caffeineSpec.getIfAvailable(), cacheManager);
-        cacheLoader.ifAvailable(cacheManager::setCacheLoader);
-        return cacheManager;
-    }
-
-    private void setCacheBuilder(CacheProperties cacheProperties, CaffeineSpec caffeineSpec, CaffeineCacheManager cacheManager) {
-        String specification = cacheProperties.getCaffeine().getSpec();
-        if (StringUtils.hasText(specification)) {
-            cacheManager.setCacheSpecification(specification);
-        } else if (caffeineSpec != null) {
-            cacheManager.setCaffeineSpec(caffeineSpec);
-        }
-    }
 }

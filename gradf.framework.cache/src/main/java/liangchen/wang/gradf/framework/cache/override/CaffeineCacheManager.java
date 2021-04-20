@@ -3,79 +3,96 @@ package liangchen.wang.gradf.framework.cache.override;
 
 import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import org.springframework.cache.Cache;
-import org.springframework.lang.Nullable;
+import com.github.benmanes.caffeine.cache.CaffeineSpec;
+import liangchen.wang.gradf.framework.cache.caffeine.CaffeineCache;
+import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 
+import javax.annotation.Nullable;
 import java.time.Duration;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @author LiangChen.Wang 2021/4/15
  */
-public class CaffeineCacheManager extends org.springframework.cache.caffeine.CaffeineCacheManager implements CacheManager {
-    private boolean dynamic = true;
+public class CaffeineCacheManager extends AbstractCacheManager {
     @Nullable
-    private CacheLoader<Object, Object> cacheLoader;
-    private Caffeine<Object, Object> cacheBuilder = Caffeine.newBuilder();
-    private final Map<String, Cache> cacheMap = new ConcurrentHashMap<>(16);
+    private final Caffeine<Object, Object> cacheBuilder;
+    @Nullable
+    private final CacheLoader<Object, Object> cacheLoader;
+    private final String[] initialCacheNames;
 
-    @Override
-    public Cache getCache(String cacheName) {
-        return getCache(cacheName, 0L);
+    private boolean allowNullValues = true;
+    private boolean dynamic = true;
+
+    public CaffeineCacheManager(String caffeineSpec, String... initialCacheNames) {
+        this(caffeineSpec, null, initialCacheNames);
     }
 
-    @Override
-    public Cache getCache(String cacheName, long ttl) {
-        return this.cacheMap.computeIfAbsent(cacheName, name -> this.dynamic ? createCaffeineCache(name, ttl) : null);
+    public CaffeineCacheManager(String caffeineSpec, CacheLoader<Object, Object> cacheLoader, String... initialCacheNames) {
+        this(StringUtil.INSTANCE.isBlank(caffeineSpec) ? null : Caffeine.from(caffeineSpec), cacheLoader, initialCacheNames);
     }
 
-    protected Cache createCaffeineCache(String name, long ttl) {
-        return adaptCaffeineCache(name, createNativeCaffeineCache(ttl));
+    public CaffeineCacheManager(CaffeineSpec caffeineSpec, String... initialCacheNames) {
+        this(caffeineSpec, null, initialCacheNames);
     }
 
+    public CaffeineCacheManager(CaffeineSpec caffeineSpec, CacheLoader<Object, Object> cacheLoader, String... initialCacheNames) {
+        this(null == caffeineSpec ? null : Caffeine.from(caffeineSpec), cacheLoader, initialCacheNames);
+    }
+
+    public CaffeineCacheManager(Caffeine<Object, Object> cacheBuilder, String... initialCacheNames) {
+        this(cacheBuilder, null, initialCacheNames);
+    }
+
+    public CaffeineCacheManager(Caffeine<Object, Object> cacheBuilder, CacheLoader<Object, Object> cacheLoader, String... initialCacheNames) {
+        if (null == cacheBuilder) {
+            this.cacheBuilder = Caffeine.newBuilder();
+        } else {
+            this.cacheBuilder = cacheBuilder;
+        }
+        this.cacheLoader = cacheLoader;
+        this.initialCacheNames = initialCacheNames;
+    }
+
+
     @Override
-    protected Cache adaptCaffeineCache(String name, com.github.benmanes.caffeine.cache.Cache<Object, Object> cache) {
-        return new liangchen.wang.gradf.framework.cache.caffeine.CaffeineCache(name, cache, isAllowNullValues());
+    protected Collection<? extends Cache> loadCaches() {
+        if (null == this.initialCacheNames || this.initialCacheNames.length == 0) {
+            return Collections.emptySet();
+        }
+        Collection<Cache> caches = new ArrayList<>(initialCacheNames.length);
+        for (String initialCacheName : this.initialCacheNames) {
+            caches.add(createCaffeineCache(initialCacheName, 0L));
+        }
+        this.dynamic = false;
+        return caches;
+    }
+
+    protected CaffeineCache createCaffeineCache(String name, long ttl) {
+        if (dynamic) {
+            return adaptCaffeineCache(name, createNativeCaffeineCache(ttl));
+        }
+        return null;
+    }
+
+    protected CaffeineCache adaptCaffeineCache(String name, com.github.benmanes.caffeine.cache.Cache<Object, Object> cache) {
+        return new CaffeineCache(name, cache, allowNullValues);
     }
 
     protected com.github.benmanes.caffeine.cache.Cache<Object, Object> createNativeCaffeineCache(long ttl) {
         if (ttl > 0) {
-            this.cacheBuilder.expireAfterWrite(Duration.ofMillis(ttl));
+            cacheBuilder.expireAfterWrite(Duration.ofMillis(ttl));
         } else {
-            this.cacheBuilder.expireAfterWrite(Duration.ZERO);
+            cacheBuilder.expireAfterWrite(Duration.ZERO);
         }
         return (this.cacheLoader != null ? this.cacheBuilder.build(this.cacheLoader) : this.cacheBuilder.build());
     }
 
+    @Nullable
     @Override
-    public void setCacheLoader(CacheLoader<Object, Object> cacheLoader) {
-        super.setCacheLoader(cacheLoader);
-        this.cacheLoader = cacheLoader;
-    }
-
-    @Override
-    public void setCaffeine(Caffeine<Object, Object> caffeine) {
-        super.setCaffeine(caffeine);
-        this.cacheBuilder = caffeine;
-    }
-
-    @Override
-    public void setCacheNames(@Nullable Collection<String> cacheNames) {
-        if (cacheNames != null) {
-            for (String name : cacheNames) {
-                this.cacheMap.put(name, createCaffeineCache(name, 0L));
-            }
-            this.dynamic = false;
-        } else {
-            this.dynamic = true;
-        }
-    }
-
-    @Override
-    public Collection<String> getCacheNames() {
-        Set<String> cacheNames = new LinkedHashSet<>(super.getCacheNames());
-        cacheNames.addAll(this.cacheMap.keySet());
-        return Collections.unmodifiableSet(cacheNames);
+    protected Cache getMissingCache(String name, long ttl) {
+        return createCaffeineCache(name, ttl);
     }
 }

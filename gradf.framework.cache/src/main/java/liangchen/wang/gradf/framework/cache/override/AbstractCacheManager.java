@@ -6,8 +6,6 @@ import org.springframework.beans.factory.InitializingBean;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -28,11 +26,9 @@ public abstract class AbstractCacheManager implements CacheManager, Initializing
         Collection<? extends Cache> caches = loadCaches();
         synchronized (this.cacheMap) {
             this.cacheMap.clear();
-            Set<String> cacheNames = new LinkedHashSet<>(caches.size());
             for (Cache cache : caches) {
                 String name = cache.getName();
                 this.cacheMap.put(name, decorateCache(cache));
-                cacheNames.add(name);
             }
         }
     }
@@ -89,7 +85,5 @@ public abstract class AbstractCacheManager implements CacheManager, Initializing
     }
 
     @Nullable
-    protected Cache getMissingCache(String name, long ttl) {
-        return null;
-    }
+    protected abstract Cache getMissingCache(String name, long ttl);
 }
