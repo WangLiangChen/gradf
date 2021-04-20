@@ -14,18 +14,16 @@ import java.util.concurrent.TimeUnit;
  */
 public class CaffeineCache extends org.springframework.cache.caffeine.CaffeineCache implements Cache {
     private final static Logger logger = LoggerFactory.getLogger(CaffeineCache.class);
-    private final String name;
-    private final com.github.benmanes.caffeine.cache.Cache<Object, Object> cache;
+    // time to live
     private long ttl;
-    private final boolean allowNullValues;
+    // time to idle
+    private long tti;
     private final Set<Object> keys;
 
     public CaffeineCache(String name, com.github.benmanes.caffeine.cache.Cache<Object, Object> cache, boolean allowNullValues) {
         super(name, cache, allowNullValues);
-        this.name = name;
-        this.cache = cache;
         cache.policy().expireAfterWrite().ifPresent(e -> this.ttl = e.getExpiresAfter(TimeUnit.MILLISECONDS));
-        this.allowNullValues = allowNullValues;
+        cache.policy().expireAfterAccess().ifPresent(e -> this.tti = e.getExpiresAfter(TimeUnit.MILLISECONDS));
         this.keys = new CopyOnWriteArraySet<>();
         logger.debug("Construct {}", this.toString());
     }
@@ -75,9 +73,10 @@ public class CaffeineCache extends org.springframework.cache.caffeine.CaffeineCa
     @Override
     public String toString() {
         return "CaffeineCache{" +
-                "name='" + name + '\'' +
+                "name='" + getName() + '\'' +
                 ", ttl=" + ttl +
-                ", allowNullValues=" + allowNullValues +
+                ", tti=" + tti +
+                ", allowNullValues=" + isAllowNullValues() +
                 '}';
     }
 }

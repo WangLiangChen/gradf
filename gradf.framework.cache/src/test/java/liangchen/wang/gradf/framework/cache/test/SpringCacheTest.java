@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.annotation.EnableCaching;
 
 import javax.inject.Inject;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -22,22 +21,20 @@ public class SpringCacheTest {
     private ICacheTestService service;
 
     @Test
-    public void testCacheManager() throws InterruptedException {
-        CountDownLatch countDownLatch = new CountDownLatch(30);
-        for (int i = 0; i < 30; i++) {
-            new Thread(() -> {
-                CacheTest one = service.one();
-                System.out.println(Thread.currentThread().getId() + "+++++++++++++++++++++++one:" + JsonUtil.INSTANCE.toJsonString(one));
-                ConcurrentUtil.INSTANCE.threadSleep(3, TimeUnit.MILLISECONDS);
-                one = service.one();
-                System.out.println(Thread.currentThread().getId() + "+++++++++++++++++++++++one:" + JsonUtil.INSTANCE.toJsonString(one));
-                ConcurrentUtil.INSTANCE.threadSleep(3, TimeUnit.MILLISECONDS);
-                one = service.one();
-                System.out.println(Thread.currentThread().getId() + "+++++++++++++++++++++++one:" + JsonUtil.INSTANCE.toJsonString(one));
-                ConcurrentUtil.INSTANCE.threadSleep(3, TimeUnit.MILLISECONDS);
-                countDownLatch.countDown();
-            }).start();
-        }
-        countDownLatch.await();
+    public void testCache() {
+        CacheTest one = service.one();
+        System.out.println("++++++++++one:" + JsonUtil.INSTANCE.toJsonString(one));
+        ConcurrentUtil.INSTANCE.threadSleep(2, TimeUnit.SECONDS);
+        one = service.one();
+        System.out.println("++++++++++one:" + JsonUtil.INSTANCE.toJsonString(one));
+        ConcurrentUtil.INSTANCE.threadSleep(2, TimeUnit.SECONDS);
+        one = service.one();
+        System.out.println("++++++++++one:" + JsonUtil.INSTANCE.toJsonString(one));
+        ConcurrentUtil.INSTANCE.threadSleep(2, TimeUnit.SECONDS);
+        one = service.one();
+        System.out.println("++++++++++one:" + JsonUtil.INSTANCE.toJsonString(one));
+        ConcurrentUtil.INSTANCE.threadSleep(2, TimeUnit.SECONDS);
+        one = service.one();
+        System.out.println("++++++++++one:" + JsonUtil.INSTANCE.toJsonString(one));
     }
 }

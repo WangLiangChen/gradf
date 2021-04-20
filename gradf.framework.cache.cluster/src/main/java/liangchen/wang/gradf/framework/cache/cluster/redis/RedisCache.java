@@ -4,6 +4,8 @@ import liangchen.wang.gradf.framework.cache.override.Cache;
 import liangchen.wang.gradf.framework.commons.enumeration.Symbol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.core.BoundSetOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 
@@ -18,23 +20,17 @@ import java.util.concurrent.TimeUnit;
  */
 public class RedisCache extends org.springframework.data.redis.cache.RedisCache implements Cache {
     private final static Logger logger = LoggerFactory.getLogger(RedisCache.class);
-    private final String name;
     private final long ttl;
-    private final boolean allowNullValues;
     private final BoundSetOperations<Object, Object> keys;
 
-    public RedisCache(String name, long ttl, boolean allowNullValues, RedisTemplate<Object, Object> redisTemplate) {
-        super(name, RedisCacheCreator.INSTANCE.cacheWriter(redisTemplate), RedisCacheCreator.INSTANCE.cacheConfig(ttl, allowNullValues));
-        this.name = name;
-        this.ttl = ttl;
-        this.allowNullValues = allowNullValues;
+    public RedisCache(String name, RedisCacheWriter cacheWriter, RedisCacheConfiguration cacheConfig, RedisTemplate<Object, Object> redisTemplate) {
+        super(name, cacheWriter, cacheConfig);
+        this.ttl = cacheConfig.getTtl().toMillis();
         String keysKey = this.createCacheKey("keys");
         this.keys = redisTemplate.boundSetOps(keysKey);
         // 有key才能设置expire,所以先add
-        if (keys.getExpire() < 0) {
-            this.keys.add(Symbol.BLANK.getSymbol());
-            this.keys.expire(ttl, TimeUnit.MILLISECONDS);
-        }
+        this.keys.add(Symbol.BLANK.getSymbol());
+        this.keys.expire(ttl, TimeUnit.MILLISECONDS);
         logger.debug("Construct {}", this.toString());
     }
 
@@ -83,9 +79,9 @@ public class RedisCache extends org.springframework.data.redis.cache.RedisCache 
     @Override
     public String toString() {
         return "RedisCache{" +
-                "name='" + name + '\'' +
+                "name='" + getName() + '\'' +
                 ", ttl=" + ttl +
-                ", allowNullValues=" + allowNullValues +
+                ", allowNullValues=" + isAllowNullValues() +
                 '}';
     }
 }

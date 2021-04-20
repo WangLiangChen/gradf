@@ -1,14 +1,13 @@
 package liangchen.wang.gradf.framework.cache.cluster.override;
 
-import liangchen.wang.gradf.framework.cache.cluster.redis.RedisCache;
 import liangchen.wang.gradf.framework.cache.override.CacheManager;
 import org.springframework.cache.Cache;
+import org.springframework.data.redis.cache.RedisCache;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheWriter;
+import org.springframework.data.redis.core.RedisTemplate;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
+import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -17,66 +16,56 @@ import java.util.concurrent.ConcurrentMap;
  * @author LiangChen.Wang 2021/4/16
  */
 public class RedisCacheManager extends org.springframework.data.redis.cache.RedisCacheManager implements CacheManager {
-    private final RedisCacheConfiguration defaultCacheConfiguration;
+    private final RedisTemplate<Object, Object> redisTemplate;
+    private final RedisCacheWriter cacheWriter;
+    private RedisCacheConfiguration defaultCacheConfig;
     private final ConcurrentMap<String, Cache> cacheMap = new ConcurrentHashMap<>(16);
 
-    public RedisCacheManager(RedisCacheWriter cacheWriter, RedisCacheConfiguration defaultCacheConfiguration) {
-        super(cacheWriter, defaultCacheConfiguration);
-        this.defaultCacheConfiguration = defaultCacheConfiguration;
+    public RedisCacheManager(RedisTemplate<Object, Object> redisTemplate, RedisCacheWriter cacheWriter, RedisCacheConfiguration defaultCacheConfig) {
+        super(cacheWriter, defaultCacheConfig);
+        this.redisTemplate = redisTemplate;
+        this.cacheWriter = cacheWriter;
+        this.defaultCacheConfig = defaultCacheConfig;
     }
 
-    public RedisCacheManager(RedisCacheWriter cacheWriter, RedisCacheConfiguration defaultCacheConfiguration, String... initialCacheNames) {
-        super(cacheWriter, defaultCacheConfiguration, initialCacheNames);
-        this.defaultCacheConfiguration = defaultCacheConfiguration;
+    public RedisCacheManager(RedisTemplate<Object, Object> redisTemplate, RedisCacheWriter cacheWriter, RedisCacheConfiguration defaultCacheConfig, String... initialCacheNames) {
+        super(cacheWriter, defaultCacheConfig, initialCacheNames);
+        this.redisTemplate = redisTemplate;
+        this.cacheWriter = cacheWriter;
+        this.defaultCacheConfig = defaultCacheConfig;
     }
 
-    public RedisCacheManager(RedisCacheWriter cacheWriter, RedisCacheConfiguration defaultCacheConfiguration, boolean allowInFlightCacheCreation, String... initialCacheNames) {
-        super(cacheWriter, defaultCacheConfiguration, allowInFlightCacheCreation, initialCacheNames);
-        this.defaultCacheConfiguration = defaultCacheConfiguration;
+    public RedisCacheManager(RedisTemplate<Object, Object> redisTemplate, RedisCacheWriter cacheWriter, RedisCacheConfiguration defaultCacheConfig, boolean allowInFlightCacheCreation, String... initialCacheNames) {
+        super(cacheWriter, defaultCacheConfig, allowInFlightCacheCreation, initialCacheNames);
+        this.redisTemplate = redisTemplate;
+        this.cacheWriter = cacheWriter;
+        this.defaultCacheConfig = defaultCacheConfig;
     }
 
-    public RedisCacheManager(RedisCacheWriter cacheWriter, RedisCacheConfiguration defaultCacheConfiguration, Map<String, RedisCacheConfiguration> initialCacheConfigurations) {
-        super(cacheWriter, defaultCacheConfiguration, initialCacheConfigurations);
-        this.defaultCacheConfiguration = defaultCacheConfiguration;
+    public RedisCacheManager(RedisTemplate<Object, Object> redisTemplate, RedisCacheWriter cacheWriter, RedisCacheConfiguration defaultCacheConfig, Map<String, RedisCacheConfiguration> initialCacheConfigurations) {
+        super(cacheWriter, defaultCacheConfig, initialCacheConfigurations);
+        this.redisTemplate = redisTemplate;
+        this.cacheWriter = cacheWriter;
+        this.defaultCacheConfig = defaultCacheConfig;
     }
 
-    public RedisCacheManager(RedisCacheWriter cacheWriter, RedisCacheConfiguration defaultCacheConfiguration, Map<String, RedisCacheConfiguration> initialCacheConfigurations, boolean allowInFlightCacheCreation) {
-        super(cacheWriter, defaultCacheConfiguration, initialCacheConfigurations, allowInFlightCacheCreation);
-        this.defaultCacheConfiguration = defaultCacheConfiguration;
+    public RedisCacheManager(RedisTemplate<Object, Object> redisTemplate, RedisCacheWriter cacheWriter, RedisCacheConfiguration defaultCacheConfig, Map<String, RedisCacheConfiguration> initialCacheConfigurations, boolean allowInFlightCacheCreation) {
+        super(cacheWriter, defaultCacheConfig, initialCacheConfigurations, allowInFlightCacheCreation);
+        this.redisTemplate = redisTemplate;
+        this.cacheWriter = cacheWriter;
+        this.defaultCacheConfig = defaultCacheConfig;
     }
 
     @Override
     public Cache getCache(String cacheName, long ttl) {
-        // Quick check for existing cache...
-        Cache cache = this.cacheMap.get(cacheName);
-        if (cache != null) {
-            return cache;
+        if (ttl > 0) {
+            this.defaultCacheConfig = this.defaultCacheConfig.entryTtl(Duration.ofMillis(ttl));
         }
-
-        // The provider may support on-demand cache creation...
-        Cache missingCache = getMissingCache(cacheName);
-        if (missingCache != null) {
-            // Fully synchronize now for missing cache registration
-            synchronized (this.cacheMap) {
-                cache = this.cacheMap.get(cacheName);
-                if (cache == null) {
-                    cache = decorateCache(missingCache);
-                    this.cacheMap.put(cacheName, cache);
-                }
-            }
-        }
-        return cache;
+        return getCache(cacheName);
     }
 
     @Override
-    public Collection<String> getCacheNames() {
-        Collection<String> cacheNames = new HashSet<>(super.getCacheNames());
-        cacheNames.addAll(this.cacheMap.keySet());
-        return Collections.unmodifiableCollection(cacheNames);
-    }
-
-    private Cache getMissingCache(String cacheName, long ttl) {
-        boolean allowNullValues=defaultCacheConfiguration.getAllowCacheNullValues();
-        return new RedisCache(cacheName,allowNullValues);
+    protected RedisCache createRedisCache(String name, RedisCacheConfiguration cacheConfig) {
+        return new liangchen.wang.gradf.framework.cache.cluster.redis.RedisCache(name, cacheWriter, cacheConfig, redisTemplate);
     }
 }
