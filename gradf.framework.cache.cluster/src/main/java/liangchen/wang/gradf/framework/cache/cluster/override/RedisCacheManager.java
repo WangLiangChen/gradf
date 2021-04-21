@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.Assert;
 
 import javax.annotation.Nullable;
+import java.time.Duration;
 import java.util.*;
 
 /**
@@ -81,7 +82,13 @@ public class RedisCacheManager extends AbstractCacheManager {
     @Nullable
     @Override
     protected Cache getMissingCache(String name, long ttl) {
-        return allowInFlightCacheCreation ? createRedisCache(name, defaultCacheConfig) : null;
+        RedisCacheConfiguration redisCacheConfiguration;
+        if (ttl > 0) {
+            redisCacheConfiguration = defaultCacheConfig;
+        } else {
+            redisCacheConfiguration = defaultCacheConfig.entryTtl(Duration.ofMillis(ttl));
+        }
+        return allowInFlightCacheCreation ? createRedisCache(name, redisCacheConfiguration) : null;
     }
 
     protected RedisCache createRedisCache(String name, @Nullable RedisCacheConfiguration cacheConfig) {
