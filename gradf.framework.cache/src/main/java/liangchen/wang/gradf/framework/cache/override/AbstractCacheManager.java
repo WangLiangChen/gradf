@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentMap;
 public abstract class AbstractCacheManager implements CacheManager, InitializingBean {
     private final String LOCK_KEY = "AbstractCacheManager";
     private boolean transactionAware = false;
-    private final ConcurrentMap<String, Cache> cacheMap = new ConcurrentHashMap<>(16);
+    private final ConcurrentMap<String, org.springframework.cache.Cache> cacheMap = new ConcurrentHashMap<>(16);
 
     @Override
     public void afterPropertiesSet() {
@@ -23,10 +23,10 @@ public abstract class AbstractCacheManager implements CacheManager, Initializing
     }
 
     public void initializeCaches() {
-        Collection<? extends Cache> caches = loadCaches();
+        Collection<? extends org.springframework.cache.Cache> caches = loadCaches();
         synchronized (this.cacheMap) {
             this.cacheMap.clear();
-            for (Cache cache : caches) {
+            for (org.springframework.cache.Cache cache : caches) {
                 String name = cache.getName();
                 this.cacheMap.put(name, decorateCache(cache));
             }
@@ -41,10 +41,10 @@ public abstract class AbstractCacheManager implements CacheManager, Initializing
         return this.transactionAware;
     }
 
-    protected abstract Collection<? extends Cache> loadCaches();
+    protected abstract Collection<? extends org.springframework.cache.Cache> loadCaches();
 
     @Nullable
-    protected final Cache lookupCache(String name) {
+    protected final org.springframework.cache.Cache lookupCache(String name) {
         return this.cacheMap.get(name);
     }
 
@@ -55,22 +55,22 @@ public abstract class AbstractCacheManager implements CacheManager, Initializing
 
     @Override
     @Nullable
-    public Cache getCache(String name) {
+    public org.springframework.cache.Cache getCache(String name) {
         return getCache(name, 0L);
     }
 
     @Override
     @Nullable
-    public Cache getCache(String name, long ttl) {
+    public org.springframework.cache.Cache getCache(String name, long ttl) {
         String lockKey = String.format("%s::%s", LOCK_KEY, name);
         return LocalLockUtil.INSTANCE.readWriteInReadWriteLock(lockKey, () -> {
-            Cache cache = this.cacheMap.get(name);
+            org.springframework.cache.Cache cache = this.cacheMap.get(name);
             if (null == cache) {
                 return null;
             }
             return new LockReader.LockValueWrapper<>(cache);
         }, () -> {
-            Cache missingCache = getMissingCache(name, ttl);
+            org.springframework.cache.Cache missingCache = getMissingCache(name, ttl);
             if (null == missingCache) {
                 return null;
             }
@@ -80,10 +80,10 @@ public abstract class AbstractCacheManager implements CacheManager, Initializing
         });
     }
 
-    protected Cache decorateCache(Cache cache) {
+    protected org.springframework.cache.Cache decorateCache(org.springframework.cache.Cache cache) {
         return (isTransactionAware() ? new TransactionAwareCacheDecorator(cache) : cache);
     }
 
     @Nullable
-    protected abstract Cache getMissingCache(String name, long ttl);
+    protected abstract org.springframework.cache.Cache getMissingCache(String name, long ttl);
 }
