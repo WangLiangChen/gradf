@@ -1,5 +1,6 @@
 package liangchen.wang.gradf.framework.cache.test.service;
 
+import liangchen.wang.gradf.framework.cache.annotation.Cacheable;
 import liangchen.wang.gradf.framework.cache.test.entity.CacheTest;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
 import org.checkerframework.checker.units.qual.C;
@@ -22,4 +23,5 @@ public abstract class AbstractCacheTestService implements ICacheTestService {
         list.add(e);
         return list;
     }
+
 }

@@ -14,16 +14,20 @@ import java.util.concurrent.TimeUnit;
  */
 public class CaffeineCache extends org.springframework.cache.caffeine.CaffeineCache implements Cache {
     private final static Logger logger = LoggerFactory.getLogger(CaffeineCache.class);
-    // time to live
+    /**
+     * time to live
+     */
     private long ttl;
-    // time to idle
+    /**
+     * time to idle
+     */
     private long tti;
     private final Set<Object> keys;
 
-    public CaffeineCache(String name, com.github.benmanes.caffeine.cache.Cache<Object, Object> cache, boolean allowNullValues) {
-        super(name, cache, allowNullValues);
-        cache.policy().expireAfterWrite().ifPresent(e -> this.ttl = e.getExpiresAfter(TimeUnit.MILLISECONDS));
-        cache.policy().expireAfterAccess().ifPresent(e -> this.tti = e.getExpiresAfter(TimeUnit.MILLISECONDS));
+    public CaffeineCache(String name, com.github.benmanes.caffeine.cache.Cache<Object, Object> nativeCache, boolean allowNullValues) {
+        super(name, nativeCache, allowNullValues);
+        nativeCache.policy().expireAfterWrite().ifPresent(e -> this.ttl = e.getExpiresAfter(TimeUnit.MILLISECONDS));
+        nativeCache.policy().expireAfterAccess().ifPresent(e -> this.tti = e.getExpiresAfter(TimeUnit.MILLISECONDS));
         this.keys = new CopyOnWriteArraySet<>();
         logger.debug("Construct {}", this.toString());
     }

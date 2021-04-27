@@ -1,15 +1,15 @@
 package liangchen.wang.gradf.framework.cache.cluster.test.service.impl;
 
 import liangchen.wang.gradf.framework.cache.annotation.Cacheable;
-import liangchen.wang.gradf.framework.cache.test.entity.CacheTest;
-import liangchen.wang.gradf.framework.cache.test.service.AbstractCacheTestService;
+import liangchen.wang.gradf.framework.cache.cluster.test.entity.CacheTest;
+import liangchen.wang.gradf.framework.cache.cluster.test.service.AbstractCacheTestService;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CacheTestServiceImpl extends AbstractCacheTestService {
     @Override
-    @Cacheable(cacheNames = "CacheTest", sync = true,ttl=5)
+    @Cacheable(cacheNames = "CacheTest", sync = true)
     public CacheTest one() {
         CacheTest cacheTest = new CacheTest();
         cacheTest.setCacheTestId(110L);

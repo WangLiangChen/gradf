@@ -71,11 +71,9 @@ public class RedisCacheManager extends AbstractCacheManager {
     @Override
     protected Collection<? extends Cache> loadCaches() {
         List<RedisCache> caches = new LinkedList<>();
-
         for (Map.Entry<String, RedisCacheConfiguration> entry : initialCacheConfiguration.entrySet()) {
             caches.add(createRedisCache(entry.getKey(), entry.getValue()));
         }
-
         return caches;
     }
 
@@ -84,9 +82,9 @@ public class RedisCacheManager extends AbstractCacheManager {
     protected Cache getMissingCache(String name, long ttl) {
         RedisCacheConfiguration redisCacheConfiguration;
         if (ttl > 0) {
-            redisCacheConfiguration = defaultCacheConfig;
-        } else {
             redisCacheConfiguration = defaultCacheConfig.entryTtl(Duration.ofMillis(ttl));
+        } else {
+            redisCacheConfiguration = defaultCacheConfig;
         }
         return allowInFlightCacheCreation ? createRedisCache(name, redisCacheConfiguration) : null;
     }

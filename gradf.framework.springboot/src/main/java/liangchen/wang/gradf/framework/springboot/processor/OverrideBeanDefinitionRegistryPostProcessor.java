@@ -22,12 +22,15 @@ public class OverrideBeanDefinitionRegistryPostProcessor implements BeanDefiniti
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
         String[] beanDefinitionNames = registry.getBeanDefinitionNames();
-        Arrays.stream(beanDefinitionNames).filter(e -> e.endsWith(OVERRIDE_SUFFIX)).forEach(beanDefinitionName -> {
-            String overriddenBeanDefinitionName = beanDefinitionName.substring(0, beanDefinitionName.indexOf(OVERRIDE_SUFFIX));
-            BeanDefinition beanDefinition = registry.getBeanDefinition(beanDefinitionName);
-            registry.removeBeanDefinition(overriddenBeanDefinitionName);
-            registry.removeBeanDefinition(beanDefinitionName);
-            registry.registerBeanDefinition(overriddenBeanDefinitionName, beanDefinition);
+        Arrays.stream(beanDefinitionNames).filter(e -> e.endsWith(OVERRIDE_SUFFIX)).forEach(overrideBeanDefinitionName -> {
+            // 去除Override的beanDefinitionName
+            String beanDefinitionName = overrideBeanDefinitionName.substring(0, overrideBeanDefinitionName.indexOf(OVERRIDE_SUFFIX));
+            if (registry.containsBeanDefinition(beanDefinitionName)) {
+                registry.removeBeanDefinition(beanDefinitionName);
+            }
+            BeanDefinition overrideBeanDefinition = registry.getBeanDefinition(overrideBeanDefinitionName);
+            registry.removeBeanDefinition(overrideBeanDefinitionName);
+            registry.registerBeanDefinition(beanDefinitionName, overrideBeanDefinition);
         });
     }
 

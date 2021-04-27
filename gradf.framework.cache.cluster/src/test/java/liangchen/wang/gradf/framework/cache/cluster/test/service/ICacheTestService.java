@@ -1,6 +1,7 @@
 package liangchen.wang.gradf.framework.cache.cluster.test.service;
 
-import liangchen.wang.gradf.framework.cache.test.entity.CacheTest;
+
+import liangchen.wang.gradf.framework.cache.cluster.test.entity.CacheTest;
 
 import java.util.List;
 

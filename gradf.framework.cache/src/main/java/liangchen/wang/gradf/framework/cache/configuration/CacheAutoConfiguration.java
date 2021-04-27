@@ -43,7 +43,7 @@ public class CacheAutoConfiguration {
     private final String NULL_PARAM_KEY = "NULL_PARAM";
 
     @Bean
-    @ConditionalOnBean(CaffeineCacheManager.class)
+    @ConditionalOnBean(org.springframework.cache.caffeine.CaffeineCacheManager.class)
     @ConditionalOnMissingBean(liangchen.wang.gradf.framework.cache.override.CacheManager.class)
     CaffeineCacheManager cacheManagerOverride(CacheProperties cacheProperties, CacheManagerCustomizers customizers, ObjectProvider<CacheLoader<Object, Object>> cacheLoader) {
         String specification = cacheProperties.getCaffeine().getSpec();

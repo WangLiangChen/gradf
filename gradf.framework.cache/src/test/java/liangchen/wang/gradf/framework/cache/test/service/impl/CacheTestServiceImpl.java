@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CacheTestServiceImpl extends AbstractCacheTestService {
     @Override
-    @Cacheable(cacheNames = "CacheTest", sync = true,ttl=5000)
+    @Cacheable(cacheNames = "CacheTest", ttl = 3000, sync = true)
     public CacheTest one() {
         CacheTest cacheTest = new CacheTest();
         cacheTest.setCacheTestId(110L);

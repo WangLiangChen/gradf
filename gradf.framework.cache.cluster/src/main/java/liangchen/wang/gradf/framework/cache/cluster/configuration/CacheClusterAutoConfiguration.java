@@ -1,13 +1,11 @@
 package liangchen.wang.gradf.framework.cache.cluster.configuration;
 
-import liangchen.wang.gradf.framework.cache.cluster.MultilevelCacheManager;
-import liangchen.wang.gradf.framework.cache.configuration.CacheAutoConfiguration;
-import liangchen.wang.gradf.framework.cache.runner.CacheMessageConsumerRunner;
+import liangchen.wang.gradf.framework.cache.cluster.override.RedisCacheManager;
+import liangchen.wang.gradf.framework.cache.cluster.redis.RedisCacheCreator;
+import liangchen.wang.gradf.framework.cache.cluster.runner.CacheMessageConsumerRunner;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.CacheAspectSupport;
 import org.springframework.context.annotation.Bean;
@@ -24,17 +22,16 @@ import java.util.concurrent.Executor;
 
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(CacheManager.class)
-@ConditionalOnBean(CacheAspectSupport.class)
-@AutoConfigureAfter(CacheAutoConfiguration.class)
+@ConditionalOnBean(value = {CacheAspectSupport.class, RedisAutoConfiguration.class})
+//@AutoConfigureAfter(CacheAutoConfiguration.class)
 public class CacheClusterAutoConfiguration {
     @Bean
-    @ConditionalOnMissingBean(CacheManager.class)
-    public CacheManager cacheManager(@Nullable RedisTemplate<Object, Object> redisTemplate, @Nullable StringRedisTemplate stringRedisTemplate) {
-        return new MultilevelCacheManager(redisTemplate, stringRedisTemplate);
+    public RedisCacheManager cacheManagerOverride(@Nullable RedisTemplate<Object, Object> redisTemplate, @Nullable StringRedisTemplate stringRedisTemplate) {
+        return new RedisCacheManager(redisTemplate, RedisCacheCreator.INSTANCE.cacheWriter(redisTemplate), RedisCacheCreator.INSTANCE.cacheConfig(0L, true));
     }
 
-    @Bean
-    @ConditionalOnBean(CacheManager.class)
+    //@Bean
+    //@ConditionalOnBean(CacheManager.class)
     public ApplicationRunner CacheMessageConsumerRunner(Executor taskExecutor, CacheManager cacheManager) {
         return new CacheMessageConsumerRunner(taskExecutor, cacheManager);
     }

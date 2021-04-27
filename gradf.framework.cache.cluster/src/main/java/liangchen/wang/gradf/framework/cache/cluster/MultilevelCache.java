@@ -3,7 +3,6 @@ package liangchen.wang.gradf.framework.cache.cluster;
 import liangchen.wang.gradf.framework.cache.caffeine.CaffeineCache;
 import liangchen.wang.gradf.framework.cache.cluster.enumeration.CacheStatus;
 import liangchen.wang.gradf.framework.cache.cluster.redis.CacheMessage;
-import liangchen.wang.gradf.framework.cache.cluster.redis.RedisCache;
 import liangchen.wang.gradf.framework.cache.cluster.runner.CacheMessageConsumerRunner;
 import liangchen.wang.gradf.framework.cache.override.Cache;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
@@ -47,7 +46,8 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
         this.allowNullValues = allowNullValues;
         long localTtl = ttl;
         if (CacheStatus.INSTANCE.isRedisEnable()) {
-            this.distributedCache = new RedisCache(name, ttl, allowNullValues, multilevelCacheManager.getRedisTemplate());
+            this.distributedCache = null;
+            //this.distributedCache = new RedisCache(name, ttl, allowNullValues, multilevelCacheManager.getRedisTemplate());
             this.streamOperations = multilevelCacheManager.getStringRedisTemplate().opsForStream();
             // 本地缓存增加过期延时
             if (ttl > 0) {
@@ -57,7 +57,7 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
             this.distributedCache = null;
             this.streamOperations = null;
         }
-        this.localCache = new CaffeineCache(name, localTtl, true);
+        this.localCache = new CaffeineCache(name, null, true);
         this.loggerPrefix = String.format("MultilevelCache(name:%s,ttl:%s,allowNullValues:%s)", name, ttl, allowNullValues);
         logger.debug("Construct {}", this.toString());
     }
