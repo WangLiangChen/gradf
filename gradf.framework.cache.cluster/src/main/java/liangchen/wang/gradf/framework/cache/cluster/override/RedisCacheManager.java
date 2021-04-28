@@ -9,7 +9,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.Assert;
 
 import javax.annotation.Nullable;
-import java.time.Duration;
 import java.util.*;
 
 /**
@@ -21,6 +20,7 @@ public class RedisCacheManager extends AbstractCacheManager {
     private final RedisCacheConfiguration defaultCacheConfig;
     private final Map<String, RedisCacheConfiguration> initialCacheConfiguration;
     private final boolean allowInFlightCacheCreation;
+    private boolean allowNullValues = true;
 
     private RedisCacheManager(RedisTemplate<Object, Object> redisTemplate, RedisCacheWriter cacheWriter, RedisCacheConfiguration defaultCacheConfiguration, boolean allowInFlightCacheCreation) {
         Assert.notNull(cacheWriter, "redisTemplate must not be null!");
@@ -72,7 +72,7 @@ public class RedisCacheManager extends AbstractCacheManager {
     protected Collection<? extends Cache> loadCaches() {
         List<RedisCache> caches = new LinkedList<>();
         for (Map.Entry<String, RedisCacheConfiguration> entry : initialCacheConfiguration.entrySet()) {
-            caches.add(createRedisCache(entry.getKey(), entry.getValue()));
+            caches.add(createRedisCache(entry.getKey(), 0L, allowNullValues, entry.getValue()));
         }
         return caches;
     }
@@ -80,16 +80,10 @@ public class RedisCacheManager extends AbstractCacheManager {
     @Nullable
     @Override
     protected Cache getMissingCache(String name, long ttl) {
-        RedisCacheConfiguration redisCacheConfiguration;
-        if (ttl > 0) {
-            redisCacheConfiguration = defaultCacheConfig.entryTtl(Duration.ofMillis(ttl));
-        } else {
-            redisCacheConfiguration = defaultCacheConfig;
-        }
-        return allowInFlightCacheCreation ? createRedisCache(name, redisCacheConfiguration) : null;
+        return allowInFlightCacheCreation ? createRedisCache(name, ttl, allowNullValues, defaultCacheConfig) : null;
     }
 
-    protected RedisCache createRedisCache(String name, @Nullable RedisCacheConfiguration cacheConfig) {
-        return new RedisCache(name, cacheWriter, cacheConfig != null ? cacheConfig : defaultCacheConfig, redisTemplate);
+    protected RedisCache createRedisCache(String name, long ttl, boolean allowNullValues, @Nullable RedisCacheConfiguration cacheConfig) {
+        return new RedisCache(name, ttl, allowNullValues, cacheWriter, cacheConfig != null ? cacheConfig : defaultCacheConfig, redisTemplate);
     }
 }

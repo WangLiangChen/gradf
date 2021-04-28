@@ -1,7 +1,5 @@
 package liangchen.wang.gradf.framework.cache.cluster;
 
-import liangchen.wang.gradf.framework.cache.caffeine.CaffeineCache;
-import liangchen.wang.gradf.framework.cache.cluster.enumeration.CacheStatus;
 import liangchen.wang.gradf.framework.cache.cluster.redis.CacheMessage;
 import liangchen.wang.gradf.framework.cache.cluster.runner.CacheMessageConsumerRunner;
 import liangchen.wang.gradf.framework.cache.override.Cache;
@@ -11,7 +9,6 @@ import liangchen.wang.gradf.framework.commons.lock.LockReader;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.support.AbstractValueAdaptingCache;
 import org.springframework.data.redis.connection.stream.ObjectRecord;
 import org.springframework.data.redis.connection.stream.StreamRecords;
 import org.springframework.data.redis.core.StreamOperations;
@@ -27,38 +24,27 @@ import java.util.stream.Collectors;
  *
  * @author LiangChen.Wang 2021/3/22
  */
-public class MultilevelCache extends AbstractValueAdaptingCache implements Cache {
+public class MultilevelCache implements Cache {
     private final Logger logger = LoggerFactory.getLogger(MultilevelCache.class);
     private final String LOCK_KEY = "MultilevelCache";
-    private final long LOCAL_CACHE_TTL_DELAY = 100;
+    private final String loggerPrefix;
     private final String name;
     private final long ttl;
-    private final boolean allowNullValues;
     private final Cache localCache;
     private final Cache distributedCache;
     private final StreamOperations<String, Object, Object> streamOperations;
-    private final String loggerPrefix;
 
-    public MultilevelCache(String name, long ttl, boolean allowNullValues, MultilevelCacheManager multilevelCacheManager) {
-        super(allowNullValues);
+    public MultilevelCache(String name, long ttl, MultilevelCacheManager multilevelCacheManager) {
         this.name = name;
         this.ttl = ttl;
-        this.allowNullValues = allowNullValues;
-        long localTtl = ttl;
-        if (CacheStatus.INSTANCE.isRedisEnable()) {
-            this.distributedCache = null;
-            //this.distributedCache = new RedisCache(name, ttl, allowNullValues, multilevelCacheManager.getRedisTemplate());
-            this.streamOperations = multilevelCacheManager.getStringRedisTemplate().opsForStream();
-            // 本地缓存增加过期延时
-            if (ttl > 0) {
-                localTtl = ttl + LOCAL_CACHE_TTL_DELAY;
-            }
-        } else {
-            this.distributedCache = null;
+        this.localCache = multilevelCacheManager.getLocalCache(name, ttl);
+        this.distributedCache = multilevelCacheManager.getDistributedCache(name, ttl);
+        if (null == this.distributedCache) {
             this.streamOperations = null;
+        } else {
+            this.streamOperations = multilevelCacheManager.getStringRedisTemplate().opsForStream();
         }
-        this.localCache = new CaffeineCache(name, null, true);
-        this.loggerPrefix = String.format("MultilevelCache(name:%s,ttl:%s,allowNullValues:%s)", name, ttl, allowNullValues);
+        this.loggerPrefix = String.format("MultilevelCache(name:%s,ttl:%s,allowNullValues:%s)", name);
         logger.debug("Construct {}", this.toString());
     }
 
@@ -71,7 +57,7 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
         if (null != valueWrapper) {
             return valueWrapper;
         }
-        if (CacheStatus.INSTANCE.isNotRedisEnable()) {
+        if (null == distributedCache) {
             return null;
         }
         valueWrapper = distributedCache.get(key);
@@ -95,7 +81,7 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
         if (null != valueWrapper) {
             return localCache.get(key, type);
         }
-        if (CacheStatus.INSTANCE.isNotRedisEnable()) {
+        if (null == distributedCache) {
             return null;
         }
         valueWrapper = distributedCache.get(key);
@@ -138,7 +124,7 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
     @Override
     public void put(Object key, Object value) {
         logger.debug(loggerPrefix("put", "key", "value"), key, JsonUtil.INSTANCE.toJsonString(value));
-        if (CacheStatus.INSTANCE.isRedisEnable()) {
+        if (null != distributedCache) {
             distributedCache.put(key, value);
         }
         localCache.put(key, value);
@@ -147,7 +133,7 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
     @Override
     public ValueWrapper putIfAbsent(Object key, Object value) {
         logger.debug(loggerPrefix("putIfAbsent", "key", "value"), key, JsonUtil.INSTANCE.toJsonString(value));
-        if (CacheStatus.INSTANCE.isRedisEnable()) {
+        if (null != distributedCache) {
             distributedCache.putIfAbsent(key, value);
         }
         return localCache.putIfAbsent(key, value);
@@ -157,7 +143,7 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
     @Override
     public void evict(Object key) {
         logger.debug(loggerPrefix("evict", "key"), key);
-        if (CacheStatus.INSTANCE.isNotRedisEnable()) {
+        if (null == distributedCache) {
             localCache.evict(key);
             return;
         }
@@ -175,7 +161,7 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
     @Override
     public void clear() {
         logger.debug(loggerPrefix("clear"));
-        if (CacheStatus.INSTANCE.isNotRedisEnable()) {
+        if (null == distributedCache) {
             localCache.clear();
             return;
         }
@@ -206,12 +192,6 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
     }
 
     @Override
-    protected Object lookup(Object key) {
-        // 已覆写get 此处不再被调用
-        return null;
-    }
-
-    @Override
     public String getName() {
         return this.name;
     }
@@ -234,7 +214,6 @@ public class MultilevelCache extends AbstractValueAdaptingCache implements Cache
         return "MultilevelCache{" +
                 "name='" + name + '\'' +
                 ", ttl=" + ttl +
-                ", allowNullValues=" + allowNullValues +
                 '}';
     }
 }

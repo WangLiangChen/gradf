@@ -16,7 +16,6 @@ import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizers;
 import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.*;
@@ -44,7 +43,6 @@ public class CacheAutoConfiguration {
 
     @Bean
     @ConditionalOnBean(org.springframework.cache.caffeine.CaffeineCacheManager.class)
-    @ConditionalOnMissingBean(liangchen.wang.gradf.framework.cache.override.CacheManager.class)
     CaffeineCacheManager cacheManagerOverride(CacheProperties cacheProperties, CacheManagerCustomizers customizers, ObjectProvider<CacheLoader<Object, Object>> cacheLoader) {
         String specification = cacheProperties.getCaffeine().getSpec();
         String[] initialCacheNames = cacheProperties.getCacheNames().toArray(new String[0]);

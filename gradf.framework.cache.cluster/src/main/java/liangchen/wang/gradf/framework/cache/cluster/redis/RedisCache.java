@@ -23,9 +23,9 @@ public class RedisCache extends org.springframework.data.redis.cache.RedisCache 
     private final long ttl;
     private final BoundSetOperations<Object, Object> keys;
 
-    public RedisCache(String name, RedisCacheWriter cacheWriter, RedisCacheConfiguration cacheConfig, RedisTemplate<Object, Object> redisTemplate) {
-        super(name, cacheWriter, cacheConfig);
-        this.ttl = cacheConfig.getTtl().toMillis();
+    public RedisCache(String name, long ttl, boolean allowNullValues, RedisCacheWriter cacheWriter, RedisCacheConfiguration defaultRedisCacheConfiguration, RedisTemplate<Object, Object> redisTemplate) {
+        super(name, cacheWriter, RedisCacheCreator.INSTANCE.cacheConfig(ttl, allowNullValues, defaultRedisCacheConfiguration));
+        this.ttl = ttl;
         String keysKey = this.createCacheKey("keys");
         this.keys = redisTemplate.boundSetOps(keysKey);
         // 有key才能设置expire,所以先add

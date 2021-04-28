@@ -1,7 +1,5 @@
 package liangchen.wang.gradf.framework.cache.override;
 
-import org.springframework.cache.Cache;
-
 /**
  * @author LiangChen.Wang 2021/3/22
  */

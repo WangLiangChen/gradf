@@ -1,5 +1,7 @@
 package liangchen.wang.gradf.framework.cache.caffeine;
 
+import com.github.benmanes.caffeine.cache.CacheLoader;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import liangchen.wang.gradf.framework.cache.override.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author LiangChen.Wang
@@ -24,10 +25,9 @@ public class CaffeineCache extends org.springframework.cache.caffeine.CaffeineCa
     private long tti;
     private final Set<Object> keys;
 
-    public CaffeineCache(String name, com.github.benmanes.caffeine.cache.Cache<Object, Object> nativeCache, boolean allowNullValues) {
-        super(name, nativeCache, allowNullValues);
-        nativeCache.policy().expireAfterWrite().ifPresent(e -> this.ttl = e.getExpiresAfter(TimeUnit.MILLISECONDS));
-        nativeCache.policy().expireAfterAccess().ifPresent(e -> this.tti = e.getExpiresAfter(TimeUnit.MILLISECONDS));
+    public CaffeineCache(String name, long ttl, boolean allowNullValues, Caffeine<Object, Object> cacheBuilder, CacheLoader<Object, Object> cacheLoader) {
+        super(name, CaffeineCacheCreator.INSTANCE.createNativeCache(cacheBuilder, cacheLoader, ttl), allowNullValues);
+        this.ttl = ttl;
         this.keys = new CopyOnWriteArraySet<>();
         logger.debug("Construct {}", this.toString());
     }

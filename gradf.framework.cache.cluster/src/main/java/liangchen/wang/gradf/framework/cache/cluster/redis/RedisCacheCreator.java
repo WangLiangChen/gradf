@@ -22,7 +22,16 @@ public enum RedisCacheCreator {
         return RedisCacheWriter.lockingRedisCacheWriter(redisTemplate.getConnectionFactory());
     }
 
-    public RedisCacheConfiguration cacheConfig(long ttl, boolean allowNullValues) {
+    public RedisCacheConfiguration cacheConfig(long ttl, boolean allowNullValues, RedisCacheConfiguration defaultRedisCacheConfiguration) {
+        RedisCacheConfiguration redisCacheConfiguration = null == defaultRedisCacheConfiguration ? createDefaultRedisCacheConfiguration(ttl, allowNullValues) : defaultRedisCacheConfiguration;
+        redisCacheConfiguration = redisCacheConfiguration.entryTtl(Duration.ofMillis(ttl));
+        if (allowNullValues) {
+            return redisCacheConfiguration;
+        }
+        return redisCacheConfiguration.disableCachingNullValues();
+    }
+
+    private RedisCacheConfiguration createDefaultRedisCacheConfiguration(long ttl, boolean allowNullValues) {
         RedisSerializer<String> keySerializer = StringRedisSerializer.UTF_8;
         RedisSerializer<Object> valueSerializer = new RedisSerializer<Object>() {
             @Override
@@ -37,15 +46,6 @@ public enum RedisCacheCreator {
         };
         RedisSerializationContext.SerializationPair<String> keyPair = RedisSerializationContext.SerializationPair.fromSerializer(keySerializer);
         RedisSerializationContext.SerializationPair<Object> valuePair = RedisSerializationContext.SerializationPair.fromSerializer(valueSerializer);
-        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig().serializeKeysWith(keyPair).serializeValuesWith(valuePair);
-        if (ttl > 0) {
-            Duration duration = Duration.ofMillis(ttl);
-            //此处会返回一个新的RedisCacheConfiguration
-            redisCacheConfiguration = redisCacheConfiguration.entryTtl(duration);
-        }
-        if (!allowNullValues) {
-            redisCacheConfiguration = redisCacheConfiguration.disableCachingNullValues();
-        }
-        return redisCacheConfiguration;
+        return RedisCacheConfiguration.defaultCacheConfig().serializeKeysWith(keyPair).serializeValuesWith(valuePair);
     }
 }

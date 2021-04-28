@@ -3,6 +3,7 @@ package liangchen.wang.gradf.framework.cache.cluster;
 import liangchen.wang.gradf.framework.cache.override.AbstractCacheManager;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -13,6 +14,7 @@ import java.util.Collections;
  */
 public class MultilevelCacheManager extends AbstractCacheManager {
     private final CacheManager localCacheManager, distributedCacheManager;
+    private final StringRedisTemplate stringRedisTemplate;
 
     public MultilevelCacheManager(CacheManager localCacheManager, CacheManager distributedCacheManager) {
         this.localCacheManager = localCacheManager;
@@ -40,7 +42,7 @@ public class MultilevelCacheManager extends AbstractCacheManager {
          *     private final ConcurrentMap<String, Cache> cacheMap = new ConcurrentHashMap<>(16);
          *     private volatile Set<String> cacheNames = Collections.emptySet();
          *     private final RedisTemplate<Object, Object> redisTemplate;
-         *     private final StringRedisTemplate stringRedisTemplate;
+         *
          *
          *     public MultilevelCacheManager(RedisTemplate<Object, Object> redisTemplate, StringRedisTemplate stringRedisTemplate) {
          *         this.redisTemplate = redisTemplate;
@@ -102,5 +104,17 @@ public class MultilevelCacheManager extends AbstractCacheManager {
          */
 
         return null;
+    }
+
+    public liangchen.wang.gradf.framework.cache.override.Cache getLocalCache(String name, long ttl) {
+        return null;
+    }
+
+    public liangchen.wang.gradf.framework.cache.override.Cache getDistributedCache(String name, long ttl) {
+        return null;
+    }
+
+    public StringRedisTemplate getStringRedisTemplate() {
+        return stringRedisTemplate;
     }
 }

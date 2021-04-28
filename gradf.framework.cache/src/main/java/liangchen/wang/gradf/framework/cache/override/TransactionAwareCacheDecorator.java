@@ -5,7 +5,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.util.Assert;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
@@ -13,7 +12,7 @@ import java.util.concurrent.Callable;
  * @author LiangChen.Wang 2021/4/20
  */
 public class TransactionAwareCacheDecorator implements Cache {
-    private final org.springframework.cache.Cache targetCache;
+    private final Cache targetCache;
 
 
     /**
@@ -21,7 +20,7 @@ public class TransactionAwareCacheDecorator implements Cache {
      *
      * @param targetCache the target Cache to decorate
      */
-    public TransactionAwareCacheDecorator(org.springframework.cache.Cache targetCache) {
+    public TransactionAwareCacheDecorator(Cache targetCache) {
         Assert.notNull(targetCache, "Target Cache must not be null");
         this.targetCache = targetCache;
     }
@@ -30,7 +29,7 @@ public class TransactionAwareCacheDecorator implements Cache {
     /**
      * Return the target Cache that this Cache should delegate to.
      */
-    public org.springframework.cache.Cache getTargetCache() {
+    public Cache getTargetCache() {
         return this.targetCache;
     }
 
@@ -121,25 +120,16 @@ public class TransactionAwareCacheDecorator implements Cache {
 
     @Override
     public Set<Object> keys() {
-        if (targetCache instanceof Cache) {
-            return ((Cache) targetCache).keys();
-        }
-        return Collections.emptySet();
+        return targetCache.keys();
     }
 
     @Override
     public boolean containsKey(Object key) {
-        if (targetCache instanceof Cache) {
-            return ((Cache) targetCache).containsKey(key);
-        }
-        return false;
+        return targetCache.containsKey(key);
     }
 
     @Override
     public long getTtl() {
-        if (targetCache instanceof Cache) {
-            return ((Cache) targetCache).getTtl();
-        }
-        return 0L;
+        return targetCache.getTtl();
     }
 }

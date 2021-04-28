@@ -8,7 +8,6 @@ import liangchen.wang.gradf.framework.cache.caffeine.CaffeineCache;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 
 import javax.annotation.Nullable;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -72,22 +71,9 @@ public class CaffeineCacheManager extends AbstractCacheManager {
 
     protected CaffeineCache createCaffeineCache(String name, long ttl) {
         if (dynamic) {
-            return adaptCaffeineCache(name, createNativeCaffeineCache(ttl));
+            return new CaffeineCache(name, ttl, allowNullValues, this.cacheBuilder, this.cacheLoader);
         }
         return null;
-    }
-
-    protected CaffeineCache adaptCaffeineCache(String name, com.github.benmanes.caffeine.cache.Cache<Object, Object> cache) {
-        return new CaffeineCache(name, cache, allowNullValues);
-    }
-
-    protected com.github.benmanes.caffeine.cache.Cache<Object, Object> createNativeCaffeineCache(long ttl) {
-        if (ttl > 0) {
-            cacheBuilder.expireAfterWrite(Duration.ofMillis(ttl));
-        } else {
-            cacheBuilder.expireAfterWrite(Duration.ZERO);
-        }
-        return (this.cacheLoader != null ? this.cacheBuilder.build(this.cacheLoader) : this.cacheBuilder.build());
     }
 
     @Nullable
