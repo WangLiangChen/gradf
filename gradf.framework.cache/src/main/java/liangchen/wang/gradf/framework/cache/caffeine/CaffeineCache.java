@@ -29,7 +29,7 @@ public class CaffeineCache extends org.springframework.cache.caffeine.CaffeineCa
         super(name, CaffeineCacheCreator.INSTANCE.createNativeCache(cacheBuilder, cacheLoader, ttl), allowNullValues);
         this.ttl = ttl;
         this.keys = new CopyOnWriteArraySet<>();
-        logger.debug("Construct {}", this.toString());
+        logger.debug("Construct {}", this);
     }
 
 

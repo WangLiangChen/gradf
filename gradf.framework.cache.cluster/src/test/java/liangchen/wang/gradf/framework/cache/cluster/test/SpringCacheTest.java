@@ -24,6 +24,12 @@ import java.util.concurrent.TimeUnit;
 public class SpringCacheTest {
     @Inject
     private ICacheTestService service;
+    @Inject
+    private Map<String,CacheManager> cacheManagerMap;
+    @Test
+    public void testCacheManagerMap(){
+        System.out.printf("");
+    }
 
     @Test
     public void testRedisCache() throws InterruptedException {

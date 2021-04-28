@@ -45,7 +45,7 @@ public class MultilevelCache implements Cache {
             this.streamOperations = multilevelCacheManager.getStringRedisTemplate().opsForStream();
         }
         this.loggerPrefix = String.format("MultilevelCache(name:%s,ttl:%s,allowNullValues:%s)", name);
-        logger.debug("Construct {}", this.toString());
+        logger.debug("Construct {}", this);
     }
 
     @Override
@@ -128,16 +128,6 @@ public class MultilevelCache implements Cache {
             distributedCache.put(key, value);
         }
         localCache.put(key, value);
-    }
-
-    @Override
-    public ValueWrapper putIfAbsent(Object key, Object value) {
-        logger.debug(loggerPrefix("putIfAbsent", "key", "value"), key, JsonUtil.INSTANCE.toJsonString(value));
-        if (null != distributedCache) {
-            distributedCache.putIfAbsent(key, value);
-        }
-        return localCache.putIfAbsent(key, value);
-
     }
 
     @Override

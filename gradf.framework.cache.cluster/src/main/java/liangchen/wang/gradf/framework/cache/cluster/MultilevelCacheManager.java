@@ -1,8 +1,9 @@
 package liangchen.wang.gradf.framework.cache.cluster;
 
+import liangchen.wang.gradf.framework.cache.cluster.enumeration.CacheClusterStatus;
 import liangchen.wang.gradf.framework.cache.override.AbstractCacheManager;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
+import liangchen.wang.gradf.framework.cache.override.Cache;
+import liangchen.wang.gradf.framework.cache.override.CacheManager;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import javax.annotation.Nullable;
@@ -16,11 +17,11 @@ public class MultilevelCacheManager extends AbstractCacheManager {
     private final CacheManager localCacheManager, distributedCacheManager;
     private final StringRedisTemplate stringRedisTemplate;
 
-    public MultilevelCacheManager(CacheManager localCacheManager, CacheManager distributedCacheManager) {
+    public MultilevelCacheManager(CacheManager localCacheManager, CacheManager distributedCacheManager, StringRedisTemplate stringRedisTemplate) {
         this.localCacheManager = localCacheManager;
         this.distributedCacheManager = distributedCacheManager;
+        this.stringRedisTemplate = stringRedisTemplate;
     }
-
 
     @Override
     protected Collection<? extends Cache> loadCaches() {
@@ -30,91 +31,22 @@ public class MultilevelCacheManager extends AbstractCacheManager {
     @Nullable
     @Override
     protected Cache getMissingCache(String name, long ttl) {
-        Cache localCache, distributedCache;
-        if (localCacheManager instanceof liangchen.wang.gradf.framework.cache.override.CacheManager) {
-            localCache = ((liangchen.wang.gradf.framework.cache.override.CacheManager) localCacheManager).getCache(name, ttl);
-        } else {
-            localCache = localCacheManager.getCache(name);
+        return new MultilevelCache(name, ttl, this);
+    }
+
+    public Cache getLocalCache(String name, long ttl) {
+        return localCacheManager.getCache(name, ttl);
+    }
+
+    public Cache getDistributedCache(String name, long ttl) {
+        if (CacheClusterStatus.INSTANCE.isDistributedCacheEnable()) {
+            return distributedCacheManager.getCache(name, ttl);
         }
-        /**
-         *  private final Logger logger = LoggerFactory.getLogger(this.getClass());
-         *     private final String LOCK_KEY = "MultilevelCacheManager";
-         *     private final ConcurrentMap<String, Cache> cacheMap = new ConcurrentHashMap<>(16);
-         *     private volatile Set<String> cacheNames = Collections.emptySet();
-         *     private final RedisTemplate<Object, Object> redisTemplate;
-         *
-         *
-         *     public MultilevelCacheManager(RedisTemplate<Object, Object> redisTemplate, StringRedisTemplate stringRedisTemplate) {
-         *         this.redisTemplate = redisTemplate;
-         *         this.stringRedisTemplate = stringRedisTemplate;
-         *     }
-         *
-         *
-         *     @Override
-         *     public Cache getCache(String cacheName, long ttl) {
-         *         String lockKey = String.format("%s::%s", LOCK_KEY, cacheName);
-         *         return LocalLockUtil.INSTANCE.readWriteInReadWriteLock(lockKey, () -> {
-         *             Cache cache = this.cacheMap.get(cacheName);
-         *             if (null == cache) {
-         *                 logger.debug("getCache with readLock,cacheName:{},cache:null", cacheName);
-         *                 return null;
-         *             }
-         *             logger.debug("getCache with readLock,cacheName:{},cache:{}", cacheName, cache);
-         *             return new LockReader.LockValueWrapper<>(cache);
-         *         }, () -> {
-         *             Cache missingCache = getMissingCache(cacheName, ttl);
-         *             logger.debug("getCache with writeLock,cacheName:{},cache:{}", cacheName, missingCache);
-         *             if (null == missingCache) {
-         *                 return null;
-         *             }
-         *             missingCache = decorateCache(missingCache);
-         *             this.cacheMap.put(cacheName, missingCache);
-         *             updateCacheNames(cacheName);
-         *             return missingCache;
-         *         });
-         *     }
-         *
-         *     private Cache getMissingCache(String cacheName, long ttl) {
-         *         return new MultilevelCache(cacheName, ttl, true, this);
-         *     }
-         *
-         *     @Override
-         *     public Cache getCache(String name) {
-         *         return getCache(name, 0L);
-         *     }
-         *
-         *     @Override
-         *     protected Collection<? extends Cache> loadCaches() {
-         *         return Collections.emptySet();
-         *     }
-         *
-         *     private void updateCacheNames(String name) {
-         *         Set<String> cacheNames = new LinkedHashSet<>(this.cacheNames);
-         *         cacheNames.add(name);
-         *         this.cacheNames = Collections.unmodifiableSet(cacheNames);
-         *     }
-         *
-         *     public RedisTemplate<Object, Object> getRedisTemplate() {
-         *         return redisTemplate;
-         *     }
-         *
-         *     public StringRedisTemplate getStringRedisTemplate() {
-         *         return stringRedisTemplate;
-         *     }
-         */
-
-        return null;
-    }
-
-    public liangchen.wang.gradf.framework.cache.override.Cache getLocalCache(String name, long ttl) {
-        return null;
-    }
-
-    public liangchen.wang.gradf.framework.cache.override.Cache getDistributedCache(String name, long ttl) {
         return null;
     }
 
     public StringRedisTemplate getStringRedisTemplate() {
         return stringRedisTemplate;
     }
+
 }

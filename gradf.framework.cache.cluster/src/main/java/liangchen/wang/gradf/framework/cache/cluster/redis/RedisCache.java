@@ -31,7 +31,7 @@ public class RedisCache extends org.springframework.data.redis.cache.RedisCache 
         // 有key才能设置expire,所以先add
         this.keys.add(Symbol.BLANK.getSymbol());
         this.keys.expire(ttl, TimeUnit.MILLISECONDS);
-        logger.debug("Construct {}", this.toString());
+        logger.debug("Construct {}", this);
     }
 
     @Override
