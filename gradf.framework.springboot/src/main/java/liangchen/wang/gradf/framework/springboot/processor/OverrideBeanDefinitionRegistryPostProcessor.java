@@ -1,13 +1,19 @@
 package liangchen.wang.gradf.framework.springboot.processor;
 
+import liangchen.wang.gradf.framework.springboot.annotation.OverrideBeanName;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.type.MethodMetadata;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.Map;
 
 /**
  * 用于实现Bean被覆盖的效果
@@ -22,16 +28,22 @@ public class OverrideBeanDefinitionRegistryPostProcessor implements BeanDefiniti
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
         String[] beanDefinitionNames = registry.getBeanDefinitionNames();
-        Arrays.stream(beanDefinitionNames).filter(e -> e.endsWith(OVERRIDE_SUFFIX)).forEach(overrideBeanDefinitionName -> {
-            // 去除Override的beanDefinitionName
-            String beanDefinitionName = overrideBeanDefinitionName.substring(0, overrideBeanDefinitionName.indexOf(OVERRIDE_SUFFIX));
-            if (registry.containsBeanDefinition(beanDefinitionName)) {
-                registry.removeBeanDefinition(beanDefinitionName);
+        for (String beanDefinitionName : beanDefinitionNames) {
+            BeanDefinition beanDefinition = registry.getBeanDefinition(beanDefinitionName);
+            if (!(beanDefinition instanceof AnnotatedBeanDefinition)) {
+                continue;
             }
-            BeanDefinition overrideBeanDefinition = registry.getBeanDefinition(overrideBeanDefinitionName);
-            registry.removeBeanDefinition(overrideBeanDefinitionName);
-            registry.registerBeanDefinition(beanDefinitionName, overrideBeanDefinition);
-        });
+            Object source = beanDefinition.getSource();
+            if(!(source instanceof MethodMetadata)){
+                continue;
+            }
+            MethodMetadata methodMetadata = (MethodMetadata) source;
+            if(!methodMetadata.isAnnotated(OverrideBeanName.class.getName())){
+                continue;
+            }
+            MergedAnnotation<OverrideBeanName> overrideBeanNameMergedAnnotation = methodMetadata.getAnnotations().get(OverrideBeanName.class);
+            System.out.printf("");
+        }
     }
 
     @Override

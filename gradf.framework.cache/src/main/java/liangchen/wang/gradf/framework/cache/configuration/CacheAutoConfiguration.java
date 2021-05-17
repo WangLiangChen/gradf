@@ -9,6 +9,7 @@ import liangchen.wang.gradf.framework.cache.override.*;
 import liangchen.wang.gradf.framework.cache.redis.RedisCacheCreator;
 import liangchen.wang.gradf.framework.commons.digest.HashUtil;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
+import liangchen.wang.gradf.framework.springboot.annotation.OverrideBeanName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -47,27 +48,28 @@ public class CacheAutoConfiguration {
     private final String NO_PARAM_KEY = "NO_PARAM";
     private final String NULL_PARAM_KEY = "NULL_PARAM";
 
-
     @Bean
     @ConditionalOnBean(org.springframework.data.redis.cache.RedisCacheManager.class)
     @ConditionalOnClass({com.github.benmanes.caffeine.cache.Caffeine.class})
-    public MultilevelCacheManager cacheManagerOverride(CacheProperties cacheProperties, CacheManagerCustomizers customizers, ObjectProvider<CacheLoader<Object, Object>> cacheLoader, RedisTemplate<Object, Object> redisTemplate, StringRedisTemplate stringRedisTemplate) {
+    @OverrideBeanName("cacheManager")
+    public MultilevelCacheManager cacheManagerOverrides(CacheProperties cacheProperties, CacheManagerCustomizers customizers, ObjectProvider<CacheLoader<Object, Object>> cacheLoader, RedisTemplate<Object, Object> redisTemplate, StringRedisTemplate stringRedisTemplate) {
         return multilevelCacheManager(cacheProperties, customizers, cacheLoader, redisTemplate, stringRedisTemplate);
     }
 
     @Bean
     @ConditionalOnBean(org.springframework.data.redis.cache.RedisCacheManager.class)
     @ConditionalOnMissingClass("com.github.benmanes.caffeine.cache.Caffeine")
-    public RedisCacheManager cacheManagerOverride(RedisTemplate<Object, Object> redisTemplate, StringRedisTemplate stringRedisTemplate) {
+    @OverrideBeanName("cacheManager")
+    public RedisCacheManager cacheManagerOverrided(RedisTemplate<Object, Object> redisTemplate, StringRedisTemplate stringRedisTemplate) {
         return redisCacheManager(redisTemplate, stringRedisTemplate);
     }
 
     @Bean
-    @ConditionalOnBean({org.springframework.cache.caffeine.CaffeineCacheManager.class})
-    CaffeineCacheManager cacheManagerOverride(CacheProperties cacheProperties, CacheManagerCustomizers customizers, ObjectProvider<CacheLoader<Object, Object>> cacheLoader) {
+    @ConditionalOnBean(org.springframework.cache.caffeine.CaffeineCacheManager.class)
+    @OverrideBeanName("cacheManager")
+    public CaffeineCacheManager cacheManagerOverride(CacheProperties cacheProperties, CacheManagerCustomizers customizers, ObjectProvider<CacheLoader<Object, Object>> cacheLoader) {
         return caffeineCacheManager(cacheProperties, customizers, cacheLoader);
     }
-
 
     @Primary
     @Bean
