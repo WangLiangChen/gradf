@@ -1,7 +1,7 @@
-package liangchen.wang.gradf.framework.cache.cluster;
+package liangchen.wang.gradf.framework.cache.mlt;
 
-import liangchen.wang.gradf.framework.cache.cluster.redis.CacheMessage;
-import liangchen.wang.gradf.framework.cache.cluster.runner.CacheMessageConsumerRunner;
+import liangchen.wang.gradf.framework.cache.redis.CacheMessage;
+import liangchen.wang.gradf.framework.cache.runner.CacheMessageConsumerRunner;
 import liangchen.wang.gradf.framework.cache.override.Cache;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
 import liangchen.wang.gradf.framework.commons.lock.LocalLockUtil;

@@ -1,10 +1,12 @@
 package liangchen.wang.gradf.framework.cache.configuration;
 
 import com.github.benmanes.caffeine.cache.CacheLoader;
+import liangchen.wang.gradf.framework.cache.mlt.MultilevelCacheManager;
 import liangchen.wang.gradf.framework.cache.override.CacheInterceptor;
 import liangchen.wang.gradf.framework.cache.override.CachePutOperation;
 import liangchen.wang.gradf.framework.cache.override.CacheableOperation;
 import liangchen.wang.gradf.framework.cache.override.*;
+import liangchen.wang.gradf.framework.cache.redis.RedisCacheCreator;
 import liangchen.wang.gradf.framework.commons.digest.HashUtil;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
 import org.slf4j.Logger;
@@ -16,6 +18,7 @@ import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizers;
 import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.*;
@@ -23,6 +26,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Role;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,14 +47,27 @@ public class CacheAutoConfiguration {
     private final String NO_PARAM_KEY = "NO_PARAM";
     private final String NULL_PARAM_KEY = "NULL_PARAM";
 
+
     @Bean
-    @ConditionalOnBean(org.springframework.cache.caffeine.CaffeineCacheManager.class)
-    CaffeineCacheManager cacheManagerOverride(CacheProperties cacheProperties, CacheManagerCustomizers customizers, ObjectProvider<CacheLoader<Object, Object>> cacheLoader) {
-        String specification = cacheProperties.getCaffeine().getSpec();
-        String[] initialCacheNames = cacheProperties.getCacheNames().toArray(new String[0]);
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager(specification, cacheLoader.getIfAvailable(), initialCacheNames);
-        return customizers.customize(cacheManager);
+    @ConditionalOnBean(org.springframework.data.redis.cache.RedisCacheManager.class)
+    @ConditionalOnClass({com.github.benmanes.caffeine.cache.Caffeine.class})
+    public MultilevelCacheManager cacheManagerOverride(CacheProperties cacheProperties, CacheManagerCustomizers customizers, ObjectProvider<CacheLoader<Object, Object>> cacheLoader, RedisTemplate<Object, Object> redisTemplate, StringRedisTemplate stringRedisTemplate) {
+        return multilevelCacheManager(cacheProperties, customizers, cacheLoader, redisTemplate, stringRedisTemplate);
     }
+
+    @Bean
+    @ConditionalOnBean(org.springframework.data.redis.cache.RedisCacheManager.class)
+    @ConditionalOnMissingClass("com.github.benmanes.caffeine.cache.Caffeine")
+    public RedisCacheManager cacheManagerOverride(RedisTemplate<Object, Object> redisTemplate, StringRedisTemplate stringRedisTemplate) {
+        return redisCacheManager(redisTemplate, stringRedisTemplate);
+    }
+
+    @Bean
+    @ConditionalOnBean({org.springframework.cache.caffeine.CaffeineCacheManager.class})
+    CaffeineCacheManager cacheManagerOverride(CacheProperties cacheProperties, CacheManagerCustomizers customizers, ObjectProvider<CacheLoader<Object, Object>> cacheLoader) {
+        return caffeineCacheManager(cacheProperties, customizers, cacheLoader);
+    }
+
 
     @Primary
     @Bean
@@ -127,6 +146,24 @@ public class CacheAutoConfiguration {
             logger.debug("Generated key:{}", key);
             return HashUtil.INSTANCE.md5Digest(key.toString());
         };
+    }
+
+    private CaffeineCacheManager caffeineCacheManager(CacheProperties cacheProperties, CacheManagerCustomizers customizers, ObjectProvider<CacheLoader<Object, Object>> cacheLoader) {
+        String specification = cacheProperties.getCaffeine().getSpec();
+        String[] initialCacheNames = cacheProperties.getCacheNames().toArray(new String[0]);
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager(specification, cacheLoader.getIfAvailable(), initialCacheNames);
+        return customizers.customize(cacheManager);
+    }
+
+    private RedisCacheManager redisCacheManager(RedisTemplate<Object, Object> redisTemplate, StringRedisTemplate stringRedisTemplate) {
+        RedisCacheManager redisCacheManager = new RedisCacheManager(redisTemplate, RedisCacheCreator.INSTANCE.cacheWriter(redisTemplate), RedisCacheConfiguration.defaultCacheConfig());
+        return redisCacheManager;
+    }
+
+    private MultilevelCacheManager multilevelCacheManager(CacheProperties cacheProperties, CacheManagerCustomizers customizers, ObjectProvider<CacheLoader<Object, Object>> cacheLoader, RedisTemplate<Object, Object> redisTemplate, StringRedisTemplate stringRedisTemplate) {
+        CaffeineCacheManager localCacheManager = caffeineCacheManager(cacheProperties, customizers, cacheLoader);
+        RedisCacheManager distributedCacheManager = redisCacheManager(redisTemplate, stringRedisTemplate);
+        return new MultilevelCacheManager(localCacheManager, distributedCacheManager, stringRedisTemplate);
     }
 
 }

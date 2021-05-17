@@ -1,9 +1,9 @@
-package liangchen.wang.gradf.framework.cache.cluster.configuration;
+package liangchen.wang.gradf.framework.cache.configuration;
 
 import com.github.benmanes.caffeine.cache.CacheLoader;
-import liangchen.wang.gradf.framework.cache.cluster.override.RedisCacheManager;
-import liangchen.wang.gradf.framework.cache.cluster.redis.RedisCacheCreator;
-import liangchen.wang.gradf.framework.cache.cluster.runner.CacheMessageConsumerRunner;
+import liangchen.wang.gradf.framework.cache.override.RedisCacheManager;
+import liangchen.wang.gradf.framework.cache.redis.RedisCacheCreator;
+import liangchen.wang.gradf.framework.cache.runner.CacheMessageConsumerRunner;
 import liangchen.wang.gradf.framework.cache.configuration.CacheAutoConfiguration;
 import liangchen.wang.gradf.framework.cache.override.CaffeineCacheManager;
 import org.springframework.beans.factory.ObjectProvider;

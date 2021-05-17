@@ -1,4 +1,4 @@
-package liangchen.wang.gradf.framework.cache.cluster.configuration;
+package liangchen.wang.gradf.framework.cache.configuration;
 
 import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
 import liangchen.wang.gradf.framework.commons.utils.Printer;

@@ -1,6 +1,6 @@
-package liangchen.wang.gradf.framework.cache.cluster.override;
+package liangchen.wang.gradf.framework.cache.override;
 
-import liangchen.wang.gradf.framework.cache.cluster.redis.RedisCache;
+import liangchen.wang.gradf.framework.cache.redis.RedisCache;
 import liangchen.wang.gradf.framework.cache.override.AbstractCacheManager;
 import liangchen.wang.gradf.framework.cache.override.Cache;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;

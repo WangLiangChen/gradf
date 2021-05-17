@@ -5,6 +5,7 @@ import liangchen.wang.gradf.framework.cache.test.service.ICacheTestService;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 
 import javax.inject.Inject;
@@ -18,6 +19,13 @@ import java.util.concurrent.CountDownLatch;
 public class SpringCacheTest {
     @Inject
     private ICacheTestService service;
+    @Inject
+    private CacheManager cacheManager;
+
+    @Test
+    public void testInit() {
+        System.out.println();
+    }
 
     @Test
     public void testCache() throws InterruptedException {

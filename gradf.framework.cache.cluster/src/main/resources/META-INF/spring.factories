@@ -1,2 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  liangchen.wang.gradf.framework.cache.cluster.configuration.RedisCacheAutoConfiguration

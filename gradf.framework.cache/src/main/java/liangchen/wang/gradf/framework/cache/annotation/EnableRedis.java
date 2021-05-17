@@ -1,7 +1,7 @@
-package liangchen.wang.gradf.framework.cache.cluster.annotation;
+package liangchen.wang.gradf.framework.cache.annotation;
 
-import liangchen.wang.gradf.framework.cache.cluster.configuration.RedisAutoConfiguration;
-import liangchen.wang.gradf.framework.cache.cluster.enumeration.CacheClusterStatus;
+import liangchen.wang.gradf.framework.cache.configuration.RedisAutoConfiguration;
+import liangchen.wang.gradf.framework.cache.enumeration.CacheClusterStatus;
 import liangchen.wang.gradf.framework.commons.exception.InfoException;
 import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
 import liangchen.wang.gradf.framework.commons.utils.NetUtil;

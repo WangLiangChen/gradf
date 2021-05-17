@@ -1,6 +1,6 @@
-package liangchen.wang.gradf.framework.cache.cluster;
+package liangchen.wang.gradf.framework.cache.mlt;
 
-import liangchen.wang.gradf.framework.cache.cluster.enumeration.CacheClusterStatus;
+import liangchen.wang.gradf.framework.cache.enumeration.CacheClusterStatus;
 import liangchen.wang.gradf.framework.cache.override.AbstractCacheManager;
 import liangchen.wang.gradf.framework.cache.override.Cache;
 import liangchen.wang.gradf.framework.cache.override.CacheManager;
