@@ -7,13 +7,9 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
-import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.stereotype.Component;
-
-import java.util.Arrays;
-import java.util.Map;
 
 /**
  * 用于实现Bean被覆盖的效果
@@ -23,7 +19,6 @@ import java.util.Map;
  */
 @Component
 public class OverrideBeanDefinitionRegistryPostProcessor implements BeanDefinitionRegistryPostProcessor {
-    private final String OVERRIDE_SUFFIX = "Override";
 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
@@ -34,15 +29,21 @@ public class OverrideBeanDefinitionRegistryPostProcessor implements BeanDefiniti
                 continue;
             }
             Object source = beanDefinition.getSource();
-            if(!(source instanceof MethodMetadata)){
+            if (!(source instanceof MethodMetadata)) {
                 continue;
             }
             MethodMetadata methodMetadata = (MethodMetadata) source;
-            if(!methodMetadata.isAnnotated(OverrideBeanName.class.getName())){
+            if (!methodMetadata.isAnnotated(OverrideBeanName.class.getName())) {
                 continue;
             }
             MergedAnnotation<OverrideBeanName> overrideBeanNameMergedAnnotation = methodMetadata.getAnnotations().get(OverrideBeanName.class);
-            System.out.printf("");
+            String value = overrideBeanNameMergedAnnotation.getString("value");
+            if (!registry.containsBeanDefinition(value)) {
+                continue;
+            }
+            registry.removeBeanDefinition(beanDefinitionName);
+            registry.removeBeanDefinition(value);
+            registry.registerBeanDefinition(value, beanDefinition);
         }
     }
 

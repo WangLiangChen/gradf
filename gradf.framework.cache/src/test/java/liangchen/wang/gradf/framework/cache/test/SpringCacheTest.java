@@ -1,5 +1,6 @@
 package liangchen.wang.gradf.framework.cache.test;
 
+import liangchen.wang.gradf.framework.cache.annotation.EnableRedis;
 import liangchen.wang.gradf.framework.cache.test.entity.CacheTest;
 import liangchen.wang.gradf.framework.cache.test.service.ICacheTestService;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
@@ -16,6 +17,7 @@ import java.util.concurrent.CountDownLatch;
  */
 @SpringBootTest
 @EnableCaching
+@EnableRedis
 public class SpringCacheTest {
     @Inject
     private ICacheTestService service;
