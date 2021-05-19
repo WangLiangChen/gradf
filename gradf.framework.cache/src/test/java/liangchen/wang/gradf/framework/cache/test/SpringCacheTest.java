@@ -4,6 +4,7 @@ import liangchen.wang.gradf.framework.cache.annotation.EnableRedis;
 import liangchen.wang.gradf.framework.cache.test.entity.CacheTest;
 import liangchen.wang.gradf.framework.cache.test.service.ICacheTestService;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
+import liangchen.wang.gradf.framework.commons.utils.ConcurrentUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.Cache;
@@ -30,6 +31,7 @@ public class SpringCacheTest {
         Cache abc = cacheManager.getCache("abc");
         abc.put("a","b");
         abc.clear();
+        ConcurrentUtil.INSTANCE.block();
     }
 
     @Test

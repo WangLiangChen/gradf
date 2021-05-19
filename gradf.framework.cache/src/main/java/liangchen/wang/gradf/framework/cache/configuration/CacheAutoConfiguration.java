@@ -8,6 +8,7 @@ import liangchen.wang.gradf.framework.cache.override.CachePutOperation;
 import liangchen.wang.gradf.framework.cache.override.CacheableOperation;
 import liangchen.wang.gradf.framework.cache.override.*;
 import liangchen.wang.gradf.framework.cache.redis.RedisCacheCreator;
+import liangchen.wang.gradf.framework.cache.runner.CacheMessageConsumerRunner;
 import liangchen.wang.gradf.framework.commons.digest.HashUtil;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
 import liangchen.wang.gradf.framework.springboot.annotation.OverrideBeanName;
@@ -36,6 +37,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.Executor;
 
 /**
  * @author LiangChen.Wang 2020/9/23
@@ -78,6 +80,11 @@ public class CacheAutoConfiguration {
         String[] initialCacheNames = cacheProperties.getCacheNames().toArray(new String[0]);
         CaffeineCacheManager cacheManager = new CaffeineCacheManager(specification, cacheLoader.getIfAvailable(), initialCacheNames);
         return customizers.customize(cacheManager);
+    }
+
+    @Bean
+    public CacheMessageConsumerRunner cacheMessageConsumerRunner(Executor executor, CacheManager cacheManager) {
+        return new CacheMessageConsumerRunner(executor, cacheManager);
     }
 
     @Primary
