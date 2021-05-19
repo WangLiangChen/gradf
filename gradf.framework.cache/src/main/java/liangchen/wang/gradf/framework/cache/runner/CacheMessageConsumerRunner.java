@@ -37,10 +37,6 @@ public class CacheMessageConsumerRunner implements ApplicationRunner, Disposable
         }
         MultilevelCacheManager multilevelCacheManager = (MultilevelCacheManager) cacheManager;
         StringRedisTemplate stringRedisTemplate = multilevelCacheManager.getStringRedisTemplate();
-        if (null == stringRedisTemplate) {
-            this.container = null;
-            return;
-        }
 
         StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, ObjectRecord<String, CacheMessage>> options =
                 StreamMessageListenerContainer.StreamMessageListenerContainerOptions.builder()
@@ -90,7 +86,7 @@ public class CacheMessageConsumerRunner implements ApplicationRunner, Disposable
                 return;
             }
             MultilevelCache multilevelCache = (MultilevelCache) cache;
-            CacheMessage.CacheAction action = cacheMessage.getAction();
+            CacheMessage.Action action = cacheMessage.getAction();
             switch (action) {
                 case evict:
                     multilevelCache.evictLocal(cacheMessage.getKey());
@@ -117,7 +113,7 @@ public class CacheMessageConsumerRunner implements ApplicationRunner, Disposable
                 status = streamOperations.createGroup(EXPIRE_CHANNEL, EXPIRE_GROUP);
             }
         } catch (Exception exception) {
-            ObjectRecord<String, CacheMessage> record = StreamRecords.newRecord().ofObject(CacheMessage.newInstance("name", CacheMessage.CacheAction.none)).withStreamKey(EXPIRE_CHANNEL);
+            ObjectRecord<String, CacheMessage> record = StreamRecords.newRecord().ofObject(CacheMessage.newInstance("name", CacheMessage.Action.none)).withStreamKey(EXPIRE_CHANNEL);
             RecordId initialRecord = streamOperations.add(record);
             Assert.INSTANCE.notNull(initialRecord, "Cannot initialize stream with key '" + EXPIRE_CHANNEL + "'");
             status = streamOperations.createGroup(EXPIRE_CHANNEL, ReadOffset.from(initialRecord), EXPIRE_GROUP);

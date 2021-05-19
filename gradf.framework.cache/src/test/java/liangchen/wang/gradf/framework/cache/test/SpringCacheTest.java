@@ -6,6 +6,7 @@ import liangchen.wang.gradf.framework.cache.test.service.ICacheTestService;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 
@@ -26,7 +27,9 @@ public class SpringCacheTest {
 
     @Test
     public void testInit() {
-        System.out.println();
+        Cache abc = cacheManager.getCache("abc");
+        abc.put("a","b");
+        abc.clear();
     }
 
     @Test

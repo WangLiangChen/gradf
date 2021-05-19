@@ -1,6 +1,7 @@
 package liangchen.wang.gradf.framework.cache.configuration;
 
 import com.github.benmanes.caffeine.cache.CacheLoader;
+import liangchen.wang.gradf.framework.cache.enumeration.CacheStatus;
 import liangchen.wang.gradf.framework.cache.mlt.MultilevelCacheManager;
 import liangchen.wang.gradf.framework.cache.override.CacheInterceptor;
 import liangchen.wang.gradf.framework.cache.override.CachePutOperation;
@@ -19,6 +20,7 @@ import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizers;
 import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;

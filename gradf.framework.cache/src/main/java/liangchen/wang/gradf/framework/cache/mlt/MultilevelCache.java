@@ -1,17 +1,13 @@
 package liangchen.wang.gradf.framework.cache.mlt;
 
-import liangchen.wang.gradf.framework.cache.redis.CacheMessage;
-import liangchen.wang.gradf.framework.cache.runner.CacheMessageConsumerRunner;
 import liangchen.wang.gradf.framework.cache.override.Cache;
+import liangchen.wang.gradf.framework.cache.redis.CacheMessage;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
 import liangchen.wang.gradf.framework.commons.lock.LocalLockUtil;
 import liangchen.wang.gradf.framework.commons.lock.LockReader;
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.redis.connection.stream.ObjectRecord;
-import org.springframework.data.redis.connection.stream.StreamRecords;
-import org.springframework.data.redis.core.StreamOperations;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -32,19 +28,15 @@ public class MultilevelCache implements Cache {
     private final long ttl;
     private final Cache localCache;
     private final Cache distributedCache;
-    private final StreamOperations<String, Object, Object> streamOperations;
+    private final MultilevelCacheManager multilevelCacheManager;
 
     public MultilevelCache(String name, long ttl, MultilevelCacheManager multilevelCacheManager) {
         this.name = name;
         this.ttl = ttl;
+        this.multilevelCacheManager = multilevelCacheManager;
         this.localCache = multilevelCacheManager.getLocalCache(name, ttl);
         this.distributedCache = multilevelCacheManager.getDistributedCache(name, ttl);
-        if (null == this.distributedCache) {
-            this.streamOperations = null;
-        } else {
-            this.streamOperations = multilevelCacheManager.getStringRedisTemplate().opsForStream();
-        }
-        this.loggerPrefix = String.format("MultilevelCache(name:%s,ttl:%s,allowNullValues:%s)", name);
+        this.loggerPrefix = String.format("MultilevelCache(name:%s,ttl:%d)", name,ttl);
         logger.debug("Construct {}", this);
     }
 
@@ -56,9 +48,6 @@ public class MultilevelCache implements Cache {
         logger.debug(loggerPrefix("getFromLocal", "key", "valueWrapper", "value"), key, valueWrapper, null == valueWrapper ? null : JsonUtil.INSTANCE.toJsonString(valueWrapper.get()));
         if (null != valueWrapper) {
             return valueWrapper;
-        }
-        if (null == distributedCache) {
-            return null;
         }
         valueWrapper = distributedCache.get(key);
         if (null == valueWrapper) {
@@ -80,9 +69,6 @@ public class MultilevelCache implements Cache {
         logger.debug(loggerPrefix("getFromLocal", "key", "type", "valueWrapper", "value"), key, type, valueWrapper, null == valueWrapper ? null : JsonUtil.INSTANCE.toJsonString(valueWrapper.get()));
         if (null != valueWrapper) {
             return localCache.get(key, type);
-        }
-        if (null == distributedCache) {
-            return null;
         }
         valueWrapper = distributedCache.get(key);
         if (null == valueWrapper) {
@@ -124,23 +110,16 @@ public class MultilevelCache implements Cache {
     @Override
     public void put(Object key, Object value) {
         logger.debug(loggerPrefix("put", "key", "value"), key, JsonUtil.INSTANCE.toJsonString(value));
-        if (null != distributedCache) {
-            distributedCache.put(key, value);
-        }
+        distributedCache.put(key, value);
         localCache.put(key, value);
     }
 
     @Override
     public void evict(Object key) {
         logger.debug(loggerPrefix("evict", "key"), key);
-        if (null == distributedCache) {
-            localCache.evict(key);
-            return;
-        }
         distributedCache.evict(key);
         // 发送消息
-        ObjectRecord<String, CacheMessage> record = StreamRecords.newRecord().ofObject(CacheMessage.newInstance(this.name, CacheMessage.CacheAction.evict, key)).withStreamKey(CacheMessageConsumerRunner.EXPIRE_CHANNEL);
-        this.streamOperations.add(record);
+        multilevelCacheManager.sendCacheMessage(CacheMessage.newInstance(this.name, CacheMessage.Action.evict, key));
     }
 
     public void evictLocal(Object key) {
@@ -151,14 +130,10 @@ public class MultilevelCache implements Cache {
     @Override
     public void clear() {
         logger.debug(loggerPrefix("clear"));
-        if (null == distributedCache) {
-            localCache.clear();
-            return;
-        }
+        localCache.clear();
         distributedCache.clear();
         // 发送消息
-        ObjectRecord<String, CacheMessage> record = StreamRecords.newRecord().ofObject(CacheMessage.newInstance(this.name, CacheMessage.CacheAction.clear)).withStreamKey(CacheMessageConsumerRunner.EXPIRE_CHANNEL);
-        this.streamOperations.add(record);
+        multilevelCacheManager.sendCacheMessage(CacheMessage.newInstance(this.name, CacheMessage.Action.clear));
     }
 
     public void clearLocal() {

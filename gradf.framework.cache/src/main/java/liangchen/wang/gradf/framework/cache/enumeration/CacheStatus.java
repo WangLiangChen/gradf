@@ -3,7 +3,7 @@ package liangchen.wang.gradf.framework.cache.enumeration;
 /**
  * @author LiangChen.Wang
  */
-public enum CacheClusterStatus {
+public enum CacheStatus {
     //
     INSTANCE;
     private boolean distributedCacheEnable;

@@ -5,14 +5,14 @@ package liangchen.wang.gradf.framework.cache.redis;
  */
 public class CacheMessage {
     private String name;
-    private CacheAction action;
+    private Action action;
     private Object key;
 
-    public static CacheMessage newInstance(String name, CacheAction action) {
+    public static CacheMessage newInstance(String name, Action action) {
         return newInstance(name, action, null);
     }
 
-    public static CacheMessage newInstance(String name, CacheAction action, Object key) {
+    public static CacheMessage newInstance(String name, Action action, Object key) {
         CacheMessage cacheMessage = new CacheMessage();
         cacheMessage.name = name;
         cacheMessage.action = action;
@@ -20,11 +20,11 @@ public class CacheMessage {
         return cacheMessage;
     }
 
-    public CacheAction getAction() {
+    public Action getAction() {
         return action;
     }
 
-    public void setAction(CacheAction action) {
+    public void setAction(Action action) {
         this.action = action;
     }
 
@@ -44,7 +44,7 @@ public class CacheMessage {
         this.name = name;
     }
 
-    public enum CacheAction {
+    public enum Action {
         //
         none, clear, put, evict
     }
