@@ -1,7 +1,6 @@
 package liangchen.wang.gradf.component.foura.shiro.filter;
 
 import org.apache.shiro.mgt.SecurityManager;
-import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.filter.mgt.FilterChainResolver;
 import org.apache.shiro.web.mgt.WebSecurityManager;
 import org.apache.shiro.web.servlet.AbstractShiroFilter;
@@ -10,10 +9,10 @@ import org.springframework.beans.factory.BeanInitializationException;
 /**
  * @author LiangChen.Wang
  */
-public class GradfShiroFilterFactoryBean extends ShiroFilterFactoryBean {
+public class ShiroFilterFactoryBean extends org.apache.shiro.spring.web.ShiroFilterFactoryBean {
     private final FilterChainResolver filterChainResolver;
 
-    public GradfShiroFilterFactoryBean(FilterChainResolver filterChainResolver) {
+    public ShiroFilterFactoryBean(FilterChainResolver filterChainResolver) {
         this.filterChainResolver = filterChainResolver;
     }
 

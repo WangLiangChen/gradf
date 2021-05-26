@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  * @author LiangChen.Wang
  * 手机号+验证码
  */
-public class MobileCaptchaRealm extends GradfRealm {
+public class MobileCaptchaRealm extends StatelessRealm {
     private static final Logger logger = LoggerFactory.getLogger(MobileCaptchaRealm.class);
 
     @Override

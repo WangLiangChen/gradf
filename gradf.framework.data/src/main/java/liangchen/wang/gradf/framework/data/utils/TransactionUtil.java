@@ -20,7 +20,7 @@ public enum TransactionUtil {
      *
      */
     INSTANCE;
-    private final PlatformTransactionManager transactionManager = BeanLoader.getBean(PlatformTransactionManager.class);
+    private final PlatformTransactionManager transactionManager = BeanLoader.INSTANCE.getBean(PlatformTransactionManager.class);
     private final IAfterCommitExecutor afterCommitExecutor = new AfterCommitExecutorImpl();
 
     public void after(Runnable runnable) {

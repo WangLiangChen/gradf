@@ -19,8 +19,8 @@ public enum FouraUtil {
      * INSTANCE;
      */
     INSTANCE;
-    private IAuthorizationManager authorizationManager = BeanLoader.getBean("Gradf_Foura_DefaultAuthorizationManager");
-    private IAuthenticationManager authenticationManager = BeanLoader.getBean("Gradf_Foura_DefaultAuthenticationManager");
+    private IAuthorizationManager authorizationManager = BeanLoader.INSTANCE.getBean("Gradf_Foura_DefaultAuthorizationManager");
+    private IAuthenticationManager authenticationManager = BeanLoader.INSTANCE.getBean("Gradf_Foura_DefaultAuthenticationManager");
 
     public void putOperator(Long operator) {
         ContextUtil.INSTANCE.setOperator(operator);

@@ -28,10 +28,4 @@ public class DefaultErrorController extends AbstractErrorController {
         Throwable throwable = (Throwable) request.getAttribute("javax.servlet.error.exception");
         ResponseUtil.createResponse(response).data(throwable).flush();
     }
-
-    @Override
-    public String getErrorPath() {
-        return ERROR_PATH;
-    }
-
 }

@@ -6,6 +6,7 @@ import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
 import liangchen.wang.gradf.framework.commons.utils.NetUtil;
 import liangchen.wang.gradf.framework.commons.utils.Printer;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
+import liangchen.wang.gradf.framework.springboot.context.BeanLoader;
 import liangchen.wang.gradf.framework.springboot.processor.FirstBeanDefinitionRegistryPostProcessor;
 import org.apache.commons.configuration2.Configuration;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -92,14 +93,15 @@ public class DefaultApplicationContextInitializer implements ApplicationContextI
     }
 
     @Override
-    public void initialize(ConfigurableApplicationContext context) {
+    public void initialize(ConfigurableApplicationContext applicationContext) {
+        BeanLoader.INSTANCE.setApplicationContext(applicationContext);
         // 注册一个优先级非常高的BeanFactoryPostProcessor
-        context.getBeanFactory().registerSingleton("firstBeanFactoryPostProcessor", new FirstBeanDefinitionRegistryPostProcessor());
+        applicationContext.getBeanFactory().registerSingleton("firstBeanFactoryPostProcessor", new FirstBeanDefinitionRegistryPostProcessor());
 
-        ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+        ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
         BeanDefinitionRegistry beanRegistry = (BeanDefinitionRegistry) beanFactory;
         ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(beanRegistry);
-        scanner.setResourceLoader(context);
+        scanner.setResourceLoader(applicationContext);
         // 判断是否排除当前扫描
         String excludeScan = System.getProperty("exclude.scan");
         System.clearProperty("exclude.scan");

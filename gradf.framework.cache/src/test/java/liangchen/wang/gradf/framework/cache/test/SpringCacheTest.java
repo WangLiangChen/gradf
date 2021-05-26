@@ -19,7 +19,7 @@ import java.util.concurrent.CountDownLatch;
  */
 @SpringBootTest
 @EnableCaching
-@EnableRedis
+// @EnableRedis
 public class SpringCacheTest {
     @Inject
     private ICacheTestService service;

@@ -1,9 +1,8 @@
 package liangchen.wang.gradf.component.foura.shiro.filterchain;
 
-import liangchen.wang.gradf.component.foura.shiro.filter.LoginAuthorizationFilter;
+import liangchen.wang.gradf.component.foura.shiro.filter.JustLoginAuthorizationFilter;
 import liangchen.wang.gradf.component.foura.shiro.filter.RolesAndPermissionsAuthorizationFilter;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
-import org.apache.shiro.web.filter.mgt.DefaultFilterChainManager;
 import org.apache.shiro.web.filter.mgt.NamedFilterList;
 import org.apache.shiro.web.filter.mgt.SimpleNamedFilterList;
 import org.slf4j.Logger;
@@ -18,8 +17,8 @@ import java.util.Set;
  *
  * @author LiangChen.Wang
  */
-public class GradfDefaultFilterChainManager extends DefaultFilterChainManager {
-    private static final Logger logger = LoggerFactory.getLogger(GradfDefaultFilterChainManager.class);
+public class DefaultFilterChainManager extends org.apache.shiro.web.filter.mgt.DefaultFilterChainManager {
+    private static final Logger logger = LoggerFactory.getLogger(DefaultFilterChainManager.class);
 
     /**
      * 重载方法以处理多个chainName
@@ -37,7 +36,7 @@ public class GradfDefaultFilterChainManager extends DefaultFilterChainManager {
             NamedFilterList chain = getChain(chainName);
             for (Filter filter : chain) {
                 configured.add(filter);
-                if (filter instanceof LoginAuthorizationFilter) {
+                if (filter instanceof JustLoginAuthorizationFilter) {
                     containLoginFilter = true;
                 } else if (filter instanceof RolesAndPermissionsAuthorizationFilter) {
                     containRolesAndPermissionsFilter = true;

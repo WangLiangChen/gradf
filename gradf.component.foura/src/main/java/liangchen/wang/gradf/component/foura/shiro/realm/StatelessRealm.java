@@ -17,8 +17,8 @@ import java.util.Set;
 /**
  * @author LiangChen.Wang
  */
-public abstract class GradfRealm extends AuthorizingRealm {
-    private static final Logger logger = LoggerFactory.getLogger(GradfRealm.class);
+public abstract class StatelessRealm extends AuthorizingRealm {
+    private static final Logger logger = LoggerFactory.getLogger(StatelessRealm.class);
 
     /**
      * 改写获取授权信息，根据认证信息里的account_id获取对应的role

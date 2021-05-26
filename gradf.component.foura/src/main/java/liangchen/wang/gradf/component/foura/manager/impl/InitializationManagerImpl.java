@@ -7,7 +7,7 @@ import liangchen.wang.gradf.component.foura.initialization.domain.*;
 import liangchen.wang.gradf.component.foura.manager.*;
 import liangchen.wang.gradf.component.foura.manager.domain.parameter.*;
 import liangchen.wang.gradf.component.foura.manager.domain.result.UrlRelationResultDomain;
-import liangchen.wang.gradf.component.foura.shiro.utils.ShiroFilterChainUtil;
+import liangchen.wang.gradf.component.foura.shiro.utils.ShiroUtil;
 import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
 import liangchen.wang.gradf.framework.commons.utils.Printer;
 import liangchen.wang.gradf.framework.data.annotation.EnableJdbcShedLock;
@@ -276,11 +276,11 @@ public class InitializationManagerImpl implements IInitializationManager {
         });
         urlRolesMap.forEach((urlPath, roleKeys) -> {
             if (CollectionUtil.INSTANCE.isEmpty(roleKeys)) {
-                ShiroFilterChainUtil.addLoginToChain(urlPath);
+                ShiroUtil.INSTANCE.addJustLoginToChain(urlPath);
                 Printer.INSTANCE.prettyPrint("初始化登录即可访问url:{}", urlPath);
             } else {
                 String roleKeysSplit = String.join(",", roleKeys);
-                ShiroFilterChainUtil.addRolesAndPermissionsToChain(urlPath, roleKeysSplit);
+                ShiroUtil.INSTANCE.addRolesAndPermissionsToChain(urlPath, roleKeysSplit);
                 Printer.INSTANCE.prettyPrint("初始化角色可访问url:{},role:{}", urlPath, roleKeysSplit);
             }
         });

@@ -5,7 +5,6 @@ import liangchen.wang.gradf.component.foura.shiro.token.JwtToken;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
 import org.apache.shiro.realm.Realm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +17,8 @@ import java.util.Iterator;
  *
  * @author LiangChen.Wang
  */
-public class GradfModularRealmAuthenticator extends ModularRealmAuthenticator {
-    private static final Logger logger = LoggerFactory.getLogger(GradfModularRealmAuthenticator.class);
+public class ModularRealmAuthenticator extends org.apache.shiro.authc.pam.ModularRealmAuthenticator {
+    private static final Logger logger = LoggerFactory.getLogger(ModularRealmAuthenticator.class);
 
     @Override
     protected AuthenticationInfo doAuthenticate(AuthenticationToken authenticationToken) throws AuthenticationException {

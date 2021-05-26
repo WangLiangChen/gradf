@@ -4,6 +4,9 @@ import liangchen.wang.gradf.framework.commons.utils.Printer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author LiangChen.Wang
+ */
 @Component
 public class StartedCommandLineRunner implements CommandLineRunner {
     @Override

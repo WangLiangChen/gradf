@@ -9,8 +9,8 @@ import liangchen.wang.gradf.component.foura.manager.domain.parameter.RoleAccount
 import liangchen.wang.gradf.component.foura.manager.domain.result.RoleResourceOperationResultDomain;
 import liangchen.wang.gradf.component.foura.manager.domain.result.RoleResourcePrivilegeResultDomain;
 import liangchen.wang.gradf.component.foura.manager.domain.result.RoleResultDomain;
-import liangchen.wang.gradf.component.foura.shiro.filter.GradfFilter;
-import liangchen.wang.gradf.component.foura.shiro.utils.ShiroFilterChainUtil;
+import liangchen.wang.gradf.component.foura.shiro.filter.StatelessFilter;
+import liangchen.wang.gradf.component.foura.shiro.utils.ShiroUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -123,22 +123,22 @@ public class AuthorizationManagerImpl implements IAuthorizationManager {
 
     @Override
     public Set<String> subjectUrls() {
-        Map<String, Filter> filters = ShiroFilterChainUtil.getFilters();
+        Map<String, Filter> filters = ShiroUtil.INSTANCE.getFilters();
         Subject subject = SecurityUtils.getSubject();
         //当前用户有权限的url pattern集合
         Set<String> urls = new HashSet<>();
         filters.forEach((filterName, filter) -> {
-            if (!(filter instanceof GradfFilter)) {
+            if (!(filter instanceof StatelessFilter)) {
                 return;
             }
-            GradfFilter gradfFilter = (GradfFilter) filter;
-            Map<String, Object> pathRoles = gradfFilter.appliedPaths();
+            StatelessFilter statelessFilter = (StatelessFilter) filter;
+            Map<String, Object> pathRoles = statelessFilter.appliedPaths();
             pathRoles.forEach((path, roles) -> {
-                if ("login".equals(filterName)) {
+                if ("justLogin".equals(filterName)) {
                     urls.add(path);
                     return;
                 }
-                if ("roles".equals(filterName)) {
+                if ("roles&permissions".equals(filterName)) {
                     String[] rolesArray = (String[]) roles;
                     for (String role : rolesArray) {
                         if (subject.hasRole(role)) {

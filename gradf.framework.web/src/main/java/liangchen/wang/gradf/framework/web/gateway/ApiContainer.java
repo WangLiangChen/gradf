@@ -22,14 +22,14 @@ public enum ApiContainer {
     ApiContainer() {
         apiMap = new HashMap<>();
         parameterUtil = new LocalVariableTableParameterNameDiscoverer();
-        String[] names = BeanLoader.getBeanDefinitionNames();
+        String[] names = BeanLoader.INSTANCE.getBeanDefinitionNames();
 
         Class<?> type;
         ApiMapping apiMapping;
         ApiTarget apiRunnable;
         Method[] methods;
         for (String name : names) {
-            type = BeanLoader.getType(name);
+            type = BeanLoader.INSTANCE.getType(name);
             methods = type.getDeclaredMethods();
             for (Method method : methods) {
                 apiMapping = method.getDeclaredAnnotation(ApiMapping.class);
@@ -67,7 +67,7 @@ public enum ApiContainer {
             this.targetName = targetName;
             this.targetMethod = targetMethod;
             this.requestMethod = requestMethod;
-            this.target = BeanLoader.getBean(targetName);
+            this.target = BeanLoader.INSTANCE.getBean(targetName);
             parameterNames = parameterUtil.getParameterNames(targetMethod);
             parameterTypes = targetMethod.getParameterTypes();
             //TODO 在这里检测 方法的参数和参数的filed是不是Object类型， 是不是HashMap类型，如果是要抛出异常，这样的类型是不清晰的，对接口不友好。

@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author LiangChen.Wang
  */
-public class JwtRealm extends GradfRealm {
+public class JwtRealm extends StatelessRealm {
     private static final Logger logger = LoggerFactory.getLogger(JwtRealm.class);
 
     @Override

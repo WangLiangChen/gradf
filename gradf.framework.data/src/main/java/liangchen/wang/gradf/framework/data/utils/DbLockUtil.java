@@ -12,7 +12,7 @@ public enum DbLockUtil {
     INSTANCE;
 
     public ILock obtainLock() {
-        ILock lock = BeanLoader.getBean("Gradf_Data_ReplaceIntoLock");
+        ILock lock = BeanLoader.INSTANCE.getBean("Gradf_Data_ReplaceIntoLock");
         Assert.INSTANCE.notNull(lock, "DbLock未初始化");
         return lock;
     }

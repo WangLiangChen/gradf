@@ -28,8 +28,8 @@ import java.util.Set;
  *
  * @author LiangChen.Wang
  */
-public abstract class GradfFilter extends AccessControlFilter {
-    private static final Logger logger = LoggerFactory.getLogger(GradfFilter.class);
+public abstract class StatelessFilter extends AccessControlFilter {
+    private static final Logger logger = LoggerFactory.getLogger(StatelessFilter.class);
     private static final String ACCESS_TOKEN = "access_token";
 
     @Override

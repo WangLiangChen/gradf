@@ -8,7 +8,6 @@ import liangchen.wang.gradf.component.commons.manager.domain.parameter.CaptchaPa
 import liangchen.wang.gradf.component.commons.manager.domain.parameter.CaptchaRefreshDomain;
 import liangchen.wang.gradf.component.commons.manager.domain.parameter.CaptchaValidateDomain;
 import liangchen.wang.gradf.component.commons.manager.domain.result.CaptchaResultDomain;
-import liangchen.wang.gradf.framework.cache.override.CacheManager;
 import liangchen.wang.gradf.framework.commons.captcha.CaptchaProperties;
 import liangchen.wang.gradf.framework.commons.captcha.producer.impl.DefaultProducer;
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
@@ -17,6 +16,7 @@ import liangchen.wang.gradf.framework.commons.exception.PromptException;
 import liangchen.wang.gradf.framework.commons.json.JsonUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
@@ -34,14 +34,15 @@ public class CaptchaManagerImpl implements ICaptchaManager {
     private final static CaptchaProperties captchaProperties = CaptchaProperties.newInstance();
     private static final String DEFAULTCHARS = "abcdefghjkmnpqrstuvwxyz23456789ABCDEFGHJKMNPQRSTUVWXYZ";
     private static final DefaultProducer producer;
-
-    private final CacheManager cacheManager;
     private final Cache cache;
 
     @Inject
     public CaptchaManagerImpl(CacheManager cacheManager) {
-        this.cacheManager = cacheManager;
-        this.cache = cacheManager.getCache("Gradf_Captcha", 5 * 60000);
+        if (cacheManager instanceof liangchen.wang.gradf.framework.cache.override.CacheManager) {
+            this.cache = ((liangchen.wang.gradf.framework.cache.override.CacheManager) cacheManager).getCache("Captcha_Expire", 1000 * 60 * 5);
+        } else {
+            this.cache = null;
+        }
     }
 
     static {

@@ -6,55 +6,53 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 /**
  * @author LiangChen.Wang
  */
-@Component
-public class BeanLoader implements ApplicationContextAware {
-    private static ApplicationContext applicationContext;
+public enum BeanLoader {
+    // instance
+    INSTANCE;
+    private ApplicationContext applicationContext;
 
-    @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
-        BeanLoader.applicationContext = applicationContext;
+        this.applicationContext = applicationContext;
     }
 
-    public static ApplicationContext getContext() {
-        return BeanLoader.applicationContext;
+    public ApplicationContext getApplicationContext() {
+        return this.applicationContext;
     }
 
-    public static <T> T getBean(String name) {
-        Object bean = getContext().getBean(name);
+    public <T> T getBean(String name) {
+        Object bean = this.applicationContext.getBean(name);
         return ClassBeanUtil.INSTANCE.cast(bean);
     }
 
-    public static <T> T getBean(Class<T> clazz) {
-        return getContext().getBean(clazz);
+    public <T> T getBean(Class<T> clazz) {
+        return this.applicationContext.getBean(clazz);
     }
 
-    public static <T> T getBean(String name, Class<T> clazz) {
-        return getContext().getBean(name, clazz);
+    public <T> T getBean(String name, Class<T> clazz) {
+        return this.applicationContext.getBean(name, clazz);
     }
 
-    public static <T> Map<String, T> getBeansOfType(Class<T> clazz) {
-        return getContext().getBeansOfType(clazz);
+    public <T> Map<String, T> getBeansOfType(Class<T> clazz) {
+        return this.applicationContext.getBeansOfType(clazz);
     }
 
-    public static Class<?> getType(String name) {
-        return getContext().getType(name);
+    public Class<?> getType(String name) {
+        return this.applicationContext.getType(name);
     }
 
-    public static String[] getBeanDefinitionNames() {
-        return getContext().getBeanDefinitionNames();
+    public String[] getBeanDefinitionNames() {
+        return this.applicationContext.getBeanDefinitionNames();
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T registerBean(String name, Class<T> clazz, Object... args) {
+    public <T> T registerBean(String name, Class<T> clazz, Object... args) {
         if (applicationContext.containsBean(name)) {
             Object bean = applicationContext.getBean(name);
             if (bean.getClass().isAssignableFrom(clazz)) {
@@ -74,7 +72,7 @@ public class BeanLoader implements ApplicationContextAware {
         return applicationContext.getBean(name, clazz);
     }
 
-    public static void removeBean(String beanName) {
+    public void removeBean(String beanName) {
         ConfigurableApplicationContext configurableApplicationContext = (ConfigurableApplicationContext) applicationContext;
         BeanDefinitionRegistry beanFactory = (BeanDefinitionRegistry) configurableApplicationContext.getBeanFactory();
         beanFactory.removeBeanDefinition(beanName);

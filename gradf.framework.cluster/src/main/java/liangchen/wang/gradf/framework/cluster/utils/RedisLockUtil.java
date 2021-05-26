@@ -12,7 +12,7 @@ public enum RedisLockUtil {
     INSTANCE;
 
     public ILock obtainLock() {
-        ILock lock = BeanLoader.getBean("Gradf_Distributed_RedisLock");
+        ILock lock = BeanLoader.INSTANCE.getBean("Gradf_Distributed_RedisLock");
         Assert.INSTANCE.notNull(lock, "Redis未初始化");
         return lock;
     }

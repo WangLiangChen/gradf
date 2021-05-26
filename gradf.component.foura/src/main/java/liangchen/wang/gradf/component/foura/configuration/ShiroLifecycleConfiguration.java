@@ -8,7 +8,8 @@ import org.springframework.core.Ordered;
 /**
  * @author LiangChen.Wang
  */
-@Configuration
+
+@Configuration(proxyBeanMethods = false)
 public class ShiroLifecycleConfiguration {
     /**
      * LifecycleBeanPostProcessor 是 BeanPostProcessor 的一个实现

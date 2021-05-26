@@ -1,7 +1,7 @@
 package liangchen.wang.gradf.component.foura.shiro.realm;
 
 
-import liangchen.wang.gradf.framework.cache.override.CacheManager;
+import liangchen.wang.gradf.framework.cache.utils.CacheUtil;
 import liangchen.wang.gradf.framework.commons.exception.PromptException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -15,11 +15,7 @@ import org.springframework.cache.Cache;
  */
 public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher {
     private static final Logger logger = LoggerFactory.getLogger(RetryLimitHashedCredentialsMatcher.class);
-    private final CacheManager cacheManager;
 
-    public RetryLimitHashedCredentialsMatcher(CacheManager cacheManager) {
-        this.cacheManager = cacheManager;
-    }
 
     // 这里暂时不考虑并发情况
     @Override
@@ -28,7 +24,7 @@ public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher
         logger.debug("principal is : {}", principal);
         String loginKey = (String) principal;
         String retryCountKey = String.format("%s:RetryCount", loginKey);
-        Cache cache = cacheManager.getCache(retryCountKey, 50*60000);
+        Cache cache = CacheUtil.INSTANCE.cache(retryCountKey, 50 * 60000);
         int count = cache.get("count", int.class);
         cache.put("count", ++count);
         if (count > 5) {

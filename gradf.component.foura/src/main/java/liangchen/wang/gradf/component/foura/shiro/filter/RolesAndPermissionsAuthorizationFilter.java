@@ -12,7 +12,7 @@ import javax.servlet.ServletResponse;
  * 按角色/权限/位权限判断是否可通过
  * defaultFilterChainManager.addFilter("roles", new RolesAuthorizationFilter());
  */
-public class RolesAndPermissionsAuthorizationFilter extends GradfFilter {
+public class RolesAndPermissionsAuthorizationFilter extends StatelessFilter {
 
     @Override
     public boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {

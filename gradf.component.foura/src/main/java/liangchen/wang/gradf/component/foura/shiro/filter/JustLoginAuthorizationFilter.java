@@ -10,7 +10,7 @@ import javax.servlet.ServletResponse;
  * 登录状态即可通过
  * defaultFilterChainManager.addFilter("login", new LoginAuthorizationFilter());
  */
-public class LoginAuthorizationFilter extends GradfFilter {
+public class JustLoginAuthorizationFilter extends StatelessFilter {
 
     @Override
     public boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
