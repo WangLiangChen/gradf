@@ -1,6 +1,7 @@
 package liangchen.wang.gradf.component.foura.configuration;
 
 
+import liangchen.wang.gradf.component.foura.runner.FouraApplicationRunner;
 import liangchen.wang.gradf.component.foura.spring.interceptor.AccessTokenHandlerInterceptor;
 import liangchen.wang.gradf.component.foura.spring.resolver.AccessTokenHandlerMethodArgumentResolver;
 import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
@@ -37,6 +38,11 @@ public class FouraAutoConfiguration implements WebMvcConfigurer {
         filterRegistration.setEnabled(enableAuth);
         // filterRegistration.setOrder();
         return filterRegistration;
+    }
+
+    @Bean
+    public FouraApplicationRunner fouraApplicationRunner() {
+        return new FouraApplicationRunner(initializationManager);
     }
 
     @Override

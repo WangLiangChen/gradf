@@ -24,7 +24,10 @@ import javax.inject.Named;
 import java.time.Instant;
 import java.util.*;
 
-@Service("Gradf_Foura_DefaultInitializationService")
+/**
+ * @author LiangChen.Wang
+ */
+@Service("Gradf_Foura_DefaultInitializationManager")
 @EnableJdbcShedLock
 public class InitializationManagerImpl implements IInitializationManager {
     private final List<IFouraInitialization> customizedDatas;
