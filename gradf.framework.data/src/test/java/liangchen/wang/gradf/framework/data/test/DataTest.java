@@ -34,14 +34,10 @@ public class DataTest {
     public void testShedLock() {
         LockingTaskExecutor executor = new DefaultLockingTaskExecutor(lockProvider);
         Instant now = Instant.now();
-        for (int i = 0; i < 10; i++) {
-            int finalI = i;
-            executor.executeWithLock((Runnable) () -> {
-                System.out.println(finalI +"====>" + Thread.currentThread().getName());
-                ConcurrentUtil.INSTANCE.threadSleep(10, TimeUnit.SECONDS);
-            }, new LockConfiguration(now, "wanglc", Duration.ofSeconds(60), Duration.ofSeconds(10)));
-        }
-
+        executor.executeWithLock((Runnable) () -> {
+            System.out.println("====>" + Thread.currentThread().getName());
+            ConcurrentUtil.INSTANCE.threadSleep(10, TimeUnit.SECONDS);
+        }, new LockConfiguration(now, "wanglc", Duration.ofSeconds(60), Duration.ofSeconds(10)));
         ConcurrentUtil.INSTANCE.threadSleep(200, TimeUnit.SECONDS);
     }
 }

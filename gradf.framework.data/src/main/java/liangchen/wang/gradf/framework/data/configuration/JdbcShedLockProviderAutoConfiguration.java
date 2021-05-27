@@ -15,7 +15,7 @@ public class JdbcShedLockProviderAutoConfiguration {
         return new JdbcTemplateLockProvider(
                 JdbcTemplateLockProvider.Configuration.builder()
                         .withJdbcTemplate(jdbcTemplate)
-                        .usingDbTime()
+                        //.usingDbTime()
                         .build()
         );
     }
