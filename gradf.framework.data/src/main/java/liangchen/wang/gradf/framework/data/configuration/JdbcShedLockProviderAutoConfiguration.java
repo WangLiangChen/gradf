@@ -12,6 +12,11 @@ public class JdbcShedLockProviderAutoConfiguration {
 
     @Bean
     public LockProvider jdbcTemplateLockProvider(JdbcTemplate jdbcTemplate) {
-        return new JdbcTemplateLockProvider(jdbcTemplate);
+        return new JdbcTemplateLockProvider(
+                JdbcTemplateLockProvider.Configuration.builder()
+                        .withJdbcTemplate(jdbcTemplate)
+                        .usingDbTime()
+                        .build()
+        );
     }
 }
