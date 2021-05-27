@@ -16,7 +16,7 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@EnableSchedulerLock(defaultLockAtMostFor = "10m")
+@EnableSchedulerLock(defaultLockAtMostFor = "5m")
 @Import({EnableJdbcShedLock.ShedLockImportSelector.class})
 public @interface EnableJdbcShedLock {
     class ShedLockImportSelector implements ImportSelector {

@@ -38,7 +38,7 @@
         <dependency>
             <groupId>net.javacrumbs.shedlock</groupId>
             <artifactId>shedlock-spring</artifactId>
-            <version>4.4.0</version>
+            <version>4.23.0</version>
         </dependency>
         <!-- jgroups -->
         <dependency>

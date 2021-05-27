@@ -3,9 +3,9 @@
 /*==============================================================*/
 create table if not exists gradf_lock (
     lock_key varchar(36) not null comment '',
-    lock_datetime datetime not null comment '锁定时间',
-    lock_until datetime not null comment '结束时间',
-    lock_by varchar(36) not null comment '锁获得者的标识',
+    lock_datetime datetime(3) not null comment '锁定时间',
+    lock_until datetime(3) not null comment '结束时间',
+    lock_owner varchar(36) not null comment '锁获得者的标识',
     primary key(lock_key)
 ) comment '数据库分布式锁';
 
