@@ -1,22 +1,33 @@
 package liangchen.wang.gradf.framework.data.annotation;
 
-import com.google.common.base.Splitter;
+import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
-import liangchen.wang.gradf.framework.commons.utils.NetUtil;
 import liangchen.wang.gradf.framework.commons.utils.Printer;
+import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
-import liangchen.wang.gradf.framework.data.aspect.DynamicDataSourceAspect;
 import liangchen.wang.gradf.framework.data.configuration.JdbcAutoConfiguration;
-import liangchen.wang.gradf.framework.data.datasource.MultipleDataSourceRegister;
+import liangchen.wang.gradf.framework.data.datasource.DynamicDataSourceContext;
+import liangchen.wang.gradf.framework.data.datasource.DataSourceRegister;
+import liangchen.wang.gradf.framework.data.datasource.dialect.AbstractDialect;
 import liangchen.wang.gradf.framework.data.enumeration.DataStatus;
 import org.apache.commons.configuration2.Configuration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyNameAliases;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+import org.springframework.context.annotation.AutoProxyRegistrar;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotationMetadata;
 
+import javax.sql.DataSource;
 import java.lang.annotation.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -30,7 +41,8 @@ import java.util.*;
 public @interface EnableJdbc {
     class JdbcImportSelector implements ImportSelector {
         private final String JDBC_CONFIG_FILE = "jdbc.properties";
-        private final int TIMEOUT = 30 * 1000;
+        private final String[] requiredKeys = new String[]{"dialect", "datasource", "host", "port", "database", "username", "password"};
+        private final String DIALECT_ITEM = "dialect", URL_ITEM = "url", EXTRA_ITEM = "extra";
         private static boolean loaded = false;
 
         @Override
@@ -42,43 +54,64 @@ public @interface EnableJdbc {
             Assert.INSTANCE.isTrue(exists, "Configuration file: {} is required,because @EnableJdbc is setted", JDBC_CONFIG_FILE);
             Printer.INSTANCE.prettyPrint("@EnableJdbc Start JDBC......");
             Printer.INSTANCE.prettyPrint("@EnableJdbc matched class: {}", annotationMetadata.getClassName());
-            validateConnectionalbe();
-            String[] imports = new String[]{MultipleDataSourceRegister.class.getName(), JdbcAutoConfiguration.class.getName(), DynamicDataSourceAspect.class.getName()};
+            instantiateDataSource();
+            String[] imports = new String[]{DataSourceRegister.class.getName(), AutoProxyRegistrar.class.getName(), JdbcAutoConfiguration.class.getName()};
             loaded = true;
             // 设置全局jdbc状态
             DataStatus.INSTANCE.setJdbcEnabled(true);
             return imports;
         }
 
-        private void validateConnectionalbe() {
-            Printer.INSTANCE.prettyPrint("Try to connect to DB......");
+        private void instantiateDataSource() {
             Configuration configuration = ConfigurationUtil.INSTANCE.getConfiguration(JDBC_CONFIG_FILE);
-            // 将配置分组
             Iterator<String> keys = configuration.getKeys();
-            Map<String, Map<String, String>> datasourceMap = new HashMap<>();
+            Map<String, Properties> dataSourcePropertiesMap = new LinkedHashMap<>();
             keys.forEachRemaining(key -> {
-                List<String> keyList = Splitter.on('.').splitToList(key);
-                String dataSourceFlag = keyList.get(0);
-                datasourceMap.putIfAbsent(dataSourceFlag, new HashMap<>());
-                Map<String, String> properties = datasourceMap.get(dataSourceFlag);
-                properties.put(keyList.get(1), configuration.getString(key));
+                int firstDot = key.indexOf('.');
+                String dataSourceName = key.substring(0, firstDot);
+                Properties properties = dataSourcePropertiesMap.get(dataSourceName);
+                if (null == properties) {
+                    properties = new Properties();
+                    dataSourcePropertiesMap.put(dataSourceName, properties);
+                }
+                String item = key.substring(firstDot + 1);
+                properties.put(item, configuration.getProperty(key));
             });
-            Assert.INSTANCE.isTrue(datasourceMap.containsKey("primary"), "primary datasource is not exists");
+            ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases("datasource", "type");
+            dataSourcePropertiesMap.forEach((dataSourceName, properties) -> {
+                List<String> requiredKeyList = Arrays.asList(requiredKeys);
+                requiredKeyList.retainAll(properties.keySet());
+                Assert.INSTANCE.isTrue(requiredKeys.length == requiredKeyList.size(), "DataSource: {}, configuration items :{} are required!", dataSourceName, requiredKeyList);
 
-            // 验证配置项是否缺失
-            String[] requiredKeys = new String[]{"dialect", "datasource", "host", "port", "database", "username", "password"};
-            int requiredkeysLength = requiredKeys.length;
-            List<String> requiredKeyList = new ArrayList<>(Arrays.asList(requiredKeys));
-            datasourceMap.forEach((k, v) -> {
-                // 取个交集
-                requiredKeyList.retainAll(v.keySet());
-                Assert.INSTANCE.isTrue(requiredkeysLength == requiredKeyList.size(), "DataSource: {}, configuration items :{} are required!", k, requiredKeyList);
+                ConfigurationPropertySource source = new MapConfigurationPropertySource(properties);
+                Binder binder = new Binder(source.withAliases(aliases));
+                DataSourceProperties dataSourceProperties = binder.bind(ConfigurationPropertyName.EMPTY, Bindable.of(DataSourceProperties.class)).get();
+                AbstractDialect dialect = resolveDialect(properties.getProperty(DIALECT_ITEM));
+                if (StringUtil.INSTANCE.isBlank(properties.getProperty(URL_ITEM))) {
+                    String query = "serverTimezone=GMT%2B8&characterEncoding=utf-8&characterSetResults=utf-8&useUnicode=true&useSSL=false&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true";
+                    String url = String.format("jdbc:mysql://%s:%s/%s?%s", properties.get("host"), properties.get("port"), properties.get("database"), query);
+                    dataSourceProperties.setUrl(url);
+                }
+                dataSourceProperties.setBeanClassLoader(this.getClass().getClassLoader());
+                try {
+                    dataSourceProperties.afterPropertiesSet();
+                } catch (Exception e) {
+                    throw new IllegalStateException("Can't init dataSource:" + dataSourceName, e);
+                }
+                DataSource dataSource = dataSourceProperties.initializeDataSourceBuilder().build();
+                binder.bind(EXTRA_ITEM, Bindable.ofInstance(dataSource));
+                DynamicDataSourceContext.INSTANCE.putDialect(dataSourceName, dialect);
+                DynamicDataSourceContext.INSTANCE.putDataSource(dataSourceName, dataSource);
             });
-            // 验证基本网络是否通
-            datasourceMap.forEach((k, v) -> {
-                Assert.INSTANCE.isTrue(NetUtil.INSTANCE.isConnectable(v.get("host"), Integer.valueOf(v.get("port")), TIMEOUT), "DataSource {} Connection test failed", k);
-            });
-            Printer.INSTANCE.prettyPrint("DB Connection test successed......");
+        }
+
+        private AbstractDialect resolveDialect(String dialectClassName) {
+            try {
+                Class<?> forName = Class.forName(dialectClassName);
+                return (AbstractDialect) forName.getDeclaredConstructor().newInstance();
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                throw new ErrorException(e.toString());
+            }
         }
     }
 }

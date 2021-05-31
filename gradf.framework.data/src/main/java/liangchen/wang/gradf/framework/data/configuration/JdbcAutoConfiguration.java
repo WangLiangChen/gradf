@@ -7,7 +7,11 @@ import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
 import liangchen.wang.gradf.framework.commons.utils.Printer;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
+import liangchen.wang.gradf.framework.data.annotation.SwitchDataSource;
+import liangchen.wang.gradf.framework.data.advisor.DynamicDataSourceBeanFactoryPointcutAdvisor;
+import liangchen.wang.gradf.framework.data.datasource.DynamicDataSourceContext;
 import liangchen.wang.gradf.framework.data.mybatis.interceptor.PaginationInterceptor;
+import org.aopalliance.intercept.MethodInterceptor;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.ibatis.annotations.Mapper;
@@ -18,6 +22,7 @@ import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.Ordered;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -30,6 +35,7 @@ import org.springframework.lang.Nullable;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
@@ -55,6 +61,22 @@ public class JdbcAutoConfiguration {
             Printer.INSTANCE.prettyPrint("MyBatis Mapper Scan Packages is :{}", mybatis);
             scanPackages = String.format("%s,%s", SYSTEM_MAPPER_SCAN_PACKAGE, mybatis);
         }
+    }
+
+    @Bean
+    public DynamicDataSourceBeanFactoryPointcutAdvisor dynamicDataSourceBeanFactoryPointcutAdvisor() {
+        DynamicDataSourceBeanFactoryPointcutAdvisor advisor = new DynamicDataSourceBeanFactoryPointcutAdvisor();
+        advisor.setAdvice((MethodInterceptor) methodInvocation -> {
+            Method method = methodInvocation.getMethod();
+            SwitchDataSource switchDataSource = method.getAnnotation(SwitchDataSource.class);
+            String dataSourceName = switchDataSource.value();
+            DynamicDataSourceContext.INSTANCE.set(dataSourceName);
+            Object proceed = methodInvocation.proceed();
+            DynamicDataSourceContext.INSTANCE.clear();
+            return proceed;
+        });
+        advisor.setOrder(Ordered.HIGHEST_PRECEDENCE);
+        return advisor;
     }
 
     /**
