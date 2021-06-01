@@ -9,6 +9,6 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Inherited
 @Documented
-public @interface SwitchDataSource {
+public @interface DataSource {
     String value();
 }

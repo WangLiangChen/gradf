@@ -38,4 +38,5 @@ public class SequenceDaoImpl implements ISequenceDao {
             return sequenceNumber;
         }, Isolation.REPEATABLE_READ);
     }
+
 }

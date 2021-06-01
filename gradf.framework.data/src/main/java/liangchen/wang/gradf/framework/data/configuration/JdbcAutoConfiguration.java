@@ -7,8 +7,9 @@ import liangchen.wang.gradf.framework.commons.utils.ConfigurationUtil;
 import liangchen.wang.gradf.framework.commons.utils.Printer;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
-import liangchen.wang.gradf.framework.data.annotation.SwitchDataSource;
+import liangchen.wang.gradf.framework.commons.validator.AssertLevel;
 import liangchen.wang.gradf.framework.data.advisor.DynamicDataSourceBeanFactoryPointcutAdvisor;
+import liangchen.wang.gradf.framework.data.annotation.DataSource;
 import liangchen.wang.gradf.framework.data.datasource.DynamicDataSourceContext;
 import liangchen.wang.gradf.framework.data.mybatis.interceptor.PaginationInterceptor;
 import org.aopalliance.intercept.MethodInterceptor;
@@ -33,7 +34,6 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.lang.Nullable;
 
 import javax.inject.Inject;
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -63,19 +63,31 @@ public class JdbcAutoConfiguration {
         }
     }
 
+    /**
+     * 注册切换数据源切面
+     *
+     * @return
+     */
     @Bean
     public DynamicDataSourceBeanFactoryPointcutAdvisor dynamicDataSourceBeanFactoryPointcutAdvisor() {
         DynamicDataSourceBeanFactoryPointcutAdvisor advisor = new DynamicDataSourceBeanFactoryPointcutAdvisor();
+        advisor.setOrder(Ordered.HIGHEST_PRECEDENCE);
         advisor.setAdvice((MethodInterceptor) methodInvocation -> {
             Method method = methodInvocation.getMethod();
-            SwitchDataSource switchDataSource = method.getAnnotation(SwitchDataSource.class);
-            String dataSourceName = switchDataSource.value();
+            DataSource dataSource = method.getAnnotation(DataSource.class);
+            if (null == dataSource) {
+                dataSource = method.getDeclaringClass().getAnnotation(DataSource.class);
+            }
+            String dataSourceName = dataSource.value();
+            Assert.INSTANCE.isTrue(DynamicDataSourceContext.INSTANCE.getDataSourceNames().contains(dataSourceName), AssertLevel.INFO, "The annotated dataSource '{}' does not exist", dataSourceName);
+
             DynamicDataSourceContext.INSTANCE.set(dataSourceName);
-            Object proceed = methodInvocation.proceed();
-            DynamicDataSourceContext.INSTANCE.clear();
-            return proceed;
+            try {
+                return methodInvocation.proceed();
+            } finally {
+                DynamicDataSourceContext.INSTANCE.clear();
+            }
         });
-        advisor.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return advisor;
     }
 
@@ -83,7 +95,7 @@ public class JdbcAutoConfiguration {
      * @param dataSource DynamicDataSource
      */
     @Inject
-    public void initSQL(DataSource dataSource) {
+    public void initSQL(javax.sql.DataSource dataSource) {
         ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
         try {
             Resource[] ddls = resourcePatternResolver.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX.concat("ddl.sql"));
@@ -107,7 +119,7 @@ public class JdbcAutoConfiguration {
      * @param dataSource DynamicDataSource
      */
     @Bean
-    public SqlSessionFactoryBean sqlSessionFactory(DataSource dataSource, @Nullable Interceptor[] interceptors) {
+    public SqlSessionFactoryBean sqlSessionFactory(javax.sql.DataSource dataSource, @Nullable Interceptor[] interceptors) {
         SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
         sqlSessionFactoryBean.setDataSource(dataSource);
         URL url = ConfigurationUtil.INSTANCE.getFullUrl("mybatis-config.xml");

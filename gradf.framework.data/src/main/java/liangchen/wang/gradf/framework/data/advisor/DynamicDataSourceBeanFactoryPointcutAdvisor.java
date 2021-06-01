@@ -1,7 +1,7 @@
 package liangchen.wang.gradf.framework.data.advisor;
 
+import liangchen.wang.gradf.framework.data.annotation.DataSource;
 import liangchen.wang.gradf.framework.data.annotation.DataSourceSwitchable;
-import liangchen.wang.gradf.framework.data.annotation.SwitchDataSource;
 import org.springframework.aop.ClassFilter;
 import org.springframework.aop.MethodMatcher;
 import org.springframework.aop.Pointcut;
@@ -27,7 +27,10 @@ public class DynamicDataSourceBeanFactoryPointcutAdvisor extends AbstractBeanFac
 
                     @Override
                     public boolean matches(Method method, Class<?> targetClass) {
-                        if (method.getAnnotation(SwitchDataSource.class) != null) {
+                        if (targetClass.getAnnotation(DataSource.class) != null) {
+                            return true;
+                        }
+                        if (method.getAnnotation(DataSource.class) != null) {
                             return true;
                         }
                         return false;

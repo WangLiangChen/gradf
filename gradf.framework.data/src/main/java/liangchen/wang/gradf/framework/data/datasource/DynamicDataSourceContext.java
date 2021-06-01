@@ -4,10 +4,7 @@ package liangchen.wang.gradf.framework.data.datasource;
 import liangchen.wang.gradf.framework.data.datasource.dialect.AbstractDialect;
 
 import javax.sql.DataSource;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author LiangChen.Wang
@@ -20,6 +17,7 @@ public enum DynamicDataSourceContext {
     private final ThreadLocal<Deque<String>> context = ThreadLocal.withInitial(() -> new ArrayDeque<>());
     private final Map<String, AbstractDialect> cachedDialects = new LinkedHashMap<>();
     private final Map<String, DataSource> cachedDataSources = new LinkedHashMap<>();
+    private final Set<String> cachedDataSourceNames = new LinkedHashSet<>();
     public final String PRIMARY_DATASOURCE_NAME = "primary";
 
 
@@ -28,6 +26,7 @@ public enum DynamicDataSourceContext {
     }
 
     public void putDataSource(String dataSourceName, DataSource dataSource) {
+        cachedDataSourceNames.add(dataSourceName);
         cachedDataSources.put(dataSourceName, dataSource);
     }
 
@@ -37,6 +36,10 @@ public enum DynamicDataSourceContext {
 
     public AbstractDialect getDialect() {
         return getDialect(get());
+    }
+
+    public Set<String> getDataSourceNames() {
+        return cachedDataSourceNames;
     }
 
     public DataSource getDataSource(String dataSourceName) {
