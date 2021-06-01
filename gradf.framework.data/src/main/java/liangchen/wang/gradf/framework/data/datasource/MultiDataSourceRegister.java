@@ -15,20 +15,20 @@ import org.springframework.core.type.AnnotationMetadata;
 /**
  * @author LiangChen.Wang
  */
-public class DataSourceRegister implements ImportBeanDefinitionRegistrar {
+public class MultiDataSourceRegister implements ImportBeanDefinitionRegistrar {
     // private final String DEFAULT_DATASOURCE = "com.zaxxer.hikari.HikariDataSource";
     private final String DATASOURCE_BEAN_NAME = "dataSource";
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata meta, BeanDefinitionRegistry registry) {
         // 创建动态数据源
-        BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(DynamicDataSource.class);
+        BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(MultiDataSource.class);
         AbstractBeanDefinition beanDefinition = beanDefinitionBuilder.getRawBeanDefinition();
-        beanDefinition.setBeanClass(DynamicDataSource.class);
+        beanDefinition.setBeanClass(MultiDataSource.class);
         beanDefinition.setSynthetic(true);
         MutablePropertyValues propertyValues = beanDefinition.getPropertyValues();
-        propertyValues.addPropertyValue("defaultTargetDataSource", DynamicDataSourceContext.INSTANCE.getPrimaryDataSource());
-        propertyValues.addPropertyValue("targetDataSources", DynamicDataSourceContext.INSTANCE.getSecondaryDataSources());
+        propertyValues.addPropertyValue("defaultTargetDataSource", MultiDataSourceContext.INSTANCE.getPrimaryDataSource());
+        propertyValues.addPropertyValue("targetDataSources", MultiDataSourceContext.INSTANCE.getSecondaryDataSources());
         if (registry.containsBeanDefinition(DATASOURCE_BEAN_NAME)) {
             registry.removeBeanDefinition(DATASOURCE_BEAN_NAME);
         }

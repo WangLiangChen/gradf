@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * @author LiangChen.Wang
  */
-public enum DynamicDataSourceContext {
+public enum MultiDataSourceContext {
     /**
      *
      */

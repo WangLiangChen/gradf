@@ -2,7 +2,7 @@ package liangchen.wang.gradf.framework.data.mybatis.interceptor;
 
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import liangchen.wang.gradf.framework.data.core.RootQuery;
-import liangchen.wang.gradf.framework.data.datasource.DynamicDataSourceContext;
+import liangchen.wang.gradf.framework.data.datasource.MultiDataSourceContext;
 import liangchen.wang.gradf.framework.data.datasource.dialect.AbstractDialect;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.statement.RoutingStatementHandler;
@@ -54,7 +54,7 @@ public class PaginationInterceptor implements Interceptor {
         logger.info("mybatis拦截分页SQL:{}", targetSql);
         // 获取动态数据库dialect
         Connection connection = (Connection) invocation.getArgs()[0];
-        AbstractDialect dialect = DynamicDataSourceContext.INSTANCE.getDialect();
+        AbstractDialect dialect = MultiDataSourceContext.INSTANCE.getDialect();
         String countSql = dialect.resolveCountSql(targetSql);
         logger.info("mybatis构造分页计数SQL:{}", countSql);
         // 获取方法参数

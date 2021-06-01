@@ -10,20 +10,20 @@ import java.time.LocalDateTime;
  */
 @MappedSuperclass
 public class BaseEntity extends RootEntity {
-    private Long sort;
+    private Integer sort;
     private LocalDateTime create_datetime;
     private LocalDateTime modify_datetime;
-    private Long creator;
-    private Long modifier;
-    private String summary;
+    private String creator;
+    private String modifier;
     private Byte data_mode;
-    private String status;
+    private String state;
+    private String summary;
 
-    public Long getSort() {
+    public Integer getSort() {
         return sort;
     }
 
-    public void setSort(Long sort) {
+    public void setSort(Integer sort) {
         this.sort = sort;
     }
 
@@ -43,28 +43,20 @@ public class BaseEntity extends RootEntity {
         this.modify_datetime = modify_datetime;
     }
 
-    public Long getCreator() {
+    public String getCreator() {
         return creator;
     }
 
-    public void setCreator(Long creator) {
+    public void setCreator(String creator) {
         this.creator = creator;
     }
 
-    public Long getModifier() {
+    public String getModifier() {
         return modifier;
     }
 
-    public void setModifier(Long modifier) {
+    public void setModifier(String modifier) {
         this.modifier = modifier;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public void setSummary(String summary) {
-        this.summary = summary;
     }
 
     public Byte getData_mode() {
@@ -75,11 +67,19 @@ public class BaseEntity extends RootEntity {
         this.data_mode = data_mode;
     }
 
-    public String getStatus() {
-        return status;
+    public String getState() {
+        return state;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 }

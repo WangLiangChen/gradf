@@ -1,8 +1,7 @@
 package liangchen.wang.gradf.framework.data.utils;
 
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
-import liangchen.wang.gradf.framework.data.transaction.AfterCommitExecutorImpl;
-import liangchen.wang.gradf.framework.data.transaction.IAfterCommitExecutor;
+import liangchen.wang.gradf.framework.data.transaction.AfterCommitExecutor;
 import liangchen.wang.gradf.framework.springboot.context.BeanLoader;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -10,6 +9,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
 /**
@@ -21,9 +21,10 @@ public enum TransactionUtil {
      */
     INSTANCE;
     private final PlatformTransactionManager transactionManager = BeanLoader.INSTANCE.getBean(PlatformTransactionManager.class);
-    private final IAfterCommitExecutor afterCommitExecutor = new AfterCommitExecutorImpl();
+    private final Executor executor = BeanLoader.INSTANCE.getBean(Executor.class);
+    private final AfterCommitExecutor afterCommitExecutor = new AfterCommitExecutor(executor);
 
-    public void after(Runnable runnable) {
+    public void afterCommit(Runnable runnable) {
         afterCommitExecutor.execute(runnable);
     }
 

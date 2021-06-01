@@ -15,6 +15,7 @@ import java.util.Map;
  * 设计模式：原型模式，缓存并clone对象
  */
 public enum EntityPrototypeUtil {
+    // instance
     INSTANCE;
     private Map<String, RootEntity> entities = new HashMap<>();
 

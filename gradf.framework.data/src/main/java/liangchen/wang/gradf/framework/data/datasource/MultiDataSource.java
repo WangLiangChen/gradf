@@ -7,15 +7,15 @@ import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 /**
  * @author LiangChen.Wang
  */
-public class DynamicDataSource extends AbstractRoutingDataSource {
-    private final Logger logger = LoggerFactory.getLogger(DynamicDataSource.class);
+public class MultiDataSource extends AbstractRoutingDataSource {
+    private final Logger logger = LoggerFactory.getLogger(MultiDataSource.class);
 
     @Override
     protected Object determineCurrentLookupKey() {
-        String dataSourceName = DynamicDataSourceContext.INSTANCE.get();
+        String dataSourceName = MultiDataSourceContext.INSTANCE.get();
         if (null == dataSourceName || dataSourceName.length() == 0) {
             dataSourceName = "primary";
-            DynamicDataSourceContext.INSTANCE.set(dataSourceName);
+            MultiDataSourceContext.INSTANCE.set(dataSourceName);
         }
         logger.debug("Current DataSource: {}", dataSourceName);
         return dataSourceName;

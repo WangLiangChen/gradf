@@ -10,7 +10,7 @@ import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.commons.validator.AssertLevel;
 import liangchen.wang.gradf.framework.data.advisor.DynamicDataSourceBeanFactoryPointcutAdvisor;
 import liangchen.wang.gradf.framework.data.annotation.DataSource;
-import liangchen.wang.gradf.framework.data.datasource.DynamicDataSourceContext;
+import liangchen.wang.gradf.framework.data.datasource.MultiDataSourceContext;
 import liangchen.wang.gradf.framework.data.mybatis.interceptor.PaginationInterceptor;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.apache.commons.configuration2.Configuration;
@@ -79,13 +79,13 @@ public class JdbcAutoConfiguration {
                 dataSource = method.getDeclaringClass().getAnnotation(DataSource.class);
             }
             String dataSourceName = dataSource.value();
-            Assert.INSTANCE.isTrue(DynamicDataSourceContext.INSTANCE.getDataSourceNames().contains(dataSourceName), AssertLevel.INFO, "The annotated dataSource '{}' does not exist", dataSourceName);
+            Assert.INSTANCE.isTrue(MultiDataSourceContext.INSTANCE.getDataSourceNames().contains(dataSourceName), AssertLevel.INFO, "The annotated dataSource '{}' does not exist", dataSourceName);
 
-            DynamicDataSourceContext.INSTANCE.set(dataSourceName);
+            MultiDataSourceContext.INSTANCE.set(dataSourceName);
             try {
                 return methodInvocation.proceed();
             } finally {
-                DynamicDataSourceContext.INSTANCE.clear();
+                MultiDataSourceContext.INSTANCE.clear();
             }
         });
         return advisor;

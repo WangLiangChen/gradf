@@ -6,8 +6,8 @@ import liangchen.wang.gradf.framework.commons.utils.Printer;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.data.configuration.JdbcAutoConfiguration;
-import liangchen.wang.gradf.framework.data.datasource.DynamicDataSourceContext;
-import liangchen.wang.gradf.framework.data.datasource.DataSourceRegister;
+import liangchen.wang.gradf.framework.data.datasource.MultiDataSourceContext;
+import liangchen.wang.gradf.framework.data.datasource.MultiDataSourceRegister;
 import liangchen.wang.gradf.framework.data.datasource.dialect.AbstractDialect;
 import liangchen.wang.gradf.framework.data.enumeration.DataStatus;
 import org.apache.commons.configuration2.Configuration;
@@ -55,7 +55,7 @@ public @interface EnableJdbc {
             Printer.INSTANCE.prettyPrint("@EnableJdbc Start JDBC......");
             Printer.INSTANCE.prettyPrint("@EnableJdbc matched class: {}", annotationMetadata.getClassName());
             instantiateDataSource();
-            String[] imports = new String[]{DataSourceRegister.class.getName(), AutoProxyRegistrar.class.getName(), JdbcAutoConfiguration.class.getName()};
+            String[] imports = new String[]{MultiDataSourceRegister.class.getName(), AutoProxyRegistrar.class.getName(), JdbcAutoConfiguration.class.getName()};
             loaded = true;
             // 设置全局jdbc状态
             DataStatus.INSTANCE.setJdbcEnabled(true);
@@ -100,8 +100,8 @@ public @interface EnableJdbc {
                 }
                 DataSource dataSource = dataSourceProperties.initializeDataSourceBuilder().build();
                 binder.bind(EXTRA_ITEM, Bindable.ofInstance(dataSource));
-                DynamicDataSourceContext.INSTANCE.putDialect(dataSourceName, dialect);
-                DynamicDataSourceContext.INSTANCE.putDataSource(dataSourceName, dataSource);
+                MultiDataSourceContext.INSTANCE.putDialect(dataSourceName, dialect);
+                MultiDataSourceContext.INSTANCE.putDataSource(dataSourceName, dataSource);
             });
         }
 
