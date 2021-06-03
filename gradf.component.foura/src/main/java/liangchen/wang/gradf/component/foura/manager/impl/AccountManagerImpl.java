@@ -72,7 +72,7 @@ public class AccountManagerImpl extends AbstractManager<Account, AccountQuery, A
             // login_name
             if (StringUtil.INSTANCE.isNotBlank(login_name)) {
                 accountLogin.setLogin_name(login_name);
-                accountLogin.setLogin_mode(LoginModeEnum.LOGIN_NAME.name());
+                accountLogin.setLogin_mode(LoginModeEnum.PASSWORD.name());
                 accountLogin.setLogin_config("");
                 accountLoginDao.insert(accountLogin);
             }
