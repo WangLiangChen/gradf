@@ -65,33 +65,28 @@ public enum MultiDataSourceContext {
         return cachedDataSources;
     }
 
+    /*********************** about context ***************************/
+
     public void set(String dataSourceName) {
         Deque<String> deque = context.get();
-        if (null == deque) {
-            deque = new ArrayDeque<>();
-            context.set(deque);
-        }
         deque.push(dataSourceName);
     }
 
     public String get() {
         Deque<String> deque = context.get();
-        if (null == deque) {
-            return null;
-        }
         return deque.peek();
     }
 
     public void clear() {
         Deque<String> deque = context.get();
-        if (null == deque) {
-            return;
-        }
         if (deque.isEmpty()) {
-            context.remove();
             return;
         }
         deque.pop();
+    }
+
+    public void remove() {
+        context.remove();
     }
 
 }
