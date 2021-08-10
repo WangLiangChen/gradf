@@ -32,6 +32,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.lang.Nullable;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.SystemPropertyUtils;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -98,6 +100,7 @@ public class JdbcAutoConfiguration {
     public void initSQL(javax.sql.DataSource dataSource) {
         ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
         try {
+            // ClassUtils.convertClassNameToResourcePath(SystemPropertyUtils.resolvePlaceholders("")
             Resource[] ddls = resourcePatternResolver.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX.concat("ddl.sql"));
             for (Resource ddl : ddls) {
                 Printer.INSTANCE.prettyPrint("init ddl sql script:{}", ddl.toString());

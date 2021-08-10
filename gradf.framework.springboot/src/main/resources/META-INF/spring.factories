@@ -2,8 +2,13 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   liangchen.wang.gradf.framework.springboot.configuration.RootConfiguration,\
   liangchen.wang.gradf.framework.springboot.configuration.AsyncAutoConfiguration
 org.springframework.context.ApplicationContextInitializer=\
-  liangchen.wang.gradf.framework.springboot.initializer.DefaultApplicationContextInitializer
+  liangchen.wang.gradf.framework.springboot.initializer.DefaultApplicationContextInitializer,\
+  liangchen.wang.gradf.framework.springboot.monitor.StartProcessMonitor
 org.springframework.boot.SpringApplicationRunListener=\
-  liangchen.wang.gradf.framework.springboot.listener.DefaultSpringApplicationRunListener
+  liangchen.wang.gradf.framework.springboot.listener.DefaultSpringApplicationRunListener,\
+  liangchen.wang.gradf.framework.springboot.monitor.StartProcessMonitor
 org.springframework.boot.env.EnvironmentPostProcessor=\
-  liangchen.wang.gradf.framework.springboot.initializer.DefaultApplicationContextInitializer
+  liangchen.wang.gradf.framework.springboot.initializer.DefaultApplicationContextInitializer,\
+  liangchen.wang.gradf.framework.springboot.monitor.StartProcessMonitor
+org.springframework.context.ApplicationListener=\
+  liangchen.wang.gradf.framework.springboot.monitor.StartProcessMonitor
