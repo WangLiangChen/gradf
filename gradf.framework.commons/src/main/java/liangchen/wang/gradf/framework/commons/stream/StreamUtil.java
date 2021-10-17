@@ -8,6 +8,7 @@ import java.util.stream.StreamSupport;
 
 /**
  * @author LiangChen.Wang
+ *
  */
 public enum StreamUtil {
     //
