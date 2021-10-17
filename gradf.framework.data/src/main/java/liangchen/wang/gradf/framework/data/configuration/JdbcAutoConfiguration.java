@@ -8,7 +8,7 @@ import liangchen.wang.gradf.framework.commons.utils.Printer;
 import liangchen.wang.gradf.framework.commons.utils.StringUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.commons.validator.AssertLevel;
-import liangchen.wang.gradf.framework.data.advisor.DynamicDataSourceBeanFactoryPointcutAdvisor;
+import liangchen.wang.gradf.framework.data.advisor.MultiDataSourceBeanFactoryPointcutAdvisor;
 import liangchen.wang.gradf.framework.data.annotation.DataSource;
 import liangchen.wang.gradf.framework.data.datasource.MultiDataSourceContext;
 import liangchen.wang.gradf.framework.data.mybatis.interceptor.PaginationInterceptor;
@@ -32,8 +32,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.lang.Nullable;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.SystemPropertyUtils;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -71,8 +69,8 @@ public class JdbcAutoConfiguration {
      * @return
      */
     @Bean
-    public DynamicDataSourceBeanFactoryPointcutAdvisor dynamicDataSourceBeanFactoryPointcutAdvisor() {
-        DynamicDataSourceBeanFactoryPointcutAdvisor advisor = new DynamicDataSourceBeanFactoryPointcutAdvisor();
+    public MultiDataSourceBeanFactoryPointcutAdvisor dynamicDataSourceBeanFactoryPointcutAdvisor() {
+        MultiDataSourceBeanFactoryPointcutAdvisor advisor = new MultiDataSourceBeanFactoryPointcutAdvisor();
         advisor.setOrder(Ordered.HIGHEST_PRECEDENCE);
         advisor.setAdvice((MethodInterceptor) methodInvocation -> {
             Method method = methodInvocation.getMethod();

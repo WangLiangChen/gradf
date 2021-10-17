@@ -8,6 +8,8 @@ import java.util.*;
 
 /**
  * @author LiangChen.Wang
+ * 缓存初始化的数据源
+ * 存储当前线程数据源
  */
 public enum MultiDataSourceContext {
     /**

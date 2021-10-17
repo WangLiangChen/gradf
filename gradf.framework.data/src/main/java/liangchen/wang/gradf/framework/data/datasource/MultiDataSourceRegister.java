@@ -8,12 +8,11 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 
-//所有实现了该接口的类的都会被ConfigurationClassPostProcessor处理，实现了BeanFactoryPostProcessor接口，
-//所以ImportBeanDefinitionRegistrar中动态注册的bean是优先于依赖其的bean初始化的，也能被aop、validator等机制处理。
-//只能供给@Import注解或者是ImportSelector接口返回值
-
 /**
  * @author LiangChen.Wang
+ * 所有实现了该接口的类的都会被ConfigurationClassPostProcessor implement BeanFactoryPostProcessor处理
+ * 所以这里注册的bean的初始化优先级较高，能被aop、validator等处理
+ * 只能供给@Import注解或者是ImportSelector接口返回值
  */
 public class MultiDataSourceRegister implements ImportBeanDefinitionRegistrar {
     // private final String DEFAULT_DATASOURCE = "com.zaxxer.hikari.HikariDataSource";

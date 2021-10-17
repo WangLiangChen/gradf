@@ -4,7 +4,7 @@ import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import liangchen.wang.gradf.framework.commons.exception.InfoException;
 import liangchen.wang.gradf.framework.data.condition.JdbcConditionAnnotation;
 import liangchen.wang.gradf.framework.data.dao.ISequenceDao;
-import liangchen.wang.gradf.framework.data.enumeration.DbConnectionsManager;
+import liangchen.wang.gradf.framework.data.datasource.DbConnectionsManager;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;

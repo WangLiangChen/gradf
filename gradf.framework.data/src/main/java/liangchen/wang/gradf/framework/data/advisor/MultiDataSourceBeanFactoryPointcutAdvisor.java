@@ -12,7 +12,7 @@ import java.lang.reflect.Method;
 /**
  * @author LiangChen.Wang 2021/5/31
  */
-public class DynamicDataSourceBeanFactoryPointcutAdvisor extends AbstractBeanFactoryPointcutAdvisor {
+public class MultiDataSourceBeanFactoryPointcutAdvisor extends AbstractBeanFactoryPointcutAdvisor {
 
     @Override
     public Pointcut getPointcut() {

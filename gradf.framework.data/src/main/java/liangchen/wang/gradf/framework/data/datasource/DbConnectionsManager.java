@@ -1,4 +1,4 @@
-package liangchen.wang.gradf.framework.data.enumeration;
+package liangchen.wang.gradf.framework.data.datasource;
 
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import liangchen.wang.gradf.framework.springboot.context.BeanLoader;
