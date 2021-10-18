@@ -213,7 +213,6 @@ public enum NetUtil {
         if (StringUtil.INSTANCE.isBlank(ip)) {
             ip = "127.0.0.1";
         }
-
         return ip;
     }
 

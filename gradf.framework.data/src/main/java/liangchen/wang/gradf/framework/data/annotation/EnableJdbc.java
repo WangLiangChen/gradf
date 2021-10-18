@@ -9,6 +9,7 @@ import liangchen.wang.gradf.framework.data.configuration.JdbcAutoConfiguration;
 import liangchen.wang.gradf.framework.data.datasource.MultiDataSourceContext;
 import liangchen.wang.gradf.framework.data.datasource.MultiDataSourceRegister;
 import liangchen.wang.gradf.framework.data.datasource.dialect.AbstractDialect;
+import liangchen.wang.gradf.framework.data.datasource.dialect.MySQLDialect;
 import liangchen.wang.gradf.framework.data.enumeration.DataStatus;
 import org.apache.commons.configuration2.Configuration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -32,18 +33,20 @@ import java.util.*;
 
 /**
  * @author LiangChen.Wang
+ * 开启JDBC 根据配置加载初始化数据源
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Import({EnableJdbc.JdbcImportSelector.class})
 @Order(Ordered.HIGHEST_PRECEDENCE)
+@SuppressWarnings("NullableProblems")
 public @interface EnableJdbc {
     class JdbcImportSelector implements ImportSelector {
         private final String JDBC_CONFIG_FILE = "jdbc.properties";
-        private final String[] requiredKeys = new String[]{"dialect", "datasource", "host", "port", "database", "username", "password"};
+        private final Object[] requiredKeys = new String[]{"dialect", "datasource", "host", "port", "database", "username", "password"};
         private final String DIALECT_ITEM = "dialect", URL_ITEM = "url", EXTRA_ITEM = "extra";
-        private static boolean loaded = false;
+        private static volatile boolean loaded = false;
 
         @Override
         public String[] selectImports(AnnotationMetadata annotationMetadata) {
@@ -56,9 +59,9 @@ public @interface EnableJdbc {
             Printer.INSTANCE.prettyPrint("@EnableJdbc matched class: {}", annotationMetadata.getClassName());
             instantiateDataSource();
             String[] imports = new String[]{MultiDataSourceRegister.class.getName(), AutoProxyRegistrar.class.getName(), JdbcAutoConfiguration.class.getName()};
-            loaded = true;
             // 设置全局jdbc状态
             DataStatus.INSTANCE.setJdbcEnabled(true);
+            loaded = true;
             return imports;
         }
 
@@ -79,7 +82,7 @@ public @interface EnableJdbc {
             });
             ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases("datasource", "type");
             dataSourcePropertiesMap.forEach((dataSourceName, properties) -> {
-                List<String> requiredKeyList = Arrays.asList(requiredKeys);
+                List<Object> requiredKeyList = Arrays.asList(requiredKeys);
                 requiredKeyList.retainAll(properties.keySet());
                 Assert.INSTANCE.isTrue(requiredKeys.length == requiredKeyList.size(), "DataSource: {}, configuration items :{} are required!", dataSourceName, requiredKeyList);
 
@@ -88,8 +91,11 @@ public @interface EnableJdbc {
                 DataSourceProperties dataSourceProperties = binder.bind(ConfigurationPropertyName.EMPTY, Bindable.of(DataSourceProperties.class)).get();
                 AbstractDialect dialect = resolveDialect(properties.getProperty(DIALECT_ITEM));
                 if (StringUtil.INSTANCE.isBlank(properties.getProperty(URL_ITEM))) {
-                    String query = "serverTimezone=GMT%2B8&characterEncoding=utf-8&characterSetResults=utf-8&useUnicode=true&useSSL=false&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true";
-                    String url = String.format("jdbc:mysql://%s:%s/%s?%s", properties.get("host"), properties.get("port"), properties.get("database"), query);
+                    String query, url = null;
+                    if (dialect instanceof MySQLDialect) {
+                        query = "serverTimezone=GMT%2B8&characterEncoding=utf-8&characterSetResults=utf-8&useUnicode=true&useSSL=false&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true";
+                        url = String.format("jdbc:mysql://%s:%s/%s?%s", properties.get("host"), properties.get("port"), properties.get("database"), query);
+                    }
                     dataSourceProperties.setUrl(url);
                 }
                 dataSourceProperties.setBeanClassLoader(this.getClass().getClassLoader());
@@ -110,7 +116,7 @@ public @interface EnableJdbc {
                 Class<?> forName = Class.forName(dialectClassName);
                 return (AbstractDialect) forName.getDeclaredConstructor().newInstance();
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                throw new ErrorException(e.toString());
+                throw new ErrorException(e);
             }
         }
     }
