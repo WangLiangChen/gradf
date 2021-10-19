@@ -25,6 +25,7 @@ import java.util.Optional;
 
 /**
  * @author LiangChen.Wang
+ * 后续考虑拆分为Command和Query
  */
 public abstract class AbstractJdbcDao<E extends RootEntity, Q extends RootQuery> implements IDao<E, Q> {
     private final Class<E> entityClass;
