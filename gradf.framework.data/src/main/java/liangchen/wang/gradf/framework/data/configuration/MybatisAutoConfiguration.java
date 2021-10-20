@@ -42,6 +42,7 @@ import java.util.Properties;
 
 /**
  * @author LiangChen.Wang
+ * 已迁移
  */
 public class MybatisAutoConfiguration {
     private final ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
