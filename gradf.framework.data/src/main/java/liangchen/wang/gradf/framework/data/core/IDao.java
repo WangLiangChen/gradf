@@ -2,6 +2,7 @@ package liangchen.wang.gradf.framework.data.core;
 
 
 import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
+import liangchen.wang.gradf.framework.data.query.RootQuery;
 
 import java.util.List;
 import java.util.Optional;

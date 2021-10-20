@@ -3,7 +3,7 @@ package liangchen.wang.gradf.framework.data.datasource.dialect;
 
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
 import liangchen.wang.gradf.framework.commons.exception.InfoException;
-import liangchen.wang.gradf.framework.data.core.RootQuery;
+import liangchen.wang.gradf.framework.data.query.RootQuery;
 
 /**
  * @author LiangChen.Wang

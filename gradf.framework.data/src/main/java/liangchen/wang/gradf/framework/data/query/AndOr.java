@@ -1,4 +1,4 @@
-package liangchen.wang.gradf.framework.data.enumeration;
+package liangchen.wang.gradf.framework.data.query;
 
 /**
  * @author .LiangChen.Wang
