@@ -1,7 +1,8 @@
-package liangchen.wang.gradf.framework.data.core;
+package liangchen.wang.gradf.framework.data.query;
 
 
-import liangchen.wang.gradf.framework.data.enumeration.Operator;
+import liangchen.wang.gradf.framework.data.core.RootEntity;
+import liangchen.wang.gradf.framework.data.query.Operator;
 import liangchen.wang.gradf.framework.data.pagination.PaginationParameter;
 
 import javax.persistence.Transient;

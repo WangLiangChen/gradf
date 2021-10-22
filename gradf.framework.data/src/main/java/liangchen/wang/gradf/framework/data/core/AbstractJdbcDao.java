@@ -5,6 +5,7 @@ import liangchen.wang.gradf.framework.commons.exception.InfoException;
 import liangchen.wang.gradf.framework.commons.utils.CollectionUtil;
 import liangchen.wang.gradf.framework.commons.validator.Assert;
 import liangchen.wang.gradf.framework.data.pagination.PaginationResult;
+import liangchen.wang.gradf.framework.data.query.RootQuery;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;

@@ -1,7 +1,7 @@
 package liangchen.wang.gradf.framework.data.mybatis.interceptor;
 
 import liangchen.wang.gradf.framework.commons.exception.ErrorException;
-import liangchen.wang.gradf.framework.data.core.RootQuery;
+import liangchen.wang.gradf.framework.data.query.RootQuery;
 import liangchen.wang.gradf.framework.data.datasource.MultiDataSourceContext;
 import liangchen.wang.gradf.framework.data.datasource.dialect.AbstractDialect;
 import org.apache.ibatis.executor.parameter.ParameterHandler;

@@ -2,8 +2,8 @@ package liangchen.wang.gradf.component.foura.dao.query;
 
 import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;
 import liangchen.wang.gradf.framework.data.annotation.Query;
-import liangchen.wang.gradf.framework.data.core.RootQuery;
-import liangchen.wang.gradf.framework.data.enumeration.Operator;
+import liangchen.wang.gradf.framework.data.query.RootQuery;
+import liangchen.wang.gradf.framework.data.query.Operator;
 
 import javax.persistence.Table;
 import java.util.Set;

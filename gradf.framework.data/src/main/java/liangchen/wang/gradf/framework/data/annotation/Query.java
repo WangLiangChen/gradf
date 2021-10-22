@@ -1,8 +1,8 @@
 package liangchen.wang.gradf.framework.data.annotation;
 
 
-import liangchen.wang.gradf.framework.data.enumeration.AndOr;
-import liangchen.wang.gradf.framework.data.enumeration.Operator;
+import liangchen.wang.gradf.framework.data.query.AndOr;
+import liangchen.wang.gradf.framework.data.query.Operator;
 
 import java.lang.annotation.*;
 

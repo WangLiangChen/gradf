@@ -262,8 +262,8 @@ public class DesignerManagerImpl implements IDesignerManager {
         lines.add("");
         lines.add("import liangchen.wang.gradf.framework.commons.object.ClassBeanUtil;");
         lines.add("import liangchen.wang.gradf.framework.data.annotation.Query;");
-        lines.add("import liangchen.wang.gradf.framework.data.core.RootQuery;");
-        lines.add("import liangchen.wang.gradf.framework.data.enumeration.Operator;");
+        lines.add("import liangchen.wang.gradf.framework.data.query.RootQuery;");
+        lines.add("import liangchen.wang.gradf.framework.data.query.Operator;");
         lines.add("");
         lines.add("import javax.persistence.Table;");
         lines.add("");
