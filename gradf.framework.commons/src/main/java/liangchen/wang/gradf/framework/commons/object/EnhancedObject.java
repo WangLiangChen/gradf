@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 
 /**
  * @author LiangChen.Wang 2019/10/25 13:30
+ * 已经参照迁移
  */
 public abstract class EnhancedObject implements Serializable, Cloneable {
     /**
