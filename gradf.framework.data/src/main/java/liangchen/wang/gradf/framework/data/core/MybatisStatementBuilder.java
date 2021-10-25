@@ -40,6 +40,9 @@ import java.util.stream.Collectors;
  */
 @JdbcConditionAnnotation
 @Repository("Gradf_Data_MybatisStatementBuilder")
+/**
+ * 迁移确认部分方法
+ */
 public class MybatisStatementBuilder {
     protected final Logger logger = LoggerFactory.getLogger(MybatisStatementBuilder.class);
     private final static Map<String, Storer> storerMap = new ConcurrentHashMap<>(100);
