@@ -12,6 +12,7 @@ import java.sql.SQLException;
 
 /**
  * @author LiangChen.Wang 2021/6/9
+ * 迁移
  */
 public enum DbConnectionsManager {
     // instance
