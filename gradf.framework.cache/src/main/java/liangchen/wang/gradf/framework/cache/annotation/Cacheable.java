@@ -5,7 +5,7 @@ import org.springframework.core.annotation.AliasFor;
 import java.lang.annotation.*;
 
 /**
- * 已经迁移
+ * 已经迁移，再次迁移
  * @author LiangChen.Wang
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
